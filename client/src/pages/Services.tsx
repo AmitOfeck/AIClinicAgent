@@ -5,15 +5,21 @@ import { Container } from '@/components/layout/Container';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { useChatContext } from '@/context/ChatContext';
 import { SERVICES, CATEGORY_COLORS, CATEGORY_ICONS, INSURANCE_PROVIDERS, CLINIC_INFO } from '@/constants';
 
 // Popular services to highlight
 const POPULAR_SERVICE_IDS = ['dental-hygiene', 'teeth-whitening', 'dental-implants'];
 
 const Services = () => {
-  const handleBookNow = () => {
-    const chatButton = document.querySelector('[aria-label="Open chat"]') as HTMLButtonElement;
-    chatButton?.click();
+  const { openWithMessage, open } = useChatContext();
+
+  const handleBookService = (serviceName: string) => {
+    openWithMessage(`I'd like to book an appointment for ${serviceName}`);
+  };
+
+  const handleOpenChat = () => {
+    open();
   };
 
   return (
@@ -60,7 +66,7 @@ const Services = () => {
           <div className="hidden lg:block absolute -bottom-12 right-8 xl:right-16">
             <div className="bg-white rounded-2xl p-5 shadow-xl">
               <p className="text-sm text-gray-500 mb-2">Ready to book?</p>
-              <Button variant="primary" size="md" onClick={handleBookNow}>
+              <Button variant="primary" size="md" onClick={handleOpenChat}>
                 <MessageCircle className="w-4 h-4 mr-2" />
                 Chat with AI Assistant
               </Button>
@@ -162,7 +168,7 @@ const Services = () => {
                           <Button
                             variant="primary"
                             size="sm"
-                            onClick={handleBookNow}
+                            onClick={() => handleBookService(service.name)}
                             className="group/btn"
                           >
                             <span className="group-hover/btn:mr-1 transition-all">Book Now</span>
@@ -229,7 +235,7 @@ const Services = () => {
               <Button
                 variant="secondary"
                 size="lg"
-                onClick={handleBookNow}
+                onClick={handleOpenChat}
                 className="group"
               >
                 <MessageCircle className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />

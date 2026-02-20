@@ -5,12 +5,14 @@ import { Container } from '@/components/layout/Container';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { useChatContext } from '@/context/ChatContext';
 import { HIGHLIGHTED_SERVICES, CATEGORY_COLORS } from '@/constants/services';
 
 export const ServicesPreview = () => {
-  const handleOpenChat = () => {
-    const chatButton = document.querySelector('[aria-label="Open chat"]') as HTMLButtonElement;
-    chatButton?.click();
+  const { openWithMessage } = useChatContext();
+
+  const handleBookService = (serviceName: string) => {
+    openWithMessage(`I'd like to book an appointment for ${serviceName}`);
   };
 
   return (
@@ -73,7 +75,7 @@ export const ServicesPreview = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleOpenChat}
+                onClick={() => handleBookService(service.name)}
                 className="w-full justify-center group-hover:bg-clinic-teal group-hover:text-white transition-all"
               >
                 Book Appointment
