@@ -5,15 +5,17 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { useChatContext } from '@/context/ChatContext';
+import { useTranslation } from '@/i18n';
 import { SERVICES, CATEGORY_COLORS } from '@/constants';
 import type { Service } from '@/types';
 
 interface ServiceCardProps {
   service: Service;
   onBook: (serviceName: string) => void;
+  bookLabel: string;
 }
 
-const ServiceCard = ({ service, onBook }: ServiceCardProps) => (
+const ServiceCard = ({ service, onBook, bookLabel }: ServiceCardProps) => (
   <Card variant="outlined" padding="lg" hover className="group">
     <div className="flex items-start justify-between mb-4">
       <Badge className={CATEGORY_COLORS[service.category]} size="sm">
@@ -39,13 +41,14 @@ const ServiceCard = ({ service, onBook }: ServiceCardProps) => (
       onClick={() => onBook(service.name)}
       className="w-full justify-center group-hover:bg-clinic-teal group-hover:text-white transition-all"
     >
-      Book Now
+      {bookLabel}
     </Button>
   </Card>
 );
 
 export const ServicesSection = () => {
   const { openWithMessage } = useChatContext();
+  const { t } = useTranslation();
 
   const handleBook = (serviceName: string) => {
     openWithMessage(`I'd like to book an appointment for ${serviceName}`);
@@ -55,19 +58,23 @@ export const ServicesSection = () => {
     <Section background="white" padding="lg" id="services">
       <Container>
         <div className="text-center mb-12">
-          <Badge variant="primary" className="mb-4">Our Services</Badge>
+          <Badge variant="primary" className="mb-4">{t.services.badge}</Badge>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            Comprehensive Dental Care
+            {t.services.title}
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            From routine cleanings to advanced procedures, our specialists provide
-            personalized care for every dental need.
+            {t.services.subtitle}
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {SERVICES.map((service) => (
-            <ServiceCard key={service.id} service={service} onBook={handleBook} />
+            <ServiceCard
+              key={service.id}
+              service={service}
+              onBook={handleBook}
+              bookLabel={t.common.bookNow}
+            />
           ))}
         </div>
       </Container>

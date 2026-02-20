@@ -2,6 +2,7 @@ import { Section } from '@/components/layout/Section';
 import { Container } from '@/components/layout/Container';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { useTranslation } from '@/i18n';
 import { TEAM } from '@/constants';
 import type { TeamMember } from '@/types';
 
@@ -62,17 +63,18 @@ const TeamCard = ({ member }: TeamCardProps) => (
 );
 
 export const TeamSection = () => {
+  const { t } = useTranslation();
+
   return (
     <Section background="gray" padding="lg" id="team">
       <Container>
         <div className="text-center mb-12">
-          <Badge variant="primary" className="mb-4">Our Specialists</Badge>
+          <Badge variant="primary" className="mb-4">{t.team.badge}</Badge>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            Meet Our Team
+            {t.team.title}
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto mt-4">
-            Our team of experienced dental professionals is dedicated to providing
-            you with the highest quality care.
+            {t.team.subtitle}
           </p>
         </div>
 

@@ -1,6 +1,7 @@
 import { Section } from '@/components/layout/Section';
 import { Container } from '@/components/layout/Container';
 import { Card } from '@/components/ui/Card';
+import { useTranslation } from '@/i18n';
 import { FEATURES, INSURANCE_PROVIDERS } from '@/constants';
 import type { Feature } from '@/types';
 
@@ -36,16 +37,17 @@ const InsuranceBadge = ({ provider }: InsuranceBadgeProps) => (
 );
 
 export const WhyChooseUsSection = () => {
+  const { t } = useTranslation();
+
   return (
     <Section background="white" padding="lg" id="why-us">
       <Container>
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            Why Choose Us
+            {t.whyChooseUs.title}
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Experience the future of dental care with our AI-powered booking system
-            and personalized treatment approach.
+            {t.whyChooseUs.subtitle}
           </p>
         </div>
 
@@ -58,7 +60,7 @@ export const WhyChooseUsSection = () => {
         {/* Insurance */}
         <div className="text-center">
           <h3 className="text-xl font-semibold text-gray-900 mb-6">
-            Insurance Providers Accepted
+            {t.whyChooseUs.insurance}
           </h3>
           <div className="flex flex-wrap justify-center gap-4">
             {INSURANCE_PROVIDERS.map((provider) => (

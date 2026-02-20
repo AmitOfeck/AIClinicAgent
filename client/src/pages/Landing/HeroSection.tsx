@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Container } from '@/components/layout/Container';
 import { useChatContext } from '@/context/ChatContext';
+import { useTranslation } from '@/i18n';
 import { CLINIC_INFO } from '@/constants';
 
 interface TrustBadgeProps {
@@ -21,6 +22,7 @@ const TrustBadge = ({ icon: Icon, text }: TrustBadgeProps) => (
 
 export const HeroSection = () => {
   const { open } = useChatContext();
+  const { t } = useTranslation();
 
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
@@ -42,20 +44,19 @@ export const HeroSection = () => {
           <div className="text-white">
             <Badge variant="primary" className="mb-6 bg-white/10 border-white/20 text-white">
               <Sparkles className="w-3 h-3 mr-1" />
-              Tel Aviv's Premier Dental Clinic
+              {t.hero.badge}
             </Badge>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-              Your Smile,
+              {t.hero.title}
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-teal-200">
-                Our Priority
+                {t.hero.titleHighlight}
               </span>
             </h1>
 
             <p className="mt-6 text-lg sm:text-xl text-white/80 max-w-lg">
-              Experience world-class dental care with Dr. Ilan Ofeck and our
-              team of specialists. Book your appointment instantly with our AI assistant.
+              {t.hero.subtitle}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
@@ -65,7 +66,7 @@ export const HeroSection = () => {
                 onClick={open}
                 leftIcon={<MessageCircle className="w-5 h-5" />}
               >
-                Book with AI Assistant
+                {t.hero.cta}
               </Button>
               <Button
                 variant="outline-white"
@@ -79,9 +80,9 @@ export const HeroSection = () => {
 
             {/* Trust badges */}
             <div className="mt-12 flex flex-wrap items-center gap-6 lg:gap-8">
-              <TrustBadge icon={Award} text="20+ Years Experience" />
-              <TrustBadge icon={Users} text="10,000+ Patients" />
-              <TrustBadge icon={Shield} text="Top Rated" />
+              <TrustBadge icon={Award} text={t.hero.trustBadges.experience} />
+              <TrustBadge icon={Users} text={t.hero.trustBadges.patients} />
+              <TrustBadge icon={Shield} text={t.hero.trustBadges.topRated} />
             </div>
           </div>
 
@@ -104,8 +105,8 @@ export const HeroSection = () => {
                     <MessageCircle className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">AI-Powered Booking</p>
-                    <p className="text-sm text-gray-500">Available 24/7</p>
+                    <p className="font-semibold text-gray-900">{t.hero.floatingCards.aiBooking}</p>
+                    <p className="text-sm text-gray-500">{t.hero.floatingCards.available}</p>
                   </div>
                 </div>
               </div>
@@ -120,7 +121,7 @@ export const HeroSection = () => {
                   </div>
                   <span className="font-bold text-gray-900">4.9</span>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Google Reviews</p>
+                <p className="text-xs text-gray-500 mt-1">{t.hero.floatingCards.googleReviews}</p>
               </div>
             </div>
           </div>

@@ -1,14 +1,14 @@
 import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
-import { BUTTON_VARIANTS, BUTTON_SIZES } from './constants';
+import { buttonVariants } from './constants';
 import type { ButtonProps } from './types';
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       children,
-      variant = 'primary',
-      size = 'md',
+      variant,
+      size,
       disabled = false,
       loading = false,
       leftIcon,
@@ -35,15 +35,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         onClick={handleClick}
         className={cn(
-          // Base styles
-          'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200',
-          'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-clinic-teal',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
-          // Variant styles
-          BUTTON_VARIANTS[variant],
-          // Size styles
-          BUTTON_SIZES[size],
-          // Full width
+          buttonVariants({ variant, size }),
           fullWidth && 'w-full',
           className
         )}

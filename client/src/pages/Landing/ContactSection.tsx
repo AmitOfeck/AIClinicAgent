@@ -4,6 +4,7 @@ import { Container } from '@/components/layout/Container';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { useTranslation } from '@/i18n';
 import { CLINIC_INFO } from '@/constants';
 
 interface ContactItemProps {
@@ -42,9 +43,10 @@ interface HoursRowProps {
   hours: string;
   isOpen: boolean;
   isToday: boolean;
+  todayLabel: string;
 }
 
-const HoursRow = ({ day, hours, isOpen, isToday }: HoursRowProps) => (
+const HoursRow = ({ day, hours, isOpen, isToday, todayLabel }: HoursRowProps) => (
   <div
     className={`flex items-center justify-between py-2 px-3 rounded-lg ${
       isToday ? 'bg-clinic-teal/5 font-medium' : ''
@@ -54,7 +56,7 @@ const HoursRow = ({ day, hours, isOpen, isToday }: HoursRowProps) => (
       {day}
       {isToday && (
         <span className="ml-2 text-xs bg-clinic-teal text-white px-2 py-0.5 rounded-full">
-          Today
+          {todayLabel}
         </span>
       )}
     </span>
@@ -65,6 +67,7 @@ const HoursRow = ({ day, hours, isOpen, isToday }: HoursRowProps) => (
 );
 
 export const ContactSection = () => {
+  const { t } = useTranslation();
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
   const todayHours = CLINIC_INFO.hours.find(h => h.day === today);
 
@@ -72,12 +75,12 @@ export const ContactSection = () => {
     <Section background="white" padding="lg" id="contact">
       <Container>
         <div className="text-center mb-12">
-          <Badge variant="primary" className="mb-4">Contact Us</Badge>
+          <Badge variant="primary" className="mb-4">{t.contact.badge}</Badge>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            Visit Our Clinic
+            {t.contact.title}
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Conveniently located in the heart of Tel Aviv with easy access and parking
+            {t.contact.subtitle}
           </p>
         </div>
 
@@ -103,27 +106,27 @@ export const ContactSection = () => {
           <div className="space-y-6">
             <Card variant="default" padding="lg">
               <h3 className="text-xl font-semibold text-gray-900 mb-6">
-                Contact Information
+                {t.contact.contactInfo}
               </h3>
 
               <div className="space-y-6">
-                <ContactItem icon={MapPin} label="Address">
+                <ContactItem icon={MapPin} label={t.contact.labels.address}>
                   {CLINIC_INFO.address}
                 </ContactItem>
 
-                <ContactItem icon={Phone} label="Phone" href={`tel:${CLINIC_INFO.phone}`}>
+                <ContactItem icon={Phone} label={t.contact.labels.phone} href={`tel:${CLINIC_INFO.phone}`}>
                   {CLINIC_INFO.phone}
                 </ContactItem>
 
-                <ContactItem icon={Mail} label="Email" href={`mailto:${CLINIC_INFO.email}`}>
+                <ContactItem icon={Mail} label={t.contact.labels.email} href={`mailto:${CLINIC_INFO.email}`}>
                   {CLINIC_INFO.email}
                 </ContactItem>
 
-                <ContactItem icon={Clock} label="Today's Hours">
+                <ContactItem icon={Clock} label={t.contact.labels.todayHours}>
                   {todayHours?.isOpen ? (
                     <span className="text-green-600">{todayHours.hours}</span>
                   ) : (
-                    <span className="text-red-600">Closed</span>
+                    <span className="text-red-600">{t.contact.labels.closed}</span>
                   )}
                 </ContactItem>
               </div>
@@ -136,7 +139,7 @@ export const ContactSection = () => {
                   onClick={() => window.open(CLINIC_INFO.location.directionsUrl, '_blank')}
                   leftIcon={<Navigation className="w-5 h-5" />}
                 >
-                  Get Directions
+                  {t.contact.getDirections}
                 </Button>
               </div>
             </Card>
@@ -145,7 +148,7 @@ export const ContactSection = () => {
             <Card variant="outlined" padding="lg">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-clinic-teal" />
-                Opening Hours
+                {t.contact.labels.openingHours}
               </h3>
 
               <div className="space-y-2">
@@ -156,6 +159,7 @@ export const ContactSection = () => {
                     hours={item.hours}
                     isOpen={item.isOpen}
                     isToday={item.day === today}
+                    todayLabel={t.contact.labels.today}
                   />
                 ))}
               </div>

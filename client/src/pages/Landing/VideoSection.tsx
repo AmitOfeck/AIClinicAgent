@@ -1,22 +1,25 @@
 import { Play } from 'lucide-react';
 import { Section } from '@/components/layout/Section';
 import { Container } from '@/components/layout/Container';
+import { useTranslation } from '@/i18n';
 import { YOUTUBE_EMBED_URL } from '@/constants';
 
 export const VideoSection = () => {
+  const { t } = useTranslation();
+
   return (
     <Section background="gray" padding="lg" id="video">
       <Container size="lg">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 text-clinic-teal font-medium mb-4">
             <Play className="w-5 h-5" />
-            <span>Watch Our Video</span>
+            <span>{t.video.badge}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            Experience Our Clinic
+            {t.video.title}
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Take a virtual tour of our modern dental facility and meet our dedicated team
+            {t.video.subtitle}
           </p>
         </div>
 

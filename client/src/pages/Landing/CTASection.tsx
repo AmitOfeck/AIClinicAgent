@@ -3,10 +3,12 @@ import { Section } from '@/components/layout/Section';
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
 import { useChatContext } from '@/context/ChatContext';
+import { useTranslation } from '@/i18n';
 import { CLINIC_INFO } from '@/constants';
 
 export const CTASection = () => {
   const { open } = useChatContext();
+  const { t } = useTranslation();
 
   return (
     <Section background="gradient" padding="xl" className="relative overflow-hidden">
@@ -21,12 +23,11 @@ export const CTASection = () => {
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
-            Ready to Transform Your Smile?
+            {t.cta.title}
           </h2>
 
           <p className="mt-6 text-xl text-white/80 max-w-2xl mx-auto">
-            Book your appointment today with our AI assistant or give us a call.
-            We're here to help you achieve the perfect smile.
+            {t.cta.subtitle}
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -37,7 +38,7 @@ export const CTASection = () => {
               leftIcon={<MessageCircle className="w-5 h-5" />}
               rightIcon={<ArrowRight className="w-5 h-5" />}
             >
-              Chat with AI Assistant
+              {t.cta.chatButton}
             </Button>
 
             <Button
@@ -46,14 +47,14 @@ export const CTASection = () => {
               onClick={() => window.location.href = `tel:${CLINIC_INFO.phone}`}
               leftIcon={<Phone className="w-5 h-5" />}
             >
-              Call {CLINIC_INFO.phone}
+              {t.common.call} {CLINIC_INFO.phone}
             </Button>
           </div>
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-white/60 text-sm">
-            <span>✓ No waiting time</span>
-            <span>✓ Instant confirmation</span>
-            <span>✓ Available 24/7</span>
+            <span>✓ {t.cta.features.noWaiting}</span>
+            <span>✓ {t.cta.features.instant}</span>
+            <span>✓ {t.cta.features.available}</span>
           </div>
         </div>
       </Container>
