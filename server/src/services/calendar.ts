@@ -1,4 +1,5 @@
 import { google } from 'googleapis'
+import { withRetry, checkServiceConfig } from '../utils/retry.js'
 
 // Service durations in minutes
 const SERVICE_DURATIONS: Record<string, number> = {
@@ -35,28 +36,37 @@ function getCalendarClient() {
   return google.calendar({ version: 'v3', auth })
 }
 
+export interface CalendarAvailabilityResult {
+  slots: string[]
+  fromCalendar: boolean  // True if fetched from Google Calendar, false if mock
+  error?: string
+}
+
 export async function checkCalendarAvailability(
   date: string,
   service?: string
-): Promise<string[]> {
+): Promise<CalendarAvailabilityResult> {
   const duration = service ? SERVICE_DURATIONS[service] || 30 : 30
   const dateObj = new Date(date)
   const dayOfWeek = dateObj.getDay()
   const hours = CLINIC_HOURS[dayOfWeek]
 
   if (!hours) {
-    return [] // Clinic is closed
+    return { slots: [], fromCalendar: false, error: 'Clinic is closed on this day' }
   }
 
-  // If Google Calendar is not configured, return mock slots
-  if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY || !process.env.GOOGLE_CALENDAR_ID) {
+  const config = checkServiceConfig(['GOOGLE_SERVICE_ACCOUNT_KEY', 'GOOGLE_CALENDAR_ID'])
+
+  if (!config.configured) {
     console.log('Google Calendar not configured, returning mock slots')
-    return generateMockSlots(date, hours, duration)
+    console.log('Missing:', config.missingKeys?.join(', '))
+    const mockSlots = generateMockSlots(date, hours, duration)
+    return { slots: mockSlots, fromCalendar: false, error: 'Google Calendar not configured' }
   }
 
-  try {
+  const result = await withRetry(async () => {
     const calendar = getCalendarClient()
-    const calendarId = process.env.GOOGLE_CALENDAR_ID
+    const calendarId = process.env.GOOGLE_CALENDAR_ID!
 
     const timeMin = new Date(date)
     timeMin.setHours(hours.open, 0, 0, 0)
@@ -78,11 +88,16 @@ export async function checkCalendarAvailability(
     }))
 
     return findAvailableSlots(date, hours, duration, busySlots)
-  } catch (error) {
-    console.error('Google Calendar API error:', error)
-    // Fallback to mock slots if API fails
-    return generateMockSlots(date, hours, duration)
+  })
+
+  if (!result.success) {
+    console.error('Google Calendar API failed after retries:', result.error)
+    // Fallback to mock slots
+    const mockSlots = generateMockSlots(date, hours, duration)
+    return { slots: mockSlots, fromCalendar: false, error: result.error }
   }
+
+  return { slots: result.data!, fromCalendar: true }
 }
 
 function generateMockSlots(
@@ -147,20 +162,32 @@ function findAvailableSlots(
   return slots.slice(0, 6)
 }
 
+export interface CalendarEventResult {
+  success: boolean
+  created: boolean  // True if event was actually created in Google Calendar
+  eventId?: string
+  error?: string
+  retryAttempts?: number
+}
+
 export async function createCalendarEvent(
   summary: string,
   description: string,
   dateTime: string,
   duration: number = 30
-): Promise<{ success: boolean; eventId?: string; error?: string }> {
-  if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY || !process.env.GOOGLE_CALENDAR_ID) {
+): Promise<CalendarEventResult> {
+  const config = checkServiceConfig(['GOOGLE_SERVICE_ACCOUNT_KEY', 'GOOGLE_CALENDAR_ID'])
+
+  if (!config.configured) {
     console.log('Google Calendar not configured, skipping event creation')
-    return { success: true, eventId: 'mock-event-id' }
+    console.log('Missing:', config.missingKeys?.join(', '))
+    // Return created: false to indicate event wasn't actually created
+    return { success: true, created: false, eventId: 'mock-event-id', error: 'Google Calendar not configured' }
   }
 
-  try {
+  const result = await withRetry(async () => {
     const calendar = getCalendarClient()
-    const calendarId = process.env.GOOGLE_CALENDAR_ID
+    const calendarId = process.env.GOOGLE_CALENDAR_ID!
 
     const startTime = new Date(dateTime)
     const endTime = new Date(startTime)
@@ -176,9 +203,23 @@ export async function createCalendarEvent(
       },
     })
 
-    return { success: true, eventId: response.data.id || undefined }
-  } catch (error) {
-    console.error('Create calendar event error:', error)
-    return { success: false, error: 'Failed to create calendar event' }
+    return response.data.id
+  })
+
+  if (!result.success) {
+    console.error('Create calendar event failed after retries:', result.error)
+    return {
+      success: false,
+      created: false,
+      error: result.error,
+      retryAttempts: result.attempts,
+    }
+  }
+
+  return {
+    success: true,
+    created: true,
+    eventId: result.data || undefined,
+    retryAttempts: result.attempts,
   }
 }

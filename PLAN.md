@@ -1,222 +1,272 @@
 # SmartClinic Agent - Implementation Plan
 
-## Timeline: 1.5 Days
+## Project Overview
+
+AI-powered dental clinic booking assistant for **Dr. Ilan Ofeck's Dental Clinic** in Tel Aviv. Uses agentic AI with ReAct pattern, human-in-the-loop approval via Telegram, and production-grade error handling.
 
 ---
 
-## Phase 1: Foundation (COMPLETED ✅)
+## Architecture
 
-### 1.1 Project Setup
-- [x] Initialize monorepo structure (`server/` + `client/`)
-- [x] Configure TypeScript for both packages
-- [x] Set up Express backend with routing
-- [x] Set up React + Vite + Tailwind frontend
-- [x] Create root package.json with dev scripts
-- [x] Create .env.example with all required variables
-
-### 1.2 Database Layer
-- [x] SQLite connection with better-sqlite3
-- [x] Appointments table (id, patient info, service, datetime, status)
-- [x] Patient preferences table (for long-term memory)
-- [x] CRUD operations for appointments
-- [x] CRUD operations for patient preferences
-
-### 1.3 Basic Infrastructure
-- [x] Health check endpoint (`/api/health`)
-- [x] CORS configuration
-- [x] Vite proxy to backend (`/api` → `localhost:3001`)
-
----
-
-## Phase 2: AI Agent Core (COMPLETED ✅)
-
-### 2.1 Agent Configuration
-- [x] System prompt with clinic context, rules, and services
-- [x] Gemini 2.5 Flash model configuration via `@ai-sdk/google`
-- [x] `maxSteps: 10` for multi-step reasoning (ReAct pattern)
-
-### 2.2 Tool Definitions
-- [x] `checkAvailability` - Query available slots for a date
-- [x] `createAppointment` - Create pending appointment + notify owner
-- [x] `searchKnowledgeBase` - Search clinic info (Agentic RAG)
-- [x] `getPatientHistory` - Retrieve returning patient data (Long-term Memory)
-- [x] `savePatientPreference` - Store patient preferences
-
-### 2.3 Chat API
-- [x] POST `/api/chat` route with streaming response
-- [x] Integration with Vercel AI SDK `streamText`
-- [x] Error handling and fallbacks
-
----
-
-## Phase 3: External Integrations (COMPLETED ✅)
-
-### 3.1 Google Calendar Service
-- [x] Calendar client initialization with service account
-- [x] `checkCalendarAvailability()` - Get free slots
-- [x] `createCalendarEvent()` - Create event on approval
-- [x] Mock fallback when not configured
-- [x] Clinic hours logic (Sun-Thu 8-5, Fri 8-1, Sat closed)
-
-### 3.2 Telegram Bot Service
-- [x] `sendOwnerNotification()` - Send appointment request with inline buttons
-- [x] `handleTelegramWebhook()` - Process approve/decline callbacks
-- [x] `editMessage()` - Update message after action
-- [x] Webhook route (`/api/telegram/webhook`)
-- [x] Console fallback when not configured
-
-### 3.3 Email Service (Resend)
-- [x] `sendEmail()` - Generic email sending
-- [x] Approval email template
-- [x] Decline email template
-- [x] Console fallback when not configured
-
-### 3.4 Knowledge Base
-- [x] `clinic-knowledge.json` with services, pricing, hours, team, FAQs
-- [x] `searchKnowledge()` - Keyword-based search
-- [x] Default fallback data
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         React Frontend                               │
+│  ┌──────────────────┐  ┌─────────────────────────────────────────┐  │
+│  │  Clinic Website  │  │         Chat Widget (@ai-sdk/react)     │  │
+│  │  - Home          │  │  useChat() ←→ /api/chat (SSE streaming) │  │
+│  │  - Services      │  │  Tool invocation visualization          │  │
+│  │  - About         │  └─────────────────────────────────────────┘  │
+│  └──────────────────┘                                                │
+└─────────────────────────────────┬────────────────────────────────────┘
+                                  │
+                       ┌──────────▼──────────┐
+                       │   Express Backend    │
+                       │                      │
+                       │  ┌────────────────┐  │
+                       │  │  ReAct Agent   │  │
+                       │  │  (Gemini 2.5)  │  │
+                       │  │  maxSteps: 10  │  │
+                       │  └───────┬────────┘  │
+                       │          │           │
+                       │  ┌───────▼────────┐  │
+                       │  │  8 Agent Tools │  │
+                       │  │  + Step Trace  │  │
+                       │  └───────┬────────┘  │
+                       │          │           │
+                       │  ┌───────▼────────┐  │
+                       │  │ Retry + Error  │  │
+                       │  │   Handling     │  │
+                       │  └────────────────┘  │
+                       └──────────┬───────────┘
+                                  │
+        ┌─────────────────────────┼─────────────────────────────┐
+        │                         │                             │
+        ▼                         ▼                             ▼
+┌───────────────┐       ┌───────────────┐           ┌───────────────┐
+│    SQLite     │       │   Telegram    │           │    Resend     │
+│   Database    │       │   Bot API     │           │    Email      │
+│  (real data)  │       │  (real API)   │           │  (mocked)     │
+└───────────────┘       └───────┬───────┘           └───────────────┘
+                                │
+                                ▼
+                        ┌───────────────┐
+                        │ Google        │
+                        │ Calendar      │
+                        │ (mocked)      │
+                        └───────────────┘
+```
 
 ---
 
-## Phase 4: Frontend (COMPLETED ✅)
+## Phase Progress
 
-### 4.1 Layout Components
-- [x] Navbar with logo and navigation
-- [x] Footer with contact info and hours
+| Phase | Status | Description |
+|-------|--------|-------------|
+| Phase 0: Foundation | ✅ Complete | Project setup, DB, agent, tools |
+| Phase 1: UI Updates | ✅ Complete | Clinic branding, staff, services |
+| Phase 5: Robustness | ✅ Complete | Error types, retry, tracing |
+| Phase 6: E2E Testing | 🔄 Next | Full booking flow testing |
+| Phase 7: Calendar | ⏳ Pending | Real Google Calendar |
+| Phase 8: Email | ⏳ Pending | Real Resend integration |
+| Phase 9: Deployment | ⏳ Pending | Vercel + Railway |
+| Phase 10: Demo | ⏳ Pending | Video recording |
 
-### 4.2 Pages
-- [x] Home - Hero, features, services preview, CTA
-- [x] Services - Full service list with pricing
-- [x] About - Team bios, stats, contact info
+---
 
-### 4.3 Chat Widget
-- [x] Floating chat bubble (bottom-right)
-- [x] Chat window with minimize/close
-- [x] Message list with user/assistant distinction
-- [x] Tool invocation visualization (shows "Checking availability...")
-- [x] Input field with send button
+## Phase 0: Foundation ✅
+
+### Project Setup
+- [x] Monorepo structure (`server/` + `client/`)
+- [x] TypeScript configuration
+- [x] Express backend with routing
+- [x] React + Vite + Tailwind frontend
+- [x] Root package.json with dev scripts
+
+### Database Layer (SQLite)
+- [x] `staff` - 6 team members with working hours
+- [x] `services` - 10 treatments with durations
+- [x] `staff_services` - Many-to-many relationship
+- [x] `appointments` - Bookings with status
+- [x] `patient_preferences` - Long-term memory
+- [x] `conversations` - Chat history
+
+### Agent Configuration
+- [x] System prompt with clinic context
+- [x] Gemini 2.5 Flash model
+- [x] `maxSteps: 10` for multi-step reasoning
+- [x] 8 tools with Zod schemas
+
+---
+
+## Phase 1: UI Updates ✅
+
+### Frontend Pages
+- [x] Home - Hero, features, services preview
+- [x] Services - 10 treatments by category
+- [x] About - 6 staff members with bios
+- [x] Navbar + Footer with contact info
+
+### Chat Widget
+- [x] Floating bubble (bottom-right)
+- [x] Message list with user/assistant styling
+- [x] Tool invocation visualization
 - [x] Loading indicator (typing dots)
 - [x] `useChat` hook integration
 
 ---
 
-## Phase 5: Testing & Polish (IN PROGRESS 🔄)
+## Phase 5: Agent Robustness ✅ (Latest)
 
-### 5.1 End-to-End Testing
-- [ ] Test chat without API key (should show error gracefully)
-- [ ] Test chat with Gemini API key
-- [ ] Test appointment booking flow
-- [ ] Test self-correction (try booking a taken slot)
-- [ ] Test knowledge base queries ("What are your prices?")
-- [ ] Test patient memory ("I prefer morning appointments")
+### Structured Error Types
+- [x] `ToolError` interface: `{ errorType, message, suggestion, retryable }`
+- [x] Error types: `NOT_FOUND`, `NO_SLOTS`, `STAFF_NOT_WORKING`, `VALIDATION_ERROR`, `API_ERROR`, `DATABASE_ERROR`
+- [x] All 8 tools return structured errors
 
-### 5.2 Telegram Integration Testing
-- [ ] Create Telegram bot via @BotFather
-- [ ] Configure webhook URL (use ngrok for local dev)
-- [ ] Test owner notification
-- [ ] Test approve/decline flow
-- [ ] Verify email sending on approval
+### Retry Logic
+- [x] `utils/retry.ts` with exponential backoff
+- [x] `withRetry(fn, options)` - configurable max retries
+- [x] `checkServiceConfig(keys)` - validates env vars
+- [x] Applied to: Calendar, Email, Telegram
 
-### 5.3 UI Polish
-- [ ] Fix any styling issues
-- [ ] Test responsive design (mobile)
-- [ ] Add loading states where needed
-- [ ] Improve error messages
+### Silent Success Fixes
+- [x] Calendar: `{ slots, fromCalendar: boolean }`
+- [x] Email: `{ success, sent: boolean }`
+- [x] Calendar Event: `{ success, created: boolean }`
 
-### 5.4 Edge Cases & Error Handling
-- [ ] Handle API rate limits gracefully
-- [ ] Handle network errors
-- [ ] Validate user inputs (email format, date validity)
-- [ ] Handle calendar conflicts
+### Proactive Patient Recognition
+- [x] System prompt section added
+- [x] Agent calls `getPatientHistory` on email receipt
+- [x] Returning patients get personalized greetings
 
----
+### RAG Decision Triggers
+- [x] Knowledge base triggers for pricing, insurance, policies
+- [x] Rule: "Search FIRST, then answer"
 
-## Phase 6: Deployment (PENDING ⏳)
+### Agent Step Tracing
+- [x] `AgentStep` interface for logging
+- [x] `onStepFinish` callback in streamText
+- [x] `GET /api/chat/trace` endpoint
+- [x] Console logging: `[Step N] Tool call: name`
 
-### 6.1 Backend Deployment (Railway/Render)
-- [ ] Create account and project
-- [ ] Configure environment variables
-- [ ] Deploy server
-- [ ] Verify health check
-
-### 6.2 Frontend Deployment (Vercel)
-- [ ] Create Vercel project
-- [ ] Configure API proxy to backend
-- [ ] Deploy client
-- [ ] Verify all pages load
-
-### 6.3 Production Configuration
-- [ ] Set Telegram webhook to production URL
-- [ ] Update CORS for production domain
-- [ ] Test full flow in production
+### Calendar Duration Fix
+- [x] Lookup service duration from DB
+- [x] Pass correct duration to `createCalendarEvent`
 
 ---
 
-## Phase 7: Demo Recording (PENDING ⏳)
+## Phase 6: E2E Testing (Next)
 
-### 7.1 Demo Script
-1. Show clinic website (homepage, services, about)
-2. Open chat widget
-3. Ask about services/pricing → Agent uses `searchKnowledgeBase`
-4. Request appointment → Agent uses `checkAvailability`
-5. Select slot and provide details → Agent uses `createAppointment`
-6. Show Telegram notification arriving
-7. Tap Approve in Telegram
-8. Show confirmation (email + updated chat)
-9. Demonstrate self-correction (try taken slot)
-10. Show tool invocations in chat UI
-
-### 7.2 Recording
-- [ ] Set up screen recording
-- [ ] Record demo walkthrough
-- [ ] Add voiceover/captions if needed
-- [ ] Upload and link in README
+### Test Scenarios
+- [ ] Chat without API key → graceful error
+- [ ] Complete booking flow → pending appointment
+- [ ] Self-correction → alternative slots
+- [ ] Knowledge queries → RAG response
+- [ ] Patient memory → preference storage
+- [ ] Telegram approve → email + calendar
+- [ ] Telegram decline → rejection email
+- [ ] Service routing → correct specialist
 
 ---
 
-## Current Status Summary
+## Phase 7-10: Future Phases
 
-| Phase | Status | Progress |
-|-------|--------|----------|
-| Phase 1: Foundation | ✅ Complete | 100% |
-| Phase 2: AI Agent Core | ✅ Complete | 100% |
-| Phase 3: External Integrations | ✅ Complete | 100% |
-| Phase 4: Frontend | ✅ Complete | 100% |
-| Phase 5: Testing & Polish | 🔄 In Progress | 20% |
-| Phase 6: Deployment | ⏳ Pending | 0% |
-| Phase 7: Demo Recording | ⏳ Pending | 0% |
+### Phase 7: Google Calendar
+- [ ] Google Cloud project setup
+- [ ] Service account creation
+- [ ] Calendar sharing
+- [ ] Real availability checking
+
+### Phase 8: Email (Resend)
+- [ ] Account setup
+- [ ] Domain verification
+- [ ] Real email sending
+
+### Phase 9: Deployment
+- [ ] Frontend → Vercel
+- [ ] Backend → Railway/Render
+- [ ] Environment configuration
+- [ ] Telegram webhook URL
+
+### Phase 10: Demo
+- [ ] Screen recording
+- [ ] Voiceover/captions
+- [ ] README link
 
 ---
 
-## Immediate Next Steps
+## File Structure
 
-1. **Add Gemini API Key** → Required to test chat
-2. **Test Chat Flow** → Verify booking works end-to-end
-3. **Set Up Telegram Bot** → For owner approval flow
-4. **Fix Any Bugs** → Address issues found during testing
-5. **Deploy** → Get it live
-6. **Record Demo** → Final deliverable
+```
+AIClinicAgent/
+├── server/
+│   ├── src/
+│   │   ├── index.ts                 # Express entry point
+│   │   ├── routes/
+│   │   │   ├── chat.ts              # AI chat + tracing
+│   │   │   └── telegram.ts          # Webhook handler
+│   │   ├── agent/
+│   │   │   ├── index.ts             # System prompt
+│   │   │   └── tools/index.ts       # 8 tools
+│   │   ├── services/
+│   │   │   ├── calendar.ts          # Google Calendar (retry)
+│   │   │   ├── telegram.ts          # Bot + notifications
+│   │   │   ├── email.ts             # Resend (retry)
+│   │   │   └── knowledge.ts         # RAG search
+│   │   ├── db/
+│   │   │   ├── index.ts             # SQLite setup + seed
+│   │   │   ├── staff.ts             # Staff queries
+│   │   │   ├── services.ts          # Service queries
+│   │   │   ├── appointments.ts      # Appointment CRUD
+│   │   │   └── patients.ts          # Patient preferences
+│   │   ├── utils/
+│   │   │   └── retry.ts             # Exponential backoff
+│   │   └── data/
+│   │       └── clinic-knowledge.json
+│   ├── data/                        # SQLite DB file
+│   └── .env
+│
+├── client/
+│   ├── src/
+│   │   ├── App.tsx
+│   │   ├── pages/
+│   │   │   ├── Home.tsx
+│   │   │   ├── Services.tsx
+│   │   │   └── About.tsx
+│   │   └── components/
+│   │       ├── chat/
+│   │       │   ├── ChatWidget.tsx
+│   │       │   ├── ChatMessages.tsx
+│   │       │   └── ChatInput.tsx
+│   │       └── clinic/
+│   │           ├── Navbar.tsx
+│   │           └── Footer.tsx
+│   └── public/images/staff/
+│
+├── PLAN.md          # This file
+├── SPEC.md          # Technical specification
+├── TASKS.md         # Task tracker
+├── STANDARDS.md     # Code conventions
+└── README.md        # Project overview
+```
 
 ---
 
-## Environment Variables Checklist
+## Environment Variables
 
 ```env
-# ✅ Required for chat to work
-GOOGLE_GENERATIVE_AI_API_KEY=
+# Required for AI chat
+GOOGLE_GENERATIVE_AI_API_KEY=your_key
 
-# 📅 Optional - falls back to mock slots
-GOOGLE_CALENDAR_ID=
-GOOGLE_SERVICE_ACCOUNT_KEY=
+# Required for Telegram notifications
+TELEGRAM_BOT_TOKEN=your_token
+TELEGRAM_OWNER_CHAT_ID=your_chat_id
 
-# 📱 Optional - logs to console if not set
-TELEGRAM_BOT_TOKEN=
-TELEGRAM_OWNER_CHAT_ID=
+# Optional - falls back to mock
+GOOGLE_CALENDAR_ID=your_calendar
+GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
+RESEND_API_KEY=your_key
 
-# 📧 Optional - logs to console if not set
-RESEND_API_KEY=
-
-# 🔧 App config
+# Server config
 PORT=3001
 CLIENT_URL=http://localhost:5173
 APP_URL=http://localhost:3001
@@ -224,55 +274,28 @@ APP_URL=http://localhost:3001
 
 ---
 
-## File Structure Reference
+## Agent Tools Summary
 
-```
-AIClinicAgent/
-├── server/
-│   ├── src/
-│   │   ├── index.ts                 # Express app entry
-│   │   ├── routes/
-│   │   │   ├── chat.ts              # AI chat endpoint
-│   │   │   └── telegram.ts          # Telegram webhook
-│   │   ├── agent/
-│   │   │   ├── index.ts             # System prompt
-│   │   │   └── tools/index.ts       # 5 agent tools
-│   │   ├── services/
-│   │   │   ├── calendar.ts          # Google Calendar
-│   │   │   ├── telegram.ts          # Telegram Bot
-│   │   │   ├── email.ts             # Resend
-│   │   │   └── knowledge.ts         # Knowledge base
-│   │   ├── db/
-│   │   │   ├── index.ts             # SQLite setup
-│   │   │   ├── appointments.ts      # Appointment CRUD
-│   │   │   └── patients.ts          # Patient CRUD
-│   │   └── data/
-│   │       └── clinic-knowledge.json
-│   ├── data/                        # SQLite DB location
-│   ├── .env                         # Environment variables
-│   └── package.json
-│
-├── client/
-│   ├── src/
-│   │   ├── App.tsx                  # Router setup
-│   │   ├── main.tsx                 # Entry point
-│   │   ├── pages/
-│   │   │   ├── Home.tsx
-│   │   │   ├── Services.tsx
-│   │   │   └── About.tsx
-│   │   ├── components/
-│   │   │   ├── chat/
-│   │   │   │   ├── ChatWidget.tsx   # Main widget
-│   │   │   │   ├── ChatMessages.tsx # Message list
-│   │   │   │   └── ChatInput.tsx    # Input field
-│   │   │   └── clinic/
-│   │   │       ├── Navbar.tsx
-│   │   │       └── Footer.tsx
-│   │   └── lib/utils.ts             # Utilities (cn)
-│   ├── index.html
-│   └── package.json
-│
-├── package.json                     # Root scripts
-├── README.md                        # Documentation
-└── PLAN.md                          # This file
-```
+| Tool | Purpose | Returns |
+|------|---------|---------|
+| `getServices` | List all dental services | Service[] |
+| `getStaffForService` | Find specialists for treatment | Staff[] + schedules |
+| `checkAvailability` | Check staff schedule for date | Slots[] or error |
+| `createAppointment` | Book pending appointment | Appointment + Telegram |
+| `getClinicTeam` | Get team information | Staff[] |
+| `searchKnowledgeBase` | RAG search clinic info | Results[] |
+| `getPatientHistory` | Lookup returning patients | Appointments + prefs |
+| `savePatientPreference` | Store patient preferences | Confirmation |
+
+---
+
+## Success Metrics
+
+- [x] Agent uses tools correctly (not hallucinating data)
+- [x] Self-corrects on errors (suggests alternatives)
+- [x] Recognizes returning patients
+- [x] Uses RAG for pricing/policy questions
+- [x] Step tracing works in console
+- [ ] Full booking flow completes
+- [ ] Telegram approve creates calendar event
+- [ ] Email confirmations send correctly
