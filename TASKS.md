@@ -90,6 +90,7 @@
 - [x] Share clinic calendar with service account email
 - [x] Add `GOOGLE_SERVICE_ACCOUNT_KEY` to env
 - [x] Add `GOOGLE_CALENDAR_ID` to env
+- [x] **Integrated calendar check into `checkAvailability` tool** - now checks both DB appointments AND Google Calendar busy slots when offering times
 
 ---
 
@@ -161,41 +162,42 @@
 
 ---
 
-## In Progress
+### Phase 7: Frontend Standards - CVA & i18n ✅
 
-### Phase 7: Frontend Standards - CVA & i18n (Current)
+#### 7.1 Install & Configure CVA ✅
+- [x] Install `class-variance-authority` package
+- [x] Update `cn()` utility to work with CVA
 
-#### 7.1 Install & Configure CVA
-- [ ] Install `class-variance-authority` package
-- [ ] Update `cn()` utility to work with CVA
+#### 7.2 Refactor UI Components to CVA ✅
+- [x] Button - convert variants/sizes to CVA
+- [x] Card - convert variants/padding to CVA
+- [x] Badge - convert variants/sizes to CVA
 
-#### 7.2 Refactor UI Components to CVA
-- [ ] Button - convert variants/sizes to CVA
-- [ ] Card - convert variants/padding to CVA
-- [ ] Badge - convert variants/sizes to CVA
-- [ ] Section - convert backgrounds/padding to CVA
+#### 7.3 i18n Preparation ✅
+- [x] Create `i18n/` folder structure
+- [x] Create `i18n/en.ts` - English translations
+- [x] Create `i18n/he.ts` - Hebrew translations
+- [x] Create `useTranslation` hook (simple, no library)
+- [x] Create `types.ts` with Translations interface
 
-#### 7.3 i18n Preparation
-- [ ] Create `i18n/` folder structure
-- [ ] Create `i18n/en.ts` - English translations
-- [ ] Create `i18n/he.ts` - Hebrew translations (placeholder)
-- [ ] Extract UI strings from components to translation keys
-- [ ] Create `useTranslation` hook (simple, no library)
+#### 7.4 Text Extraction ✅
+- [x] HeroSection - title, subtitle, badges
+- [x] ServicesSection - heading, description
+- [x] TeamSection - heading, description
+- [x] ContactSection - all labels
+- [x] CTASection - all text
+- [x] WhyChooseUsSection - all text
+- [x] VideoSection - all text
 
-#### 7.4 Text Extraction
-- [ ] HeroSection - title, subtitle, badges
-- [ ] ServicesSection - heading, description
-- [ ] TeamSection - heading, description
-- [ ] ContactSection - all labels
-- [ ] CTASection - all text
-- [ ] ChatWidget - welcome message, placeholders
-- [ ] Navbar & Footer - all text
+#### 7.5 Code Patterns ✅
+- [x] Array pattern for repeated components (ContactSection, HeroSection)
+- [x] Updated STANDARDS-FRONTEND.md with patterns
 
 ---
 
 ## Pending Tasks
 
-### Phase 8: End-to-End Testing
+### Phase 9: End-to-End Testing
 - [ ] Test chat without API key (graceful error)
 - [ ] Test complete booking flow in browser
 - [ ] Test self-correction (book taken slot → suggest alternatives)
@@ -206,14 +208,14 @@
 - [ ] Verify staff images display correctly
 - [ ] Test different services route to correct specialist
 
-### Phase 9: Email Integration
+### Phase 10: Email Integration
 - [ ] Set up Resend account
 - [ ] Verify domain for sending
 - [ ] Add RESEND_API_KEY to environment
 - [ ] Test confirmation emails
 - [ ] Test decline emails
 
-### Phase 10: Deployment
+### Phase 11: Deployment
 - [ ] Deploy client to Vercel
 - [ ] Deploy server to Railway/Render
 - [ ] Configure production environment variables
@@ -221,7 +223,7 @@
 - [ ] Update CORS for production domain
 - [ ] Final production testing
 
-### Phase 11: Demo & Documentation
+### Phase 12: Demo & Documentation
 - [ ] Record demo video showing:
   - Website tour (home, services, about)
   - Booking flow with tool visualization

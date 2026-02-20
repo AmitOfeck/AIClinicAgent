@@ -1,6 +1,6 @@
 import { tool } from 'ai'
 import { z } from 'zod'
-import { checkCalendarAvailability, createCalendarEvent } from '../../services/calendar.js'
+import { checkCalendarAvailability } from '../../services/calendar.js'
 import { sendOwnerNotification } from '../../services/telegram.js'
 import { searchKnowledge } from '../../services/knowledge.js'
 import {
@@ -141,8 +141,9 @@ export const tools = {
       staffId: z.number().describe('ID of the staff member'),
       date: z.string().describe('Date to check in YYYY-MM-DD format'),
       serviceDuration: z.number().optional().describe('Duration of the service in minutes (default 30)'),
+      serviceName: z.string().optional().describe('Name of the service (for calendar integration)'),
     }),
-    execute: async ({ staffId, date, serviceDuration = 30 }) => {
+    execute: async ({ staffId, date, serviceDuration = 30, serviceName }) => {
       try {
         const staff = getStaffById(staffId)
         if (!staff) {
@@ -185,6 +186,10 @@ export const tools = {
         // Get existing appointments for this staff on this date
         const existingAppointments = getAppointmentsByStaffAndDate(staffId, date)
 
+        // Check Google Calendar for busy slots (clinic-wide events, vacations, etc.)
+        const calendarResult = await checkCalendarAvailability(date, serviceName)
+        const calendarAvailableSlots = new Set(calendarResult.slots)
+
         // Generate available slots based on working hours
         const slots: string[] = []
         for (const period of workingHours[dayOfWeek]) {
@@ -200,17 +205,22 @@ export const tools = {
 
               const timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`
 
-              // Check if this slot conflicts with existing appointments
+              // Check if this slot conflicts with existing DB appointments
               const slotStart = new Date(`${date}T${timeStr}:00`)
               const slotEndTime = new Date(slotStart.getTime() + serviceDuration * 60000)
 
-              const hasConflict = existingAppointments.some((apt) => {
+              const hasDbConflict = existingAppointments.some((apt) => {
                 const aptStart = new Date(apt.date_time)
                 const aptEnd = new Date(aptStart.getTime() + 60 * 60000) // Assume 60 min
                 return slotStart < aptEnd && slotEndTime > aptStart
               })
 
-              if (!hasConflict) {
+              // Check if slot is available in Google Calendar
+              // If calendar is configured and returns slots, the slot must be in the available list
+              // If calendar is not configured (fromCalendar=false), we skip calendar check
+              const isCalendarAvailable = !calendarResult.fromCalendar || calendarAvailableSlots.has(timeStr)
+
+              if (!hasDbConflict && isCalendarAvailable) {
                 slots.push(timeStr)
               }
             }
@@ -225,6 +235,7 @@ export const tools = {
             suggestion: 'Try a different date, or use getStaffForService to find another staff member who can perform this service',
             slots: [],
             staffName: staff.name,
+            calendarChecked: calendarResult.fromCalendar,
             retryable: false,
           }
         }
@@ -235,6 +246,7 @@ export const tools = {
           date,
           staffId,
           staffName: staff.name,
+          calendarChecked: calendarResult.fromCalendar,
         }
       } catch (error) {
         console.error('Check availability error:', error)
