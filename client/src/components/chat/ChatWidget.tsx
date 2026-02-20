@@ -47,7 +47,7 @@ export default function ChatWidget() {
       {!isOpen && (
         <button
           onClick={open}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-clinic-teal hover:bg-clinic-teal-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105 z-50"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-14 h-14 bg-clinic-teal hover:bg-clinic-teal-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105 z-50"
           aria-label="Open chat"
         >
           <MessageCircle className="w-6 h-6" />
@@ -58,12 +58,18 @@ export default function ChatWidget() {
       {isOpen && (
         <div
           className={cn(
-            'fixed bottom-6 right-6 w-[380px] bg-white rounded-2xl shadow-2xl flex flex-col z-50 transition-all duration-200',
-            isMinimized ? 'h-14' : 'h-[600px] max-h-[80vh]'
+            'fixed bg-white shadow-2xl flex flex-col z-50 transition-all duration-200',
+            // Mobile: full screen with safe areas
+            'inset-0 sm:inset-auto sm:bottom-6 sm:right-6',
+            // Desktop: fixed width with rounded corners
+            'sm:w-[380px] sm:rounded-2xl',
+            // Mobile: no rounded corners on top
+            'rounded-none sm:rounded-2xl',
+            isMinimized ? 'h-14' : 'sm:h-[600px] sm:max-h-[80vh]'
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 bg-clinic-teal text-white rounded-t-2xl">
+          <div className="flex items-center justify-between px-4 py-4 sm:py-3 bg-clinic-teal text-white sm:rounded-t-2xl flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                 🦷
