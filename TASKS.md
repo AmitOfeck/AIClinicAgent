@@ -1,6 +1,6 @@
 # SmartClinic Agent - Project Tasks
 
-## Current Status: Frontend Standards Upgrade - CVA & i18n Prep
+## Current Status: Multi-Channel Agent Architecture
 
 ---
 
@@ -195,9 +195,41 @@
 
 ---
 
+### Phase 9: Multi-Channel Agent Service ✅ (Current)
+
+Refactor agent logic into a reusable service layer to support multiple channels (Web, WhatsApp, Telegram).
+
+#### 9.1 Agent Service Layer
+- [x] Create `services/agent.ts` - Core agent service
+- [x] Implement `streamChat()` - For web (SSE streaming)
+- [x] Implement `generateChat()` - For WhatsApp/other (text response)
+- [x] Move model config, tools, prompt into service
+- [x] Add proper TypeScript types
+
+#### 9.2 Route Updates
+- [x] Update `routes/chat.ts` to use `streamChat()` from service
+- [x] Preserve step tracing functionality
+- [x] Verify web chat still works
+
+#### 9.3 Architecture Result
+```
+                    ┌─────────────────────────┐
+                    │   services/agent.ts     │
+                    │  streamChat()           │ → Web (SSE)
+                    │  generateChat()         │ → WhatsApp (text)
+                    └───────────┬─────────────┘
+                                │
+          ┌─────────────────────┼─────────────────────┐
+          │                     │                     │
+    routes/chat.ts      routes/whatsapp.ts     (future channels)
+       (Web)              (Ready to add)
+```
+
+---
+
 ## Pending Tasks
 
-### Phase 9: End-to-End Testing
+### Phase 10: End-to-End Testing
 - [ ] Test chat without API key (graceful error)
 - [ ] Test complete booking flow in browser
 - [ ] Test self-correction (book taken slot → suggest alternatives)
@@ -208,14 +240,14 @@
 - [ ] Verify staff images display correctly
 - [ ] Test different services route to correct specialist
 
-### Phase 10: Email Integration
+### Phase 11: Email Integration (Optional)
 - [ ] Set up Resend account
 - [ ] Verify domain for sending
 - [ ] Add RESEND_API_KEY to environment
 - [ ] Test confirmation emails
 - [ ] Test decline emails
 
-### Phase 11: Deployment
+### Phase 12: Deployment
 - [ ] Deploy client to Vercel
 - [ ] Deploy server to Railway/Render
 - [ ] Configure production environment variables
@@ -223,7 +255,7 @@
 - [ ] Update CORS for production domain
 - [ ] Final production testing
 
-### Phase 12: Demo & Documentation
+### Phase 13: Demo & Documentation
 - [ ] Record demo video showing:
   - Website tour (home, services, about)
   - Booking flow with tool visualization
@@ -249,6 +281,7 @@
 
 ### Agent Core
 ```
+server/src/services/agent.ts       # Agent service (streamChat, generateChat)
 server/src/agent/index.ts          # System prompt (with RAG triggers)
 server/src/agent/tools/index.ts    # 8 tools with structured errors
 ```
@@ -264,6 +297,7 @@ server/src/db/patients.ts          # Patient preferences
 
 ### Services (with retry logic)
 ```
+server/src/services/agent.ts       # Multi-channel agent (web + WhatsApp ready)
 server/src/services/telegram.ts    # Notifications + webhook handler
 server/src/services/calendar.ts    # Availability + event creation
 server/src/services/email.ts       # Confirmation/decline emails
