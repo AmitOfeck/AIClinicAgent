@@ -15,7 +15,7 @@ export default function ChatWidget() {
       {
         id: 'welcome',
         role: 'assistant',
-        content: "Hello! Welcome to Dr. Opek's Dental Clinic. I'm here to help you book appointments, answer questions about our services, or provide information about our clinic. How can I assist you today?",
+        content: "Hello! Welcome to Dr. Ilan Ofeck's Dental Clinic. I'm here to help you book appointments, answer questions about our services, or provide information about our clinic. How can I assist you today?",
       },
     ],
   })

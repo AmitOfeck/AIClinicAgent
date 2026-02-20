@@ -10,7 +10,7 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🦷</span>
               <span className="font-bold text-xl text-white">
-                Dr. Opek's Dental
+                Dr. Ofeck's Dental
               </span>
             </div>
             <p className="text-sm text-gray-400">
@@ -29,11 +29,11 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-clinic-teal" />
-                (555) 123-4567
+                03-5467032
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-clinic-teal" />
-                info@dropek-dental.com
+                info@dr-ofeck.co.il
               </li>
             </ul>
           </div>
@@ -75,7 +75,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} Dr. Opek's Dental Clinic. All rights reserved.
+          © {new Date().getFullYear()} Dr. Ofeck's Dental Clinic. All rights reserved.
         </div>
       </div>
     </footer>

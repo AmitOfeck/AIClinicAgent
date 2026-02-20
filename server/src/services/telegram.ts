@@ -6,6 +6,7 @@ interface AppointmentNotification {
   patientEmail: string
   service: string
   dateTime: string
+  staffName?: string
 }
 
 export async function sendOwnerNotification(data: AppointmentNotification): Promise<boolean> {
@@ -36,6 +37,7 @@ export async function sendOwnerNotification(data: AppointmentNotification): Prom
 *Patient:* ${data.patientName}
 *Email:* ${data.patientEmail}
 *Service:* ${data.service}
+*Staff:* ${data.staffName || 'Not specified'}
 *Date:* ${formattedDate}
 *Time:* ${formattedTime}
 
@@ -170,7 +172,7 @@ export async function handleTelegramWebhook(update: any): Promise<void> {
       // Send confirmation email
       await sendEmail({
         to: appointment.patient_email,
-        subject: '✅ Your appointment at Dr. Opek\'s Dental Clinic is confirmed!',
+        subject: '✅ Your appointment at Dr. Ilan Ofeck\'s Dental Clinic is confirmed!',
         html: `
           <h2>Appointment Confirmed!</h2>
           <p>Dear ${appointment.patient_name},</p>
@@ -178,7 +180,7 @@ export async function handleTelegramWebhook(update: any): Promise<void> {
           <p><strong>Service:</strong> ${appointment.service}</p>
           <p><strong>Date & Time:</strong> ${new Date(appointment.date_time).toLocaleString()}</p>
           <p>We look forward to seeing you!</p>
-          <p>Best regards,<br>Dr. Opek's Dental Clinic</p>
+          <p>Best regards,<br>Dr. Ilan Ofeck's Dental Clinic</p>
         `,
       })
 
@@ -191,7 +193,7 @@ export async function handleTelegramWebhook(update: any): Promise<void> {
       // Send decline email
       await sendEmail({
         to: appointment.patient_email,
-        subject: 'Regarding your appointment request at Dr. Opek\'s Dental Clinic',
+        subject: 'Regarding your appointment request at Dr. Ilan Ofeck\'s Dental Clinic',
         html: `
           <h2>Appointment Update</h2>
           <p>Dear ${appointment.patient_name},</p>
@@ -200,7 +202,7 @@ export async function handleTelegramWebhook(update: any): Promise<void> {
           <p><strong>Requested Time:</strong> ${new Date(appointment.date_time).toLocaleString()}</p>
           <p>Please visit our website to book a different time, or call us at (555) 123-4567.</p>
           <p>We apologize for any inconvenience.</p>
-          <p>Best regards,<br>Dr. Opek's Dental Clinic</p>
+          <p>Best regards,<br>Dr. Ilan Ofeck's Dental Clinic</p>
         `,
       })
 
