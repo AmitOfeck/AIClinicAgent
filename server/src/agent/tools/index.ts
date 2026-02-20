@@ -403,9 +403,15 @@ export const tools = {
         trackPatientInteraction(email)
 
         const patient = getPatientByEmail(email)
-        const appointments = getAppointmentsByEmail(email)
+        const allAppointments = getAppointmentsByEmail(email)
 
-        if (!patient && appointments.length === 0) {
+        // Filter to only active appointments (PENDING/APPROVED)
+        // DECLINED and CANCELLED appointments should not block new bookings
+        const activeAppointments = allAppointments.filter(
+          (apt) => apt.status === 'PENDING' || apt.status === 'APPROVED'
+        )
+
+        if (!patient && allAppointments.length === 0) {
           return {
             found: false,
             isNewPatient: true,
@@ -416,9 +422,14 @@ export const tools = {
 
         return {
           found: true,
-          isNewPatient: false,
+          isNewPatient: allAppointments.length === 0,
           patient: patient || null,
-          previousAppointments: appointments.slice(0, 5),
+          // Only return active appointments to avoid blocking re-bookings of declined slots
+          activeAppointments: activeAppointments.slice(0, 5),
+          // Include count of past appointments for context
+          totalPastAppointments: allAppointments.filter(
+            (apt) => apt.status === 'APPROVED'
+          ).length,
         }
       } catch (error) {
         console.error('Patient history error:', error)

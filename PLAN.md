@@ -62,10 +62,11 @@ AI-powered dental clinic booking assistant for **Dr. Ilan Ofeck's Dental Clinic*
 | Phase 6.5: Landing Page | ✅ Complete | Single page, mobile responsive |
 | Phase 7: CVA & i18n | ✅ Complete | Component variants, translations |
 | Phase 8: Google Calendar | ✅ Complete | Real calendar integration |
-| Phase 9: E2E Testing | 🔄 Current | Full booking flow testing |
-| Phase 10: Email | ⏳ Skipped | Resend integration (optional) |
-| Phase 11: Deployment | ⏳ Pending | Vercel + Railway |
-| Phase 12: Demo | ⏳ Pending | Video recording |
+| Phase 9: Multi-Channel Agent | ✅ Complete | Agent service for Web + WhatsApp |
+| Phase 10: E2E Testing | ⏳ Pending | Full booking flow testing |
+| Phase 11: Email | ⏳ Skipped | Resend integration (optional) |
+| Phase 12: Deployment | ⏳ Pending | Vercel + Railway |
+| Phase 13: Demo | ⏳ Pending | Video recording |
 
 ---
 
@@ -239,7 +240,46 @@ AI-powered dental clinic booking assistant for **Dr. Ilan Ofeck's Dental Clinic*
 
 ---
 
-## Phase 9: End-to-End Testing (Current)
+## Phase 9: Multi-Channel Agent Service ✅
+
+Refactored agent logic into a reusable service layer to support multiple channels.
+
+### Architecture
+
+```
+                    ┌─────────────────────────┐
+                    │   services/agent.ts     │
+                    │                         │
+                    │  - model config         │
+                    │  - tools                │
+                    │  - system prompt        │
+                    │                         │
+                    │  streamChat()           │ → Web (SSE streaming)
+                    │  generateChat()         │ → WhatsApp (text response)
+                    └───────────┬─────────────┘
+                                │
+          ┌─────────────────────┼─────────────────────┐
+          │                     │                     │
+    routes/chat.ts      routes/whatsapp.ts     (future channels)
+       (Web)              (Ready to add)
+```
+
+### Implementation
+- [x] Create `services/agent.ts` - Core agent service
+- [x] `streamChat(messages)` - Returns stream for web SSE
+- [x] `generateChat(messages)` - Returns text for WhatsApp/other
+- [x] Update `routes/chat.ts` to use service
+- [x] Preserve step tracing functionality
+
+### Benefits
+- **Web chat**: Works exactly the same (streaming)
+- **WhatsApp ready**: Just import `generateChat()` when needed
+- **Single source of truth**: Model, tools, prompt in one place
+- **Easy to extend**: Add Telegram, SMS, or other channels
+
+---
+
+## Phase 10: End-to-End Testing (Pending)
 
 ### Test Scenarios
 - [ ] Server builds successfully
@@ -252,7 +292,7 @@ AI-powered dental clinic booking assistant for **Dr. Ilan Ofeck's Dental Clinic*
 
 ---
 
-## Phase 10: Email Integration (Skipped)
+## Phase 11: Email Integration (Skipped)
 
 Resend integration is optional - email logs to console when not configured.
 
@@ -264,7 +304,7 @@ Resend integration is optional - email logs to console when not configured.
 
 ---
 
-## Phase 11: Deployment (Pending)
+## Phase 12: Deployment (Pending)
 
 - [ ] Deploy client to Vercel
 - [ ] Deploy server to Railway/Render
@@ -275,7 +315,7 @@ Resend integration is optional - email logs to console when not configured.
 
 ---
 
-## Phase 12: Demo (Pending)
+## Phase 13: Demo (Pending)
 
 - [ ] Record demo video showing:
   - Website tour (landing page sections)
@@ -301,6 +341,7 @@ AIClinicAgent/
 │   │   │   ├── index.ts             # System prompt (dynamic)
 │   │   │   └── tools/index.ts       # 8 tools
 │   │   ├── services/
+│   │   │   ├── agent.ts             # Multi-channel agent service
 │   │   │   ├── calendar.ts          # Google Calendar (retry)
 │   │   │   ├── telegram.ts          # Bot + notifications
 │   │   │   ├── email.ts             # Resend (retry)
