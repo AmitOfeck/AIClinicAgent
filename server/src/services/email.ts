@@ -9,7 +9,7 @@ interface EmailOptions {
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY
 
-  if (!apiKey) {
+  if (!apiKey || apiKey === 'your_resend_api_key') {
     console.log('Resend not configured, skipping email')
     console.log('Would send email:', options)
     return true
@@ -19,7 +19,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     const resend = new Resend(apiKey)
 
     const { error } = await resend.emails.send({
-      from: 'Dr. Opek\'s Dental Clinic <appointments@resend.dev>',
+      from: 'Dr. Ilan Ofeck Dental Clinic <appointments@resend.dev>',
       to: options.to,
       subject: options.subject,
       html: options.html,
