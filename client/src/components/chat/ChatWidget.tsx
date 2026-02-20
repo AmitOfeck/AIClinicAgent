@@ -1,21 +1,22 @@
-import { useState } from 'react'
 import { MessageCircle, X, Minimize2 } from 'lucide-react'
 import ChatMessages from './ChatMessages'
 import ChatInput from './ChatInput'
 import { useChat } from '@ai-sdk/react'
 import { cn } from '../../lib/utils'
+import { useChatWidget } from '@/hooks'
+import { API_ENDPOINTS } from '@/api'
+import { WELCOME_MESSAGE } from '@/constants'
 
 export default function ChatWidget() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isMinimized, setIsMinimized] = useState(false)
+  const { isOpen, isMinimized, open, close, toggleMinimize } = useChatWidget()
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
-    api: '/api/chat',
+    api: API_ENDPOINTS.chat,
     initialMessages: [
       {
         id: 'welcome',
         role: 'assistant',
-        content: "Hello! Welcome to Dr. Ilan Ofeck's Dental Clinic. I'm here to help you book appointments, answer questions about our services, or provide information about our clinic. How can I assist you today?",
+        content: WELCOME_MESSAGE,
       },
     ],
   })
@@ -25,7 +26,7 @@ export default function ChatWidget() {
       {/* Chat Button */}
       {!isOpen && (
         <button
-          onClick={() => setIsOpen(true)}
+          onClick={open}
           className="fixed bottom-6 right-6 w-14 h-14 bg-clinic-teal hover:bg-clinic-teal-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105 z-50"
           aria-label="Open chat"
         >
@@ -54,14 +55,14 @@ export default function ChatWidget() {
             </div>
             <div className="flex items-center gap-1">
               <button
-                onClick={() => setIsMinimized(!isMinimized)}
+                onClick={toggleMinimize}
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                 aria-label={isMinimized ? 'Expand chat' : 'Minimize chat'}
               >
                 <Minimize2 className="w-4 h-4" />
               </button>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={close}
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                 aria-label="Close chat"
               >

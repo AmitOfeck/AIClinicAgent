@@ -6,9 +6,10 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { TEAM, STATS, CLINIC_INFO } from '@/constants';
+import { useClinicHours } from '@/hooks';
 
 const About = () => {
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  const { isToday } = useClinicHours();
 
   const handleOpenChat = () => {
     const chatButton = document.querySelector('[aria-label="Open chat"]') as HTMLButtonElement;
@@ -280,25 +281,25 @@ const About = () => {
 
               <div className="space-y-2">
                 {CLINIC_INFO.hours.map((item) => {
-                  const isToday = item.day === today;
+                  const isTodayItem = isToday(item.day);
                   return (
                     <div
                       key={item.day}
                       className={`flex justify-between py-3 px-4 rounded-lg transition-colors ${
-                        isToday
+                        isTodayItem
                           ? 'bg-clinic-teal/10 border border-clinic-teal/20'
                           : 'hover:bg-gray-50'
                       }`}
                     >
-                      <span className={`font-medium ${isToday ? 'text-clinic-teal' : 'text-gray-900'}`}>
+                      <span className={`font-medium ${isTodayItem ? 'text-clinic-teal' : 'text-gray-900'}`}>
                         {item.day}
-                        {isToday && (
+                        {isTodayItem && (
                           <span className="ml-2 text-xs bg-clinic-teal text-white px-2 py-0.5 rounded-full">
                             Today
                           </span>
                         )}
                       </span>
-                      <span className={item.isOpen ? (isToday ? 'text-clinic-teal font-medium' : 'text-gray-600') : 'text-gray-400'}>
+                      <span className={item.isOpen ? (isTodayItem ? 'text-clinic-teal font-medium' : 'text-gray-600') : 'text-gray-400'}>
                         {item.hours}
                       </span>
                     </div>

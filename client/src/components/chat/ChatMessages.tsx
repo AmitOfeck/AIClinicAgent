@@ -1,29 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { Message } from '@ai-sdk/react'
 import { cn } from '../../lib/utils'
-import { Bot, User, Loader2, Calendar, Mail, Search, Brain } from 'lucide-react'
+import { Bot, User, Loader2, Brain } from 'lucide-react'
+import { TOOL_ICONS } from '@/constants'
+import type { ToolName } from '@/types/chat'
 
 interface ChatMessagesProps {
   messages: Message[]
   isLoading: boolean
-}
-
-const toolIcons: Record<string, any> = {
-  checkAvailability: Calendar,
-  createAppointment: Calendar,
-  searchKnowledgeBase: Search,
-  getPatientHistory: Brain,
-  savePatientPreference: Brain,
-  sendPatientEmail: Mail,
-}
-
-const toolLabels: Record<string, string> = {
-  checkAvailability: 'Checking availability...',
-  createAppointment: 'Creating appointment...',
-  searchKnowledgeBase: 'Searching knowledge base...',
-  getPatientHistory: 'Looking up patient history...',
-  savePatientPreference: 'Saving preference...',
-  sendPatientEmail: 'Sending email...',
 }
 
 export default function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
@@ -39,8 +23,11 @@ export default function ChatMessages({ messages, isLoading }: ChatMessagesProps)
         <div key={message.id}>
           {/* Tool invocations */}
           {message.toolInvocations?.map((tool, index) => {
-            const Icon = toolIcons[tool.toolName] || Brain
-            const label = toolLabels[tool.toolName] || `Using ${tool.toolName}...`
+            const toolName = tool.toolName as ToolName
+            const toolConfig = TOOL_ICONS[toolName]
+            const Icon = toolConfig?.icon || Brain
+            const label = toolConfig?.label || `Using ${tool.toolName}`
+            const displayLabel = tool.state === 'result' ? label : `${label}...`
 
             return (
               <div
@@ -48,7 +35,7 @@ export default function ChatMessages({ messages, isLoading }: ChatMessagesProps)
                 className="flex items-center gap-2 text-xs text-gray-500 mb-2 ml-12"
               >
                 <Icon className="w-3 h-3" />
-                <span>{tool.state === 'result' ? label.replace('...', '') : label}</span>
+                <span>{displayLabel}</span>
                 {tool.state !== 'result' && (
                   <Loader2 className="w-3 h-3 animate-spin" />
                 )}
