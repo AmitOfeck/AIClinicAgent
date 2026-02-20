@@ -146,12 +146,12 @@ const About = () => {
                 padding="none"
                 className="group overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
               >
-                {/* Photo Container - Fixed with object-top */}
-                <div className="relative h-64 overflow-hidden bg-clinic-teal/10">
+                {/* Photo Container - Taller to show full face */}
+                <div className="relative h-72 overflow-hidden bg-gray-100">
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-[center_25%] group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
