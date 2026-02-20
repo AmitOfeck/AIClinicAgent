@@ -21,12 +21,6 @@ router.post('/', async (req, res) => {
       messages,
       tools,
       maxSteps: 10,
-      onError: (error) => {
-        console.error('Stream error:', error)
-      },
-      onToolCall: (toolCall) => {
-        console.log('Tool call:', toolCall.toolName, JSON.stringify(toolCall.args).slice(0, 100))
-      },
     })
 
     // Stream the response
