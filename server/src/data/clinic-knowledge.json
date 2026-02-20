@@ -1,0 +1,103 @@
+{
+  "clinic": {
+    "name": "Dr. Opek's Dental Clinic",
+    "address": "123 Smile Street, Tel Aviv, Israel",
+    "phone": "(555) 123-4567",
+    "email": "info@dropek-dental.com",
+    "website": "https://dropek-dental.com"
+  },
+  "hours": {
+    "Sunday": "8:00 AM - 5:00 PM",
+    "Monday": "8:00 AM - 5:00 PM",
+    "Tuesday": "8:00 AM - 5:00 PM",
+    "Wednesday": "8:00 AM - 5:00 PM",
+    "Thursday": "8:00 AM - 5:00 PM",
+    "Friday": "8:00 AM - 1:00 PM",
+    "Saturday": "Closed"
+  },
+  "services": [
+    {
+      "name": "Routine Checkup & Cleaning",
+      "duration": "30 minutes",
+      "price": "$80",
+      "description": "Comprehensive oral examination and professional cleaning to maintain your dental health."
+    },
+    {
+      "name": "Teeth Whitening",
+      "duration": "60 minutes",
+      "price": "$250",
+      "description": "Professional in-office whitening treatment for a brighter, more confident smile."
+    },
+    {
+      "name": "Dental Implant Consultation",
+      "duration": "45 minutes",
+      "price": "$120",
+      "description": "Evaluation and planning for dental implants, including X-rays and treatment options."
+    },
+    {
+      "name": "Root Canal Treatment",
+      "duration": "90 minutes",
+      "price": "$600",
+      "description": "Treatment to save an infected tooth by removing the damaged pulp and sealing the canal."
+    },
+    {
+      "name": "Orthodontic Consultation",
+      "duration": "45 minutes",
+      "price": "$100",
+      "description": "Assessment for braces or clear aligners to straighten your teeth."
+    },
+    {
+      "name": "Emergency Dental Care",
+      "duration": "Varies",
+      "price": "Starting at $150",
+      "description": "Immediate care for dental emergencies like severe pain, broken teeth, or infections."
+    }
+  ],
+  "team": [
+    {
+      "name": "Dr. Amit Opek",
+      "role": "Lead Dentist & Founder",
+      "bio": "Dr. Opek has over 15 years of experience in general and cosmetic dentistry. He graduated from Tel Aviv University School of Dental Medicine."
+    },
+    {
+      "name": "Dr. Sarah Cohen",
+      "role": "Orthodontist",
+      "bio": "Specializing in Invisalign and traditional braces, Dr. Cohen helps patients of all ages achieve beautiful smiles."
+    },
+    {
+      "name": "Maya Levy",
+      "role": "Dental Hygienist",
+      "bio": "Maya is dedicated to patient comfort and education, making every cleaning a pleasant experience."
+    }
+  ],
+  "insurance": [
+    "Maccabi Healthcare",
+    "Clalit Health Services",
+    "Meuhedet",
+    "Leumit Health Fund",
+    "Most private insurance plans"
+  ],
+  "faqs": [
+    {
+      "question": "Do you accept walk-ins?",
+      "answer": "We primarily see patients by appointment, but we do our best to accommodate emergencies. Please call ahead."
+    },
+    {
+      "question": "What payment methods do you accept?",
+      "answer": "We accept cash, credit cards, and direct billing to most insurance providers."
+    },
+    {
+      "question": "Is parking available?",
+      "answer": "Yes, free parking is available in the building lot."
+    },
+    {
+      "question": "Do you treat children?",
+      "answer": "Yes, we welcome patients of all ages, including children. We have a kid-friendly waiting area."
+    }
+  ],
+  "policies": {
+    "cancellation": "Please provide at least 24 hours notice for cancellations to avoid a cancellation fee.",
+    "payment": "Payment is due at the time of service. We can provide documentation for insurance reimbursement.",
+    "emergency": "For after-hours emergencies, call our main line and follow the prompts for emergency care."
+  }
+}
