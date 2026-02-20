@@ -1,13 +1,18 @@
-import { Link, useLocation } from 'react-router-dom'
-import { cn } from '../../lib/utils'
+import { Link } from 'react-router-dom'
+import { CLINIC_INFO } from '@/constants'
 
 export default function Navbar() {
-  const location = useLocation()
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   const links = [
-    { href: '/', label: 'Home' },
-    { href: '/services', label: 'Services' },
-    { href: '/about', label: 'About' },
+    { id: 'services', label: 'Services' },
+    { id: 'team', label: 'Team' },
+    { id: 'contact', label: 'Contact' },
   ]
 
   return (
@@ -23,24 +28,19 @@ export default function Navbar() {
 
           <div className="flex items-center gap-8">
             {links.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={cn(
-                  'text-sm font-medium transition-colors',
-                  location.pathname === link.href
-                    ? 'text-clinic-teal'
-                    : 'text-gray-600 hover:text-clinic-teal'
-                )}
+              <button
+                key={link.id}
+                onClick={() => scrollToSection(link.id)}
+                className="text-sm font-medium text-gray-600 hover:text-clinic-teal transition-colors"
               >
                 {link.label}
-              </Link>
+              </button>
             ))}
             <a
-              href="tel:+97235467032"
+              href={`tel:${CLINIC_INFO.phone}`}
               className="bg-clinic-teal hover:bg-clinic-teal-dark text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             >
-              03-5467032
+              {CLINIC_INFO.phone}
             </a>
           </div>
         </div>

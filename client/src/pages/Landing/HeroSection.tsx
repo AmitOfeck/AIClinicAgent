@@ -2,7 +2,8 @@ import { MessageCircle, Phone, Shield, Users, Award, Sparkles } from 'lucide-rea
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Container } from '@/components/layout/Container';
-import { CLINIC_INFO } from '@/constants/clinic';
+import { useChatContext } from '@/context/ChatContext';
+import { CLINIC_INFO } from '@/constants';
 
 interface TrustBadgeProps {
   icon: React.ElementType;
@@ -19,21 +20,14 @@ const TrustBadge = ({ icon: Icon, text }: TrustBadgeProps) => (
 );
 
 export const HeroSection = () => {
-  const handleOpenChat = () => {
-    const chatButton = document.querySelector('[aria-label="Open chat"]') as HTMLButtonElement;
-    chatButton?.click();
-  };
-
-  const handleCallClinic = () => {
-    window.location.href = `tel:${CLINIC_INFO.phone}`;
-  };
+  const { open } = useChatContext();
 
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-      {/* Background gradient */}
+      {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-clinic-teal via-clinic-teal-dark to-blue-900" />
 
-      {/* Decorative elements */}
+      {/* Decorative circles */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-64 h-64 border border-white/10 rounded-full" />
         <div className="absolute top-40 left-32 w-32 h-32 border border-white/5 rounded-full" />
@@ -68,7 +62,7 @@ export const HeroSection = () => {
               <Button
                 variant="white"
                 size="lg"
-                onClick={handleOpenChat}
+                onClick={open}
                 leftIcon={<MessageCircle className="w-5 h-5" />}
               >
                 Book with AI Assistant
@@ -76,7 +70,7 @@ export const HeroSection = () => {
               <Button
                 variant="outline-white"
                 size="lg"
-                onClick={handleCallClinic}
+                onClick={() => window.location.href = `tel:${CLINIC_INFO.phone}`}
                 leftIcon={<Phone className="w-5 h-5" />}
               >
                 {CLINIC_INFO.phone}
@@ -91,10 +85,9 @@ export const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right content - Hero image/illustration */}
+          {/* Right content - Hero image */}
           <div className="hidden lg:block">
             <div className="relative">
-              {/* Main image placeholder - can be replaced with actual clinic image */}
               <div className="group relative rounded-2xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-sm border border-white/20 transition-all duration-500 hover:shadow-[0_25px_60px_-12px_rgba(0,0,0,0.4)] hover:border-white/40">
                 <img
                   src="/images/staff/team.jpg"
@@ -104,7 +97,7 @@ export const HeroSection = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
 
-              {/* Floating card - AI booking feature */}
+              {/* Floating card - AI booking */}
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl animate-pulse">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -134,14 +127,9 @@ export const HeroSection = () => {
         </div>
       </Container>
 
-      {/* Bottom wave decoration */}
+      {/* Wave divider */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg
-          viewBox="0 0 1440 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-auto"
-        >
+        <svg viewBox="0 0 1440 120" fill="none" className="w-full h-auto">
           <path
             d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
             fill="white"
@@ -151,5 +139,3 @@ export const HeroSection = () => {
     </section>
   );
 };
-
-export default HeroSection;

@@ -2,23 +2,20 @@ import { MessageCircle, Phone, ArrowRight } from 'lucide-react';
 import { Section } from '@/components/layout/Section';
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
-import { CLINIC_INFO } from '@/constants/clinic';
+import { useChatContext } from '@/context/ChatContext';
+import { CLINIC_INFO } from '@/constants';
 
 export const CTASection = () => {
-  const handleOpenChat = () => {
-    const chatButton = document.querySelector('[aria-label="Open chat"]') as HTMLButtonElement;
-    chatButton?.click();
-  };
-
-  const handleCallClinic = () => {
-    window.location.href = `tel:${CLINIC_INFO.phone}`;
-  };
+  const { open } = useChatContext();
 
   return (
-    <Section background="gradient" padding="xl">
-      <Container size="lg">
+    <Section background="gradient" padding="xl" className="relative overflow-hidden">
+      {/* Decorative circles */}
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -translate-x-1/2 translate-y-1/2" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/2 -translate-y-1/2" />
+
+      <Container size="lg" className="relative z-10">
         <div className="text-center">
-          {/* Decorative tooth icon */}
           <div className="mb-8 inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm">
             <span className="text-4xl">🦷</span>
           </div>
@@ -36,7 +33,7 @@ export const CTASection = () => {
             <Button
               variant="white"
               size="xl"
-              onClick={handleOpenChat}
+              onClick={open}
               leftIcon={<MessageCircle className="w-5 h-5" />}
               rightIcon={<ArrowRight className="w-5 h-5" />}
             >
@@ -46,14 +43,13 @@ export const CTASection = () => {
             <Button
               variant="outline-white"
               size="xl"
-              onClick={handleCallClinic}
+              onClick={() => window.location.href = `tel:${CLINIC_INFO.phone}`}
               leftIcon={<Phone className="w-5 h-5" />}
             >
               Call {CLINIC_INFO.phone}
             </Button>
           </div>
 
-          {/* Trust indicators */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-white/60 text-sm">
             <span>✓ No waiting time</span>
             <span>✓ Instant confirmation</span>
@@ -61,12 +57,6 @@ export const CTASection = () => {
           </div>
         </div>
       </Container>
-
-      {/* Decorative elements */}
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -translate-x-1/2 translate-y-1/2" />
-      <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/2 -translate-y-1/2" />
     </Section>
   );
 };
-
-export default CTASection;
