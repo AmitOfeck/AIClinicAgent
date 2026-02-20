@@ -6,6 +6,7 @@ interface AppointmentNotification {
   patientEmail: string
   service: string
   dateTime: string
+  staffName?: string
 }
 
 export async function sendOwnerNotification(data: AppointmentNotification): Promise<boolean> {
@@ -36,6 +37,7 @@ export async function sendOwnerNotification(data: AppointmentNotification): Prom
 *Patient:* ${data.patientName}
 *Email:* ${data.patientEmail}
 *Service:* ${data.service}
+*Staff:* ${data.staffName || 'Not specified'}
 *Date:* ${formattedDate}
 *Time:* ${formattedTime}
 

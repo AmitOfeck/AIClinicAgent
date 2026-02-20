@@ -6,7 +6,7 @@ import { SYSTEM_PROMPT } from '../agent/index.js'
 
 const router = Router()
 
-// Use gemini-2.5-flash (free tier)
+// Use gemini-2.5-flash (paid tier)
 const model = google('gemini-2.5-flash')
 
 router.post('/', async (req, res) => {
@@ -21,6 +21,9 @@ router.post('/', async (req, res) => {
       messages,
       tools,
       maxSteps: 10,
+      onError: (error) => {
+        console.error('Stream error:', error)
+      },
     })
 
     // Stream the response
