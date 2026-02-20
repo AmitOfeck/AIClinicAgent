@@ -29,21 +29,6 @@ export function getStaffById(id: number): Staff | undefined {
   `).get(id) as Staff | undefined
 }
 
-export function getStaffByName(name: string): Staff | undefined {
-  return db.prepare(`
-    SELECT * FROM staff WHERE name LIKE ? AND is_active = 1
-  `).get(`%${name}%`) as Staff | undefined
-}
-
-export function getStaffForService(serviceName: string): Staff[] {
-  return db.prepare(`
-    SELECT s.* FROM staff s
-    JOIN staff_services ss ON s.id = ss.staff_id
-    JOIN services sv ON ss.service_id = sv.id
-    WHERE sv.name LIKE ? AND s.is_active = 1
-  `).all(`%${serviceName}%`) as Staff[]
-}
-
 export function getStaffForServiceById(serviceId: number): Staff[] {
   return db.prepare(`
     SELECT s.* FROM staff s
@@ -79,19 +64,3 @@ export function getStaffWorkingHours(staffId: number): Record<string, string[]> 
   }
 }
 
-export function isStaffAvailable(staffId: number, dayOfWeek: string, time: string): boolean {
-  const hours = getStaffWorkingHours(staffId)
-  if (!hours) return false
-
-  const dayHours = hours[dayOfWeek.toLowerCase()]
-  if (!dayHours || dayHours.length === 0) return false
-
-  for (const slot of dayHours) {
-    const [start, end] = slot.split('-')
-    if (time >= start && time < end) {
-      return true
-    }
-  }
-
-  return false
-}

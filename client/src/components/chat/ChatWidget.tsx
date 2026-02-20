@@ -1,16 +1,25 @@
+import { useEffect } from 'react'
 import { MessageCircle, X, Minimize2 } from 'lucide-react'
 import ChatMessages from './ChatMessages'
 import ChatInput from './ChatInput'
 import { useChat } from '@ai-sdk/react'
 import { cn } from '../../lib/utils'
-import { useChatWidget } from '@/hooks'
+import { useChatContext } from '@/context/ChatContext'
 import { API_ENDPOINTS } from '@/api'
 import { WELCOME_MESSAGE } from '@/constants'
 
 export default function ChatWidget() {
-  const { isOpen, isMinimized, open, close, toggleMinimize } = useChatWidget()
+  const {
+    isOpen,
+    isMinimized,
+    pendingMessage,
+    open,
+    close,
+    toggleMinimize,
+    clearPendingMessage,
+  } = useChatContext()
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error, append } = useChat({
     api: API_ENDPOINTS.chat,
     initialMessages: [
       {
@@ -20,6 +29,17 @@ export default function ChatWidget() {
       },
     ],
   })
+
+  // Auto-send pending message when chat opens
+  useEffect(() => {
+    if (isOpen && pendingMessage && !isLoading) {
+      append({
+        role: 'user',
+        content: pendingMessage,
+      })
+      clearPendingMessage()
+    }
+  }, [isOpen, pendingMessage, isLoading, append, clearPendingMessage])
 
   return (
     <>

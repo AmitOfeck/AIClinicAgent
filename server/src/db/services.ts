@@ -35,12 +35,6 @@ export function getServiceByName(name: string): Service | undefined {
   `).get(`%${name}%`) as Service | undefined
 }
 
-export function getServicesByCategory(category: string): Service[] {
-  return db.prepare(`
-    SELECT * FROM services WHERE category = ? AND is_active = 1
-  `).all(category) as Service[]
-}
-
 export function getServicesWithStaff(): ServiceWithStaff[] {
   const services = getAllServices()
   return services.map(svc => {
@@ -55,14 +49,6 @@ export function getServicesWithStaff(): ServiceWithStaff[] {
       staff
     }
   })
-}
-
-export function getServicesForStaff(staffId: number): Service[] {
-  return db.prepare(`
-    SELECT sv.* FROM services sv
-    JOIN staff_services ss ON sv.id = ss.service_id
-    WHERE ss.staff_id = ? AND sv.is_active = 1
-  `).all(staffId) as Service[]
 }
 
 export function findServiceByKeywords(keywords: string): Service | undefined {
