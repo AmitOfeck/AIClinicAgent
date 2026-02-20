@@ -1,4 +1,4 @@
-import { Clock, DollarSign } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import Navbar from '../components/clinic/Navbar'
 import Footer from '../components/clinic/Footer'
 
@@ -6,50 +6,74 @@ const services = [
   {
     name: 'Routine Checkup & Cleaning',
     duration: '30 minutes',
-    price: '$80',
+    price: '₪250',
     description:
-      'Comprehensive oral examination and professional cleaning to maintain your dental health. Includes X-rays if needed and personalized care recommendations.',
+      'Comprehensive oral examination and professional cleaning by our dental hygienist. Includes plaque removal, polishing, and personalized care recommendations.',
     includes: ['Oral examination', 'Professional cleaning', 'Fluoride treatment', 'Care recommendations'],
   },
   {
     name: 'Teeth Whitening',
     duration: '60 minutes',
-    price: '$250',
+    price: '₪800',
     description:
-      'Professional in-office whitening treatment for a brighter, more confident smile. See results in just one session.',
-    includes: ['Consultation', 'Professional whitening gel', 'LED activation', 'Post-care kit'],
-  },
-  {
-    name: 'Dental Implant Consultation',
-    duration: '45 minutes',
-    price: '$120',
-    description:
-      'Evaluation and planning for dental implants, including X-rays and discussion of treatment options.',
-    includes: ['Comprehensive exam', 'Digital X-rays', 'Treatment planning', 'Cost estimate'],
+      'Professional in-office whitening treatment for a brighter, more confident smile. Safe and effective results in just one session.',
+    includes: ['Consultation', 'Professional whitening gel', 'LED activation', 'Post-care instructions'],
   },
   {
     name: 'Root Canal Treatment',
     duration: '90 minutes',
-    price: '$600',
+    price: '₪1,500',
     description:
-      'Treatment to save an infected tooth by removing the damaged pulp and sealing the canal. Modern techniques ensure minimal discomfort.',
-    includes: ['Local anesthesia', 'Pulp removal', 'Canal cleaning', 'Permanent filling'],
+      'Expert endodontic treatment by our specialist to save an infected tooth. Modern techniques ensure minimal discomfort and excellent outcomes.',
+    includes: ['Local anesthesia', 'Pulp removal', 'Canal cleaning & shaping', 'Permanent filling'],
   },
   {
-    name: 'Orthodontic Consultation',
-    duration: '45 minutes',
-    price: '$100',
+    name: 'Dental Implants',
+    duration: 'Multiple visits',
+    price: 'From ₪4,500',
     description:
-      'Assessment for braces or clear aligners to straighten your teeth. We offer both traditional braces and Invisalign.',
-    includes: ['Bite analysis', 'Digital impressions', 'Treatment options', 'Timeline & cost'],
+      'State-of-the-art implant placement by our oral surgeon. A permanent solution to replace missing teeth that looks and feels natural.',
+    includes: ['Consultation & planning', '3D imaging', 'Implant surgery', 'Crown placement'],
   },
   {
-    name: 'Emergency Dental Care',
+    name: 'Gum Disease Treatment',
+    duration: '45-90 minutes',
+    price: 'From ₪400',
+    description:
+      'Periodontal therapy by our specialist, including natural herbal treatments. We treat all stages of gum disease to restore your oral health.',
+    includes: ['Deep cleaning', 'Scaling & root planing', 'Herbal treatments', 'Maintenance plan'],
+  },
+  {
+    name: 'Pediatric Dentistry',
+    duration: '30 minutes',
+    price: '₪200',
+    description:
+      'Gentle, child-friendly dental care by our pediatric dentist. We make dental visits fun and stress-free for your little ones.',
+    includes: ['Kid-friendly exam', 'Gentle cleaning', 'Fluoride treatment', 'Parent guidance'],
+  },
+  {
+    name: 'Aesthetic Dentistry',
     duration: 'Varies',
-    price: 'Starting at $150',
+    price: 'From ₪1,200',
     description:
-      'Immediate care for dental emergencies like severe pain, broken teeth, or infections. Same-day appointments available.',
-    includes: ['Pain relief', 'Diagnosis', 'Immediate treatment', 'Follow-up plan'],
+      'Transform your smile with crowns, veneers, and other cosmetic treatments. Custom-designed for natural, beautiful results.',
+    includes: ['Smile design', 'Porcelain veneers', 'Dental crowns', 'Composite bonding'],
+  },
+  {
+    name: 'Oral Surgery',
+    duration: 'Varies',
+    price: 'From ₪500',
+    description:
+      'Expert surgical procedures by our oral and maxillofacial surgeon. From wisdom teeth removal to complex extractions.',
+    includes: ['Wisdom teeth removal', 'Complex extractions', 'Bone grafting', 'Post-op care'],
+  },
+  {
+    name: 'Anxiety Management',
+    duration: 'Added to any service',
+    price: '₪150',
+    description:
+      'Nitrous oxide (laughing gas) sedation for anxious patients. Relax and feel comfortable during your dental treatment.',
+    includes: ['Nitrous oxide sedation', 'Calm environment', 'Patient monitoring', 'Gentle approach'],
   },
 ]
 
@@ -63,8 +87,8 @@ export default function Services() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4">Our Services</h1>
           <p className="text-teal-100 max-w-2xl">
-            We offer a comprehensive range of dental services using the latest
-            technology and techniques. Your comfort and care are our top priorities.
+            Comprehensive dental care with a team of specialists. From routine checkups
+            to advanced procedures, we've got you covered.
           </p>
         </div>
       </section>
@@ -103,8 +127,7 @@ export default function Services() {
                       <span className="text-sm">{service.duration}</span>
                     </div>
                     <div className="flex items-center gap-1 text-clinic-teal font-bold text-lg">
-                      <DollarSign className="w-4 h-4" />
-                      <span>{service.price.replace('$', '')}</span>
+                      <span>{service.price}</span>
                     </div>
                     <button
                       onClick={() => {
@@ -128,21 +151,22 @@ export default function Services() {
       {/* Insurance Section */}
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Insurance</h2>
-          <p className="text-gray-600 mb-4">We accept most major insurance providers:</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Insurance & Payment</h2>
+          <p className="text-gray-600 mb-4">We work with most major health funds and insurance providers:</p>
           <div className="flex flex-wrap gap-3">
             {[
               'Maccabi Healthcare',
               'Clalit Health Services',
               'Meuhedet',
               'Leumit Health Fund',
-              'Most private insurance',
-            ].map((insurance) => (
+              'Private Insurance',
+              'Credit Card Payments',
+            ].map((item) => (
               <span
-                key={insurance}
+                key={item}
                 className="bg-white border border-gray-200 px-4 py-2 rounded-lg text-sm text-gray-700"
               >
-                {insurance}
+                {item}
               </span>
             ))}
           </div>

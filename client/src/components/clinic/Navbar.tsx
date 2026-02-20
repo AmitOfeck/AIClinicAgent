@@ -17,7 +17,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-2">
             <span className="text-2xl">🦷</span>
             <span className="font-bold text-xl text-gray-900">
-              Dr. Opek's <span className="text-clinic-teal">Dental</span>
+              Dr. Ilan Ofeck <span className="text-clinic-teal">Dental</span>
             </span>
           </Link>
 
@@ -37,10 +37,10 @@ export default function Navbar() {
               </Link>
             ))}
             <a
-              href="tel:+15551234567"
+              href="tel:03-5467032"
               className="bg-clinic-teal hover:bg-clinic-teal-dark text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             >
-              (555) 123-4567
+              03-5467032
             </a>
           </div>
         </div>

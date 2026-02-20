@@ -1,17 +1,21 @@
 {
   "clinic": {
-    "name": "Dr. Opek's Dental Clinic",
-    "address": "123 Smile Street, Tel Aviv, Israel",
-    "phone": "(555) 123-4567",
-    "email": "info@dropek-dental.com",
-    "website": "https://dropek-dental.com"
+    "name": "Dr. Ilan Ofeck Dental Clinic",
+    "address": "Bazal Street 35, Tel Aviv",
+    "building": "Marom Bazal Medical Building",
+    "phone": "03-5467032",
+    "mobile": "054-8667032",
+    "email": "drofeck@gmail.com",
+    "website": "https://dr-ofeck.co.il/",
+    "established": "1994",
+    "experience": "30+ years"
   },
   "hours": {
-    "Sunday": "8:00 AM - 5:00 PM",
-    "Monday": "8:00 AM - 5:00 PM",
-    "Tuesday": "8:00 AM - 5:00 PM",
-    "Wednesday": "8:00 AM - 5:00 PM",
-    "Thursday": "8:00 AM - 5:00 PM",
+    "Sunday": "8:00 AM - 6:00 PM",
+    "Monday": "8:00 AM - 6:00 PM",
+    "Tuesday": "8:00 AM - 6:00 PM",
+    "Wednesday": "8:00 AM - 6:00 PM",
+    "Thursday": "8:00 AM - 6:00 PM",
     "Friday": "8:00 AM - 1:00 PM",
     "Saturday": "Closed"
   },
@@ -19,55 +23,97 @@
     {
       "name": "Routine Checkup & Cleaning",
       "duration": "30 minutes",
-      "price": "$80",
-      "description": "Comprehensive oral examination and professional cleaning to maintain your dental health."
+      "price": "₪250",
+      "description": "Comprehensive oral examination and professional cleaning by our dental hygienist. Includes plaque removal, polishing, and personalized care recommendations.",
+      "includes": ["Oral examination", "Professional cleaning", "Fluoride treatment", "Care recommendations"]
     },
     {
       "name": "Teeth Whitening",
       "duration": "60 minutes",
-      "price": "$250",
-      "description": "Professional in-office whitening treatment for a brighter, more confident smile."
-    },
-    {
-      "name": "Dental Implant Consultation",
-      "duration": "45 minutes",
-      "price": "$120",
-      "description": "Evaluation and planning for dental implants, including X-rays and treatment options."
+      "price": "₪800",
+      "description": "Professional in-office whitening treatment for a brighter, more confident smile. Safe and effective results in just one session.",
+      "includes": ["Consultation", "Professional whitening gel", "LED activation", "Post-care instructions"]
     },
     {
       "name": "Root Canal Treatment",
       "duration": "90 minutes",
-      "price": "$600",
-      "description": "Treatment to save an infected tooth by removing the damaged pulp and sealing the canal."
+      "price": "₪1,500",
+      "description": "Expert endodontic treatment by our specialist to save an infected tooth. Modern techniques ensure minimal discomfort and excellent outcomes.",
+      "includes": ["Local anesthesia", "Pulp removal", "Canal cleaning & shaping", "Permanent filling"]
     },
     {
-      "name": "Orthodontic Consultation",
-      "duration": "45 minutes",
-      "price": "$100",
-      "description": "Assessment for braces or clear aligners to straighten your teeth."
+      "name": "Dental Implants",
+      "duration": "Multiple visits",
+      "price": "From ₪4,500",
+      "description": "State-of-the-art implant placement by our oral surgeon. A permanent solution to replace missing teeth that looks and feels natural.",
+      "includes": ["Consultation & planning", "3D imaging", "Implant surgery", "Crown placement"]
     },
     {
-      "name": "Emergency Dental Care",
+      "name": "Gum Disease Treatment",
+      "duration": "45-90 minutes",
+      "price": "From ₪400",
+      "description": "Periodontal therapy by our specialist, including natural herbal treatments. We treat all stages of gum disease to restore your oral health.",
+      "includes": ["Deep cleaning", "Scaling & root planing", "Herbal treatments", "Maintenance plan"]
+    },
+    {
+      "name": "Pediatric Dentistry",
+      "duration": "30 minutes",
+      "price": "₪200",
+      "description": "Gentle, child-friendly dental care by our pediatric dentist. We make dental visits fun and stress-free for your little ones.",
+      "includes": ["Kid-friendly exam", "Gentle cleaning", "Fluoride treatment", "Parent guidance"]
+    },
+    {
+      "name": "Aesthetic Dentistry",
       "duration": "Varies",
-      "price": "Starting at $150",
-      "description": "Immediate care for dental emergencies like severe pain, broken teeth, or infections."
+      "price": "From ₪1,200",
+      "description": "Transform your smile with crowns, veneers, and other cosmetic treatments. Custom-designed for natural, beautiful results.",
+      "includes": ["Smile design", "Porcelain veneers", "Dental crowns", "Composite bonding"]
+    },
+    {
+      "name": "Oral Surgery",
+      "duration": "Varies",
+      "price": "From ₪500",
+      "description": "Expert surgical procedures by our oral and maxillofacial surgeon. From wisdom teeth removal to complex extractions.",
+      "includes": ["Wisdom teeth removal", "Complex extractions", "Bone grafting", "Post-op care"]
+    },
+    {
+      "name": "Anxiety Management",
+      "duration": "Added to any service",
+      "price": "₪150",
+      "description": "Nitrous oxide (laughing gas) sedation for anxious patients. Relax and feel comfortable during your dental treatment.",
+      "includes": ["Nitrous oxide sedation", "Calm environment", "Patient monitoring", "Gentle approach"]
     }
   ],
   "team": [
     {
-      "name": "Dr. Amit Opek",
+      "name": "Dr. Ilan Ofeck",
       "role": "Lead Dentist & Founder",
-      "bio": "Dr. Opek has over 15 years of experience in general and cosmetic dentistry. He graduated from Tel Aviv University School of Dental Medicine."
+      "bio": "Graduate of Tel Aviv University School of Dental Medicine with over 30 years of experience. Specializes in general dentistry and prosthodontics with a gentle, patient-focused approach."
     },
     {
-      "name": "Dr. Sarah Cohen",
-      "role": "Orthodontist",
-      "bio": "Specializing in Invisalign and traditional braces, Dr. Cohen helps patients of all ages achieve beautiful smiles."
+      "name": "Endodontic Specialist",
+      "role": "Root Canal Expert",
+      "bio": "Our endodontic specialist handles all root canal treatments with precision and care, using the latest techniques for optimal outcomes."
     },
     {
-      "name": "Maya Levy",
-      "role": "Dental Hygienist",
-      "bio": "Maya is dedicated to patient comfort and education, making every cleaning a pleasant experience."
+      "name": "Periodontal Specialist",
+      "role": "Gum Disease Expert",
+      "bio": "Specializing in gum disease treatment and prevention, including natural herbal therapies for healthier gums."
+    },
+    {
+      "name": "Oral Surgeon",
+      "role": "Surgical Specialist",
+      "bio": "Our oral and maxillofacial surgeon performs implants, extractions, and other surgical procedures with expertise."
+    },
+    {
+      "name": "Pediatric Dentist",
+      "role": "Children's Specialist",
+      "bio": "Making dental visits fun for kids! Our pediatric dentist creates positive experiences for young patients."
+    },
+    {
+      "name": "Dental Hygienist",
+      "role": "Cleaning Specialist",
+      "bio": "Dedicated to patient comfort and education, providing thorough cleanings and personalized oral health guidance."
     }
   ],
   "insurance": [
@@ -75,29 +121,50 @@
     "Clalit Health Services",
     "Meuhedet",
     "Leumit Health Fund",
-    "Most private insurance plans"
+    "Private Insurance",
+    "Credit Card Payments"
   ],
   "faqs": [
     {
       "question": "Do you accept walk-ins?",
-      "answer": "We primarily see patients by appointment, but we do our best to accommodate emergencies. Please call ahead."
+      "answer": "We primarily see patients by appointment, but we do our best to accommodate emergencies. Please call ahead at 03-5467032."
     },
     {
       "question": "What payment methods do you accept?",
-      "answer": "We accept cash, credit cards, and direct billing to most insurance providers."
+      "answer": "We accept cash, credit cards, and work with most major health funds including Maccabi, Clalit, Meuhedet, and Leumit."
     },
     {
       "question": "Is parking available?",
-      "answer": "Yes, free parking is available in the building lot."
+      "answer": "Yes, parking is available at the Marom Bazal Medical Building where our clinic is located."
     },
     {
       "question": "Do you treat children?",
-      "answer": "Yes, we welcome patients of all ages, including children. We have a kid-friendly waiting area."
+      "answer": "Yes! We have a dedicated pediatric dentist who specializes in making dental visits fun and stress-free for children of all ages."
+    },
+    {
+      "question": "I'm nervous about dental visits. Can you help?",
+      "answer": "Absolutely! Dr. Ofeck specializes in treating anxious patients. We offer nitrous oxide (laughing gas) sedation and a calm, gentle approach to help you feel comfortable."
+    },
+    {
+      "question": "Do you offer emergency appointments?",
+      "answer": "Yes, we do our best to see emergency patients the same day. Call us at 03-5467032 for urgent dental issues."
+    },
+    {
+      "question": "What languages do you speak?",
+      "answer": "Our staff speaks Hebrew and English fluently."
     }
   ],
   "policies": {
     "cancellation": "Please provide at least 24 hours notice for cancellations to avoid a cancellation fee.",
-    "payment": "Payment is due at the time of service. We can provide documentation for insurance reimbursement.",
-    "emergency": "For after-hours emergencies, call our main line and follow the prompts for emergency care."
-  }
+    "payment": "Payment is due at the time of service. We work with most major health funds and can provide documentation for insurance reimbursement.",
+    "emergency": "For dental emergencies, call 03-5467032. We'll do our best to see you the same day."
+  },
+  "specialFeatures": [
+    "Over 30 years of experience",
+    "Full team of specialists on-site",
+    "Anxiety-free care with nitrous oxide",
+    "Natural herbal gum treatments",
+    "Kid-friendly environment",
+    "Emergency same-day appointments"
+  ]
 }
