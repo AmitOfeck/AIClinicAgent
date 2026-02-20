@@ -24,6 +24,12 @@ export const HeroSection = () => {
   const { open } = useChatContext();
   const { t } = useTranslation();
 
+  const trustBadges = [
+    { icon: Award, text: t.hero.trustBadges.experience },
+    { icon: Users, text: t.hero.trustBadges.patients },
+    { icon: Shield, text: t.hero.trustBadges.topRated },
+  ];
+
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
       {/* Background */}
@@ -80,9 +86,9 @@ export const HeroSection = () => {
 
             {/* Trust badges */}
             <div className="mt-12 flex flex-wrap items-center gap-6 lg:gap-8">
-              <TrustBadge icon={Award} text={t.hero.trustBadges.experience} />
-              <TrustBadge icon={Users} text={t.hero.trustBadges.patients} />
-              <TrustBadge icon={Shield} text={t.hero.trustBadges.topRated} />
+              {trustBadges.map((badge) => (
+                <TrustBadge key={badge.text} icon={badge.icon} text={badge.text} />
+              ))}
             </div>
           </div>
 

@@ -71,6 +71,35 @@ export const ContactSection = () => {
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
   const todayHours = CLINIC_INFO.hours.find(h => h.day === today);
 
+  const contactItems = [
+    {
+      icon: MapPin,
+      label: t.contact.labels.address,
+      value: CLINIC_INFO.address,
+    },
+    {
+      icon: Phone,
+      label: t.contact.labels.phone,
+      value: CLINIC_INFO.phone,
+      href: `tel:${CLINIC_INFO.phone}`,
+    },
+    {
+      icon: Mail,
+      label: t.contact.labels.email,
+      value: CLINIC_INFO.email,
+      href: `mailto:${CLINIC_INFO.email}`,
+    },
+    {
+      icon: Clock,
+      label: t.contact.labels.todayHours,
+      value: todayHours?.isOpen ? (
+        <span className="text-green-600">{todayHours.hours}</span>
+      ) : (
+        <span className="text-red-600">{t.contact.labels.closed}</span>
+      ),
+    },
+  ];
+
   return (
     <Section background="white" padding="lg" id="contact">
       <Container>
@@ -110,25 +139,16 @@ export const ContactSection = () => {
               </h3>
 
               <div className="space-y-6">
-                <ContactItem icon={MapPin} label={t.contact.labels.address}>
-                  {CLINIC_INFO.address}
-                </ContactItem>
-
-                <ContactItem icon={Phone} label={t.contact.labels.phone} href={`tel:${CLINIC_INFO.phone}`}>
-                  {CLINIC_INFO.phone}
-                </ContactItem>
-
-                <ContactItem icon={Mail} label={t.contact.labels.email} href={`mailto:${CLINIC_INFO.email}`}>
-                  {CLINIC_INFO.email}
-                </ContactItem>
-
-                <ContactItem icon={Clock} label={t.contact.labels.todayHours}>
-                  {todayHours?.isOpen ? (
-                    <span className="text-green-600">{todayHours.hours}</span>
-                  ) : (
-                    <span className="text-red-600">{t.contact.labels.closed}</span>
-                  )}
-                </ContactItem>
+                {contactItems.map((item) => (
+                  <ContactItem
+                    key={item.label}
+                    icon={item.icon}
+                    label={item.label}
+                    href={item.href}
+                  >
+                    {item.value}
+                  </ContactItem>
+                ))}
               </div>
 
               <div className="mt-6 pt-6 border-t border-gray-100">

@@ -399,6 +399,62 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
 ---
 
+## Repetitive Components Pattern
+
+When rendering the same component multiple times with different props, use an array/map pattern instead of repeating the component.
+
+### Array Pattern for Repeated Components
+
+```tsx
+// ✅ Good - Array pattern
+const contactItems = [
+  { icon: MapPin, label: 'Address', value: address },
+  { icon: Phone, label: 'Phone', value: phone, href: `tel:${phone}` },
+  { icon: Mail, label: 'Email', value: email, href: `mailto:${email}` },
+];
+
+return (
+  <div className="space-y-4">
+    {contactItems.map((item) => (
+      <ContactItem
+        key={item.label}
+        icon={item.icon}
+        label={item.label}
+        href={item.href}
+      >
+        {item.value}
+      </ContactItem>
+    ))}
+  </div>
+);
+
+// ❌ Bad - Repetitive components
+return (
+  <div className="space-y-4">
+    <ContactItem icon={MapPin} label="Address">
+      {address}
+    </ContactItem>
+    <ContactItem icon={Phone} label="Phone" href={`tel:${phone}`}>
+      {phone}
+    </ContactItem>
+    <ContactItem icon={Mail} label="Email" href={`mailto:${email}`}>
+      {email}
+    </ContactItem>
+  </div>
+);
+```
+
+### When to Use Array Pattern
+
+| Use Array Pattern | Keep Individual Components |
+|-------------------|---------------------------|
+| 3+ similar components | 1-2 components |
+| Same component type | Different component types |
+| Props are data-driven | Complex conditional logic |
+| Easy to add/remove items | Unique per-item markup |
+
+---
+
 ## Styling Best Practices
 
 ### Tailwind CSS Rules
