@@ -17,7 +17,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-2">
             <span className="text-2xl">🦷</span>
             <span className="font-bold text-xl text-gray-900">
-              Dr. Opek's <span className="text-clinic-teal">Dental</span>
+              Dr. Ofeck's <span className="text-clinic-teal">Dental</span>
             </span>
           </Link>
 

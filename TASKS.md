@@ -1,12 +1,12 @@
 # SmartClinic Agent - Project Tasks
 
-## Current Status: Phase 1 - UI Updates
+## Current Status: Phase 1 Complete - Ready for Testing
 
 ## Cost Rules (Active)
+- Use gemini-2.5-flash (paid tier)
 - No speculative API calls
 - Max 1 retry on failure
 - Batch related operations
-- Use gemini-2.5-flash (paid tier)
 
 ---
 
@@ -14,69 +14,88 @@
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| SQLite DB | Real | Staff, services, appointments |
-| Gemini AI | Real | Paid API |
-| Telegram Bot | Real | Notifications working |
-| Google Calendar | Mocked | Returns fake slots |
-| Email | Mocked | Logs to console |
-| Staff Schedules | Mock Data | Real structure, demo hours |
+| SQLite DB | ✅ Real | Staff, services, appointments |
+| Gemini AI | ✅ Real | Paid API (gemini-2.5-flash) |
+| Telegram Bot | ✅ Real | Notifications working |
+| Google Calendar | 🔶 Mocked | Returns mock slots |
+| Email | 🔶 Mocked | Logs to console |
 
 ---
 
-## Phases
+## Completed
 
-### Phase 1: UI Updates (Done)
-- [x] Update Services.tsx with real 10 services
-- [x] Update About.tsx with real 6 staff members
-- [x] Added category badges and staff info to services
-- [x] Added image fallback for missing staff photos
+### Phase 1: UI Updates ✅
+- [x] Update Services.tsx with 10 real services + categories
+- [x] Update About.tsx with 6 real staff members
+- [x] Update Home.tsx with clinic branding and info
+- [x] Fix all "Opek" → "Ofeck" throughout codebase
+- [x] Update phone (03-5467032) and address (Basel 35, Tel Aviv)
+- [x] Create SPEC.md project specification
+- [x] Update Navbar, Footer, ChatWidget with correct names
 
-### Phase 2: Local Testing
-- [ ] Test full booking flow end-to-end
-- [ ] Verify Telegram notifications with staff name
-- [ ] Test different services route to correct staff
+### Phase 0: Backend ✅
+- [x] Staff-based booking logic
+- [x] Database schema with staff/services relationships
+- [x] Agent tools for specialist matching
+- [x] System prompt with clinic info
+- [x] Telegram notifications with staff name
+
+---
+
+## Pending
+
+### Phase 2: Testing (Current)
+- [ ] Test full booking flow in browser
+- [ ] Verify staff images display (after adding photos)
+- [ ] Test Telegram approval/decline flow
+- [ ] Test different services route to correct specialist
 
 ### Phase 3: Google Calendar Integration
 - [ ] Set up Google Cloud project
-- [ ] Create service account
-- [ ] Share calendar with service account
+- [ ] Create service account with Calendar API
+- [ ] Share clinic calendar with service account
 - [ ] Update calendar.ts to use real API
 - [ ] Test real availability checking
 
 ### Phase 4: Email Integration
-- [ ] Choose provider (Resend/SendGrid)
-- [ ] Set up API keys
-- [ ] Update email.ts service
+- [ ] Set up Resend account
+- [ ] Add RESEND_API_KEY to environment
+- [ ] Update email.ts to send real emails
 - [ ] Test confirmation emails
 
 ### Phase 5: Deployment
 - [ ] Deploy client to Vercel
 - [ ] Deploy server to Railway/Render
-- [ ] Set up environment variables
-- [ ] Configure Telegram webhook URL
-- [ ] Final testing in production
+- [ ] Configure production environment variables
+- [ ] Set up Telegram webhook URL
+- [ ] Final production testing
 
 ---
 
-## Staff-Service Mappings (Reference)
+## Quick Reference
 
-| Staff | Services |
-|-------|----------|
-| Dr. Ilan Ofeck | Restorations, Veneers, Crowns, Botox |
-| Katy Fridman | Hygiene, Whitening |
-| Shir Formoza | Hygiene, Whitening |
-| Dr. Maayan Granit | Root Canal |
-| Dr. Sahar Nadel | Implants, Periodontal Surgery |
-| Dr. Dan Zitoni | Restorations |
+### Staff Images Location
+```
+client/public/images/staff/
+├── dr-ilan-ofeck.jpg
+├── katy-fridman.jpg
+├── dr-sahar-nadel.jpg
+├── dr-maayan-granit.jpg
+├── dr-dan-zitoni.jpg
+└── shir-formoza.jpg
+```
 
----
+### Key Files
+- `server/src/agent/index.ts` - System prompt
+- `server/src/agent/tools/index.ts` - AI tools
+- `server/src/db/index.ts` - Database schema + seed data
+- `server/src/routes/chat.ts` - Chat endpoint + model config
 
-## Files Modified This Session
-- server/src/db/index.ts - Schema + seed data
-- server/src/db/staff.ts - New file
-- server/src/db/services.ts - New file
-- server/src/db/appointments.ts - Added staff_id
-- server/src/agent/tools/index.ts - Staff-based tools
-- server/src/agent/index.ts - Updated system prompt
-- server/src/services/telegram.ts - Added staff name
-- server/src/routes/chat.ts - Model update
+### Run Locally
+```bash
+# Terminal 1 - Server
+cd server && npm run dev
+
+# Terminal 2 - Client
+cd client && npm run dev
+```
