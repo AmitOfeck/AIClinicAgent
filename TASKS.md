@@ -1,6 +1,6 @@
 # SmartClinic Agent - Project Tasks
 
-## Current Status: Agent Robustness Complete - Ready for E2E Testing
+## Current Status: Frontend Architecture Complete - Ready for E2E Testing
 
 ---
 
@@ -11,14 +11,67 @@
 | SQLite DB | ✅ Real | Staff, services, appointments, patients |
 | Gemini AI | ✅ Real | Paid API (gemini-2.5-flash) |
 | Telegram Bot | ✅ Real | Notifications + approve/decline |
-| Google Calendar | 🔶 Mocked | Returns mock slots (with retry) |
+| Google Calendar | ✅ Real | Credentials configured in server/.env |
 | Email (Resend) | 🔶 Mocked | Logs to console (with retry) |
 
 ---
 
 ## Completed Tasks
 
-### Phase 5: Agent Robustness Upgrade ✅ (Latest)
+### Phase 6: Frontend Refactor & Architecture ✅ (Latest)
+
+#### 6.1 Foundation ✅
+- [x] Create folder structure (types/, constants/, hooks/, config/, api/)
+- [x] Create `types/clinic.ts` - Service, TeamMember, ClinicInfo, DayHours
+- [x] Create `types/chat.ts` - ChatMessage, ToolInvocation, ToolIconMap
+- [x] Create `constants/clinic.ts` - Clinic info, hours, location
+- [x] Create `constants/services.ts` - Services array, category colors
+- [x] Create `constants/team.ts` - Team members, stats
+- [x] Create `constants/features.ts` - Homepage features
+- [x] Create `constants/chat.ts` - Tool icons, welcome message
+
+#### 6.2 UI Component Library ✅
+- [x] Create `Button` component (variants, sizes, icons)
+- [x] Create `Card` component (variants, padding, hover)
+- [x] Create `Badge` component (colors, sizes)
+- [x] Create `Section` component (backgrounds, padding)
+- [x] Create `Container` component (max-widths)
+- [x] Create `PageLayout` component (consistent page structure)
+
+#### 6.3 Client Architecture ✅
+- [x] Create `config/env.ts` - Environment configuration (VITE_API_BASE_URL)
+- [x] Create `.env.example` - Environment template
+- [x] Create `api/apiClient.ts` - Generic API client with error handling
+- [x] Create `api/endpoints.ts` - Centralized API endpoints
+- [x] Create `hooks/useApi.ts` - Generic API state management
+- [x] Create `hooks/useChatWidget.ts` - Chat UI state management
+- [x] Create `hooks/useClinicHours.ts` - Clinic hours with "today" highlighting
+- [x] Refactor ChatWidget to use `useChatWidget` hook
+- [x] Refactor ChatMessages to use `TOOL_ICONS` from constants
+- [x] Refactor About page to use `useClinicHours` hook
+
+#### 6.4 Home & Services Pages ✅
+- [x] Redesign Home page with hero, features, video, location sections
+- [x] Redesign Services page with categories and filtering
+- [x] Add proper TypeScript types throughout
+
+---
+
+### Phase 8: Google Calendar Integration ✅
+- [x] Integration code in `server/src/services/calendar.ts`
+- [x] `checkCalendarAvailability()` - fetches busy slots from Google Calendar
+- [x] `createCalendarEvent()` - creates events on approval
+- [x] Retry logic with exponential backoff
+- [x] Graceful fallback to mock slots when not configured
+- [x] Set up Google Cloud project with Calendar API enabled
+- [x] Create service account and download JSON key
+- [x] Share clinic calendar with service account email
+- [x] Add `GOOGLE_SERVICE_ACCOUNT_KEY` to env
+- [x] Add `GOOGLE_CALENDAR_ID` to env
+
+---
+
+### Phase 5: Agent Robustness Upgrade ✅
 
 #### Task 1: Structured Error Types ✅
 - [x] Added `ToolError` interface with `errorType`, `message`, `suggestion`, `retryable`
@@ -88,7 +141,7 @@
 
 ## Pending Tasks
 
-### Phase 6: End-to-End Testing (Next)
+### Phase 7: End-to-End Testing (Current)
 - [ ] Test chat without API key (graceful error)
 - [ ] Test complete booking flow in browser
 - [ ] Test self-correction (book taken slot → suggest alternatives)
@@ -99,22 +152,14 @@
 - [ ] Verify staff images display correctly
 - [ ] Test different services route to correct specialist
 
-### Phase 7: Google Calendar Integration
-- [ ] Set up Google Cloud project
-- [ ] Create service account with Calendar API access
-- [ ] Share clinic calendar with service account email
-- [ ] Add credentials to environment variables
-- [ ] Test real availability checking
-- [ ] Test calendar event creation on approval
-
-### Phase 8: Email Integration
+### Phase 9: Email Integration
 - [ ] Set up Resend account
 - [ ] Verify domain for sending
 - [ ] Add RESEND_API_KEY to environment
 - [ ] Test confirmation emails
 - [ ] Test decline emails
 
-### Phase 9: Deployment
+### Phase 10: Deployment
 - [ ] Deploy client to Vercel
 - [ ] Deploy server to Railway/Render
 - [ ] Configure production environment variables
@@ -122,7 +167,7 @@
 - [ ] Update CORS for production domain
 - [ ] Final production testing
 
-### Phase 10: Demo & Documentation
+### Phase 11: Demo & Documentation
 - [ ] Record demo video showing:
   - Website tour (home, services, about)
   - Booking flow with tool visualization
@@ -165,6 +210,32 @@ server/src/routes/chat.ts          # AI chat (streaming + tracing)
 server/src/routes/telegram.ts      # Webhook endpoint
 ```
 
+### Client Architecture
+```
+client/src/
+├── config/
+│   └── env.ts                 # Environment config (VITE_API_BASE_URL)
+├── api/
+│   ├── apiClient.ts           # Generic fetch wrapper with error handling
+│   └── endpoints.ts           # Centralized API endpoints
+├── hooks/
+│   ├── useApi.ts              # Generic API state management
+│   ├── useChatWidget.ts       # Chat UI state (open/minimize)
+│   └── useClinicHours.ts      # Clinic hours with "today" check
+├── types/
+│   ├── clinic.ts              # Service, TeamMember, DayHours, etc.
+│   └── chat.ts                # ToolInvocation, ToolIconMap, etc.
+├── constants/
+│   ├── clinic.ts              # CLINIC_INFO, NAV_LINKS
+│   ├── services.ts            # SERVICES array
+│   ├── team.ts                # TEAM, STATS
+│   └── chat.ts                # TOOL_ICONS, WELCOME_MESSAGE
+└── components/ui/
+    ├── Button/
+    ├── Card/
+    └── Badge/
+```
+
 ### Client Images
 ```
 client/public/images/staff/
@@ -198,6 +269,7 @@ cd client && npx tsc --noEmit
 
 ## Environment Variables
 
+### Server (`server/.env`)
 ```env
 # Required
 GOOGLE_GENERATIVE_AI_API_KEY=xxx
@@ -215,4 +287,13 @@ RESEND_API_KEY=xxx
 PORT=3001
 CLIENT_URL=http://localhost:5173
 APP_URL=http://localhost:3001
+```
+
+### Client (`client/.env`)
+```env
+# API Configuration
+VITE_API_BASE_URL=http://localhost:3001
+
+# Feature Flags (optional)
+VITE_ENABLE_ANALYTICS=false
 ```
