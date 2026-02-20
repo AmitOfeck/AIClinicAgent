@@ -3,7 +3,6 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import chatRouter from './routes/chat.js'
 import telegramRouter from './routes/telegram.js'
-import testChatRouter from './routes/test-chat.js'
 import { initDatabase } from './db/index.js'
 
 dotenv.config()
@@ -24,7 +23,6 @@ initDatabase()
 // Routes
 app.use('/api/chat', chatRouter)
 app.use('/api/telegram', telegramRouter)
-app.use('/api/test-chat', testChatRouter)
 
 // Health check
 app.get('/api/health', (req, res) => {

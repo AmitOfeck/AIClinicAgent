@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { streamText, ToolCallPart, ToolResultPart } from 'ai'
+import { streamText } from 'ai'
 import { google } from '@ai-sdk/google'
 import { tools } from '../agent/tools/index.js'
-import { SYSTEM_PROMPT } from '../agent/index.js'
+import { getSystemPrompt } from '../agent/index.js'
 
 const router = Router()
 
@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
 
     const result = streamText({
       model,
-      system: SYSTEM_PROMPT,
+      system: getSystemPrompt(),
       messages,
       tools,
       maxSteps: 10,

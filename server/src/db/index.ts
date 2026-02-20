@@ -73,31 +73,47 @@ export function initDatabase() {
     )
   `)
 
-  // Patient preferences table (for long-term memory)
+  // Patient preferences table (for long-term memory & re-engagement)
   db.exec(`
     CREATE TABLE IF NOT EXISTS patient_preferences (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       patient_email TEXT UNIQUE NOT NULL,
       patient_name TEXT,
+      phone TEXT,
+      whatsapp_number TEXT,
       preferences TEXT,
+      interests TEXT,
       notes TEXT,
-      last_visit TEXT,
+      last_interaction TEXT,
+      converted INTEGER DEFAULT 0,
+      preferred_channel TEXT DEFAULT 'email',
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `)
 
-  // Conversation history table
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS conversations (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      session_id TEXT NOT NULL,
-      patient_email TEXT,
-      messages TEXT NOT NULL,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-    )
-  `)
+  // Migration: Add new columns if they don't exist (for existing databases)
+  const columns = db.prepare("PRAGMA table_info(patient_preferences)").all() as { name: string }[]
+  const columnNames = columns.map(c => c.name)
+
+  if (!columnNames.includes('phone')) {
+    db.exec("ALTER TABLE patient_preferences ADD COLUMN phone TEXT")
+  }
+  if (!columnNames.includes('whatsapp_number')) {
+    db.exec("ALTER TABLE patient_preferences ADD COLUMN whatsapp_number TEXT")
+  }
+  if (!columnNames.includes('interests')) {
+    db.exec("ALTER TABLE patient_preferences ADD COLUMN interests TEXT")
+  }
+  if (!columnNames.includes('last_interaction')) {
+    db.exec("ALTER TABLE patient_preferences ADD COLUMN last_interaction TEXT")
+  }
+  if (!columnNames.includes('converted')) {
+    db.exec("ALTER TABLE patient_preferences ADD COLUMN converted INTEGER DEFAULT 0")
+  }
+  if (!columnNames.includes('preferred_channel')) {
+    db.exec("ALTER TABLE patient_preferences ADD COLUMN preferred_channel TEXT DEFAULT 'email'")
+  }
 
   // Seed initial data if tables are empty
   seedInitialData()
