@@ -8,6 +8,8 @@ export {
   default,
 } from './Card';
 
+export { cardVariants } from './constants';
+
 export type {
   CardProps,
   CardVariant,
@@ -18,3 +20,5 @@ export type {
   CardContentProps,
   CardFooterProps,
 } from './Card';
+
+export type { CardVariants } from './constants';

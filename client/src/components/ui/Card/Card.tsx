@@ -1,37 +1,20 @@
 import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
+import { cardVariants, type CardVariants } from './constants';
 
-export type CardVariant = 'default' | 'elevated' | 'outlined' | 'ghost';
-export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
-
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: CardVariant;
-  padding?: CardPadding;
-  hover?: boolean;
+export interface CardProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    CardVariants {
   as?: 'div' | 'article' | 'section';
 }
-
-const CARD_VARIANTS: Record<CardVariant, string> = {
-  default: 'bg-white shadow-sm border border-gray-100',
-  elevated: 'bg-white shadow-lg',
-  outlined: 'bg-white border-2 border-gray-200',
-  ghost: 'bg-gray-50',
-};
-
-const CARD_PADDING: Record<CardPadding, string> = {
-  none: '',
-  sm: 'p-4',
-  md: 'p-6',
-  lg: 'p-8',
-};
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   (
     {
       children,
-      variant = 'default',
-      padding = 'md',
-      hover = false,
+      variant,
+      padding,
+      hover,
       as: Component = 'div',
       className,
       ...props
@@ -41,13 +24,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     return (
       <Component
         ref={ref}
-        className={cn(
-          'rounded-xl transition-all duration-200',
-          CARD_VARIANTS[variant],
-          CARD_PADDING[padding],
-          hover && 'hover:shadow-md hover:-translate-y-1 cursor-pointer',
-          className
-        )}
+        className={cn(cardVariants({ variant, padding, hover }), className)}
         {...props}
       >
         {children}
@@ -63,11 +40,7 @@ export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, children, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn('mb-4', className)}
-      {...props}
-    >
+    <div ref={ref} className={cn('mb-4', className)} {...props}>
       {children}
     </div>
   )
@@ -75,7 +48,8 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
 
 CardHeader.displayName = 'CardHeader';
 
-export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+export interface CardTitleProps
+  extends React.HTMLAttributes<HTMLHeadingElement> {
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 }
 
@@ -93,31 +67,26 @@ export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
 
 CardTitle.displayName = 'CardTitle';
 
-export interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
+export interface CardDescriptionProps
+  extends React.HTMLAttributes<HTMLParagraphElement> {}
 
-export const CardDescription = forwardRef<HTMLParagraphElement, CardDescriptionProps>(
-  ({ className, children, ...props }, ref) => (
-    <p
-      ref={ref}
-      className={cn('text-sm text-gray-600', className)}
-      {...props}
-    >
-      {children}
-    </p>
-  )
-);
+export const CardDescription = forwardRef<
+  HTMLParagraphElement,
+  CardDescriptionProps
+>(({ className, children, ...props }, ref) => (
+  <p ref={ref} className={cn('text-sm text-gray-600', className)} {...props}>
+    {children}
+  </p>
+));
 
 CardDescription.displayName = 'CardDescription';
 
-export interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface CardContentProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const CardContent = forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, children, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn('', className)}
-      {...props}
-    >
+    <div ref={ref} className={cn('', className)} {...props}>
       {children}
     </div>
   )
@@ -140,5 +109,9 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
 );
 
 CardFooter.displayName = 'CardFooter';
+
+// Re-export types for backward compatibility
+export type CardVariant = NonNullable<CardVariants['variant']>;
+export type CardPadding = NonNullable<CardVariants['padding']>;
 
 export default Card;

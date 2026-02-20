@@ -2,7 +2,9 @@ import { MessageCircle, Phone, Shield, Users, Award, Sparkles } from 'lucide-rea
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Container } from '@/components/layout/Container';
-import { CLINIC_INFO } from '@/constants/clinic';
+import { useChatContext } from '@/context/ChatContext';
+import { useTranslation } from '@/i18n';
+import { CLINIC_INFO } from '@/constants';
 
 interface TrustBadgeProps {
   icon: React.ElementType;
@@ -19,21 +21,21 @@ const TrustBadge = ({ icon: Icon, text }: TrustBadgeProps) => (
 );
 
 export const HeroSection = () => {
-  const handleOpenChat = () => {
-    const chatButton = document.querySelector('[aria-label="Open chat"]') as HTMLButtonElement;
-    chatButton?.click();
-  };
+  const { open } = useChatContext();
+  const { t } = useTranslation();
 
-  const handleCallClinic = () => {
-    window.location.href = `tel:${CLINIC_INFO.phone}`;
-  };
+  const trustBadges = [
+    { icon: Award, text: t.hero.trustBadges.experience },
+    { icon: Users, text: t.hero.trustBadges.patients },
+    { icon: Shield, text: t.hero.trustBadges.topRated },
+  ];
 
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-      {/* Background gradient */}
+      {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-clinic-teal via-clinic-teal-dark to-blue-900" />
 
-      {/* Decorative elements */}
+      {/* Decorative circles */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-64 h-64 border border-white/10 rounded-full" />
         <div className="absolute top-40 left-32 w-32 h-32 border border-white/5 rounded-full" />
@@ -48,35 +50,34 @@ export const HeroSection = () => {
           <div className="text-white">
             <Badge variant="primary" className="mb-6 bg-white/10 border-white/20 text-white">
               <Sparkles className="w-3 h-3 mr-1" />
-              Tel Aviv's Premier Dental Clinic
+              {t.hero.badge}
             </Badge>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-              Your Smile,
+              {t.hero.title}
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-teal-200">
-                Our Priority
+                {t.hero.titleHighlight}
               </span>
             </h1>
 
             <p className="mt-6 text-lg sm:text-xl text-white/80 max-w-lg">
-              Experience world-class dental care with Dr. Ilan Ofeck and our
-              team of specialists. Book your appointment instantly with our AI assistant.
+              {t.hero.subtitle}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Button
                 variant="white"
                 size="lg"
-                onClick={handleOpenChat}
+                onClick={open}
                 leftIcon={<MessageCircle className="w-5 h-5" />}
               >
-                Book with AI Assistant
+                {t.hero.cta}
               </Button>
               <Button
                 variant="outline-white"
                 size="lg"
-                onClick={handleCallClinic}
+                onClick={() => window.location.href = `tel:${CLINIC_INFO.phone}`}
                 leftIcon={<Phone className="w-5 h-5" />}
               >
                 {CLINIC_INFO.phone}
@@ -85,16 +86,15 @@ export const HeroSection = () => {
 
             {/* Trust badges */}
             <div className="mt-12 flex flex-wrap items-center gap-6 lg:gap-8">
-              <TrustBadge icon={Award} text="20+ Years Experience" />
-              <TrustBadge icon={Users} text="10,000+ Patients" />
-              <TrustBadge icon={Shield} text="Top Rated" />
+              {trustBadges.map((badge) => (
+                <TrustBadge key={badge.text} icon={badge.icon} text={badge.text} />
+              ))}
             </div>
           </div>
 
-          {/* Right content - Hero image/illustration */}
+          {/* Right content - Hero image */}
           <div className="hidden lg:block">
             <div className="relative">
-              {/* Main image placeholder - can be replaced with actual clinic image */}
               <div className="group relative rounded-2xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-sm border border-white/20 transition-all duration-500 hover:shadow-[0_25px_60px_-12px_rgba(0,0,0,0.4)] hover:border-white/40">
                 <img
                   src="/images/staff/team.jpg"
@@ -104,15 +104,15 @@ export const HeroSection = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
 
-              {/* Floating card - AI booking feature */}
+              {/* Floating card - AI booking */}
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl animate-pulse">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                     <MessageCircle className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">AI-Powered Booking</p>
-                    <p className="text-sm text-gray-500">Available 24/7</p>
+                    <p className="font-semibold text-gray-900">{t.hero.floatingCards.aiBooking}</p>
+                    <p className="text-sm text-gray-500">{t.hero.floatingCards.available}</p>
                   </div>
                 </div>
               </div>
@@ -127,21 +127,16 @@ export const HeroSection = () => {
                   </div>
                   <span className="font-bold text-gray-900">4.9</span>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Google Reviews</p>
+                <p className="text-xs text-gray-500 mt-1">{t.hero.floatingCards.googleReviews}</p>
               </div>
             </div>
           </div>
         </div>
       </Container>
 
-      {/* Bottom wave decoration */}
+      {/* Wave divider */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg
-          viewBox="0 0 1440 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-auto"
-        >
+        <svg viewBox="0 0 1440 120" fill="none" className="w-full h-auto">
           <path
             d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
             fill="white"
@@ -151,5 +146,3 @@ export const HeroSection = () => {
     </section>
   );
 };
-
-export default HeroSection;
