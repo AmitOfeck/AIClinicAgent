@@ -1,122 +1,159 @@
 import { tool } from 'ai'
 import { z } from 'zod'
+import { checkCalendarAvailability, createCalendarEvent } from '../../services/calendar.js'
 import { sendOwnerNotification } from '../../services/telegram.js'
 import { searchKnowledge } from '../../services/knowledge.js'
-import { createAppointment, getAppointmentById, getAppointmentsByEmail, getAppointmentsByStaffAndDate } from '../../db/appointments.js'
+import {
+  createAppointment,
+  getAppointmentById,
+  getAppointmentsByEmail,
+  getAppointmentsByStaffAndDate,
+} from '../../db/appointments.js'
 import { getPatientByEmail, upsertPatientPreferences } from '../../db/patients.js'
-import { getStaffForService, getAllStaff, getStaffById, isStaffAvailable, getStaffWorkingHours } from '../../db/staff.js'
-import { findServiceByKeywords, getServiceById, getAllServices, getServicesWithStaff } from '../../db/services.js'
+import {
+  getAllServices,
+  getServiceById,
+  findServiceByKeywords,
+  getServicesWithStaff,
+} from '../../db/services.js'
+import {
+  getAllStaff,
+  getStaffById,
+  getStaffForServiceById,
+  getStaffWorkingHours,
+  isStaffAvailable,
+  getStaffWithServices,
+} from '../../db/staff.js'
 
 export const tools = {
-  // Find which staff member handles a specific service
+  getServices: tool({
+    description: 'Get all available dental services with their details. Use this when a patient asks about services or treatments.',
+    parameters: z.object({}),
+    execute: async () => {
+      try {
+        const services = getServicesWithStaff()
+        return {
+          success: true,
+          services: services.map((s) => ({
+            id: s.id,
+            name: s.name,
+            description: s.description,
+            durationMinutes: s.duration_minutes,
+            category: s.category,
+            staff: s.staff.map((st) => st.name),
+          })),
+        }
+      } catch (error) {
+        console.error('Get services error:', error)
+        return { success: false, error: 'Unable to fetch services' }
+      }
+    },
+  }),
+
   getStaffForService: tool({
-    description: 'Find which staff member(s) can perform a specific service. Use this BEFORE checking availability to know whose schedule to check.',
+    description: 'Find which staff members can perform a specific service. Use this before checking availability.',
     parameters: z.object({
-      serviceName: z.string().describe('Name or keywords of the service (e.g., "root canal", "cleaning", "implants")'),
+      serviceName: z.string().describe('Name or keywords of the service (e.g., "root canal", "cleaning", "implant")'),
     }),
     execute: async ({ serviceName }) => {
       try {
-        // First find the service
         const service = findServiceByKeywords(serviceName)
         if (!service) {
           return {
-            found: false,
-            message: `Service "${serviceName}" not found. Available services: Routine Checkup & Cleaning, Teeth Whitening, Root Canal Treatment, Dental Implants, Gum Disease Treatment, Pediatric Dentistry, Aesthetic Dentistry, Oral Surgery, Anxiety Management, General Consultation.`
+            success: false,
+            message: `Service "${serviceName}" not found. Please ask the patient to clarify which treatment they need.`,
           }
         }
 
-        // Get staff who can do this service
-        const staff = getStaffForService(service.name)
+        const staff = getStaffForServiceById(service.id)
         if (staff.length === 0) {
           return {
-            found: false,
-            message: `No staff found for service "${service.name}".`
+            success: false,
+            message: `No staff members available for ${service.name}`,
           }
         }
 
         return {
-          found: true,
+          success: true,
           service: {
             id: service.id,
             name: service.name,
-            duration: service.duration_minutes,
-            price: service.price,
+            durationMinutes: service.duration_minutes,
+            category: service.category,
           },
-          staff: staff.map(s => ({
+          staff: staff.map((s) => ({
             id: s.id,
             name: s.name,
             role: s.role,
             specialty: s.specialty,
           })),
-          message: `${service.name} is performed by: ${staff.map(s => s.name).join(', ')}`
         }
       } catch (error) {
-        console.error('getStaffForService error:', error)
-        return { found: false, error: 'Unable to find staff for this service.' }
+        console.error('Get staff for service error:', error)
+        return { success: false, error: 'Unable to find staff for this service' }
       }
     },
   }),
 
-  // Check availability for a specific staff member
   checkAvailability: tool({
-    description: 'Check available appointment slots for a specific staff member on a given date. Returns available time slots.',
+    description: 'Check available appointment slots for a staff member on a specific date. Always get the staff member first using getStaffForService.',
     parameters: z.object({
+      staffId: z.number().describe('ID of the staff member'),
       date: z.string().describe('Date to check in YYYY-MM-DD format'),
-      staffId: z.number().describe('ID of the staff member to check availability for'),
-      durationMinutes: z.number().optional().describe('Duration of the appointment in minutes (default: 30)'),
+      serviceDuration: z.number().optional().describe('Duration of the service in minutes (default 30)'),
     }),
-    execute: async ({ date, staffId, durationMinutes = 30 }) => {
+    execute: async ({ staffId, date, serviceDuration = 30 }) => {
       try {
         const staff = getStaffById(staffId)
         if (!staff) {
-          return { available: false, error: 'Staff member not found', slots: [] }
+          return { available: false, message: 'Staff member not found', slots: [] }
         }
 
-        // Get day of week
         const dateObj = new Date(date)
-        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-        const dayOfWeek = days[dateObj.getDay()]
+        const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+        const dayOfWeek = dayNames[dateObj.getDay()]
 
-        // Get staff working hours
         const workingHours = getStaffWorkingHours(staffId)
         if (!workingHours || !workingHours[dayOfWeek] || workingHours[dayOfWeek].length === 0) {
           return {
             available: false,
+            message: `${staff.name} does not work on ${dayOfWeek}s`,
+            slots: [],
             staffName: staff.name,
-            message: `${staff.name} does not work on ${dayOfWeek}s.`,
-            slots: []
           }
         }
 
         // Get existing appointments for this staff on this date
         const existingAppointments = getAppointmentsByStaffAndDate(staffId, date)
-        const bookedTimes = existingAppointments.map(a => {
-          const time = a.date_time.split('T')[1]?.substring(0, 5) || ''
-          return time
-        })
 
-        // Generate available slots
+        // Generate available slots based on working hours
         const slots: string[] = []
-        for (const range of workingHours[dayOfWeek]) {
-          const [start, end] = range.split('-')
-          let currentHour = parseInt(start.split(':')[0])
-          let currentMinute = parseInt(start.split(':')[1])
-          const endHour = parseInt(end.split(':')[0])
-          const endMinute = parseInt(end.split(':')[1])
+        for (const period of workingHours[dayOfWeek]) {
+          const [startTime, endTime] = period.split('-')
+          const [startHour, startMin] = startTime.split(':').map(Number)
+          const [endHour, endMin] = endTime.split(':').map(Number)
 
-          while (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute)) {
-            const timeStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`
+          for (let h = startHour; h < endHour || (h === endHour && 0 < endMin); h++) {
+            for (let m = 0; m < 60; m += 30) {
+              if (h === startHour && m < startMin) continue
+              const slotEnd = h * 60 + m + serviceDuration
+              if (slotEnd > endHour * 60 + endMin) continue
 
-            // Check if slot is not already booked
-            if (!bookedTimes.includes(timeStr)) {
-              slots.push(timeStr)
-            }
+              const timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`
 
-            // Move to next slot (30 min intervals)
-            currentMinute += 30
-            if (currentMinute >= 60) {
-              currentMinute = 0
-              currentHour++
+              // Check if this slot conflicts with existing appointments
+              const slotStart = new Date(`${date}T${timeStr}:00`)
+              const slotEndTime = new Date(slotStart.getTime() + serviceDuration * 60000)
+
+              const hasConflict = existingAppointments.some((apt) => {
+                const aptStart = new Date(apt.date_time)
+                const aptEnd = new Date(aptStart.getTime() + 60 * 60000) // Assume 60 min
+                return slotStart < aptEnd && slotEndTime > aptStart
+              })
+
+              if (!hasConflict) {
+                slots.push(timeStr)
+              }
             }
           }
         }
@@ -124,49 +161,69 @@ export const tools = {
         if (slots.length === 0) {
           return {
             available: false,
+            message: `No available slots for ${staff.name} on ${date}`,
+            slots: [],
             staffName: staff.name,
-            date,
-            message: `${staff.name} has no available slots on ${date}.`,
-            slots: []
           }
         }
 
         return {
           available: true,
+          slots: slots.slice(0, 8), // Return max 8 slots
+          date,
           staffId,
           staffName: staff.name,
-          date,
-          slots,
-          message: `${staff.name} has ${slots.length} available slots on ${date}.`
         }
       } catch (error) {
-        console.error('checkAvailability error:', error)
+        console.error('Check availability error:', error)
         return {
           available: false,
-          error: 'Unable to check availability. Please try again or call us at 03-5467032.',
-          slots: []
+          error: 'Unable to check availability. Please try again.',
+          slots: [],
         }
       }
     },
   }),
 
-  // Create appointment with staff assignment
+  getClinicTeam: tool({
+    description: 'Get information about the clinic team and staff members.',
+    parameters: z.object({}),
+    execute: async () => {
+      try {
+        const staff = getStaffWithServices()
+        return {
+          success: true,
+          team: staff.map((s) => ({
+            id: s.id,
+            name: s.name,
+            role: s.role,
+            specialty: s.specialty,
+            services: s.services,
+          })),
+        }
+      } catch (error) {
+        console.error('Get clinic team error:', error)
+        return { success: false, error: 'Unable to fetch team information' }
+      }
+    },
+  }),
+
   createAppointment: tool({
-    description: 'Create a new pending appointment with a specific staff member. This will notify the clinic owner for approval.',
+    description: 'Create a new pending appointment. This will notify the clinic owner for approval.',
     parameters: z.object({
       patientName: z.string().describe('Full name of the patient'),
       patientEmail: z.string().email().describe('Email address for confirmation'),
       patientPhone: z.string().optional().describe('Phone number (optional)'),
       serviceId: z.number().describe('ID of the service'),
-      serviceName: z.string().describe('Name of the service'),
-      staffId: z.number().describe('ID of the staff member who will perform the service'),
-      dateTime: z.string().describe('Appointment date and time in ISO format (YYYY-MM-DDTHH:MM:SS)'),
+      service: z.string().describe('Name of the dental service'),
+      staffId: z.number().describe('ID of the staff member'),
+      dateTime: z.string().describe('Appointment date and time in ISO format (e.g., 2024-01-15T10:00:00)'),
     }),
-    execute: async ({ patientName, patientEmail, patientPhone, serviceId, serviceName, staffId, dateTime }) => {
+    execute: async ({ patientName, patientEmail, patientPhone, serviceId, service, staffId, dateTime }) => {
       try {
         const staff = getStaffById(staffId)
         if (!staff) {
-          return { success: false, error: 'Staff member not found.' }
+          return { success: false, error: 'Staff member not found' }
         }
 
         // Create the appointment in the database
@@ -175,7 +232,7 @@ export const tools = {
           patientEmail,
           patientPhone,
           serviceId,
-          service: serviceName,
+          service,
           staffId,
           dateTime,
         })
@@ -188,9 +245,9 @@ export const tools = {
           appointmentId: appointment.id,
           patientName,
           patientEmail,
-          service: serviceName,
-          staffName: staff.name,
+          service,
           dateTime,
+          staffName: staff.name,
         })
 
         return {
@@ -198,21 +255,20 @@ export const tools = {
           appointmentId: appointment.id,
           status: 'PENDING',
           staffName: staff.name,
-          message: `Appointment request created for ${serviceName} with ${staff.name}. The clinic owner will review and confirm shortly. You'll receive an email at ${patientEmail} once approved.`,
+          message: `Appointment request created with ${staff.name}. The clinic will review and confirm shortly. You'll receive an email at ${patientEmail} once approved.`,
         }
       } catch (error) {
-        console.error('createAppointment error:', error)
+        console.error('Create appointment error:', error)
         return {
           success: false,
-          error: 'Failed to create appointment. Please try again or call us at 03-5467032.',
+          error: 'Failed to create appointment. Please try again or call us directly.',
         }
       }
     },
   }),
 
-  // Search knowledge base
   searchKnowledgeBase: tool({
-    description: 'Search the clinic knowledge base for information about services, pricing, hours, insurance, team, policies, etc.',
+    description: 'Search the clinic knowledge base for information about services, pricing, hours, insurance, team, etc.',
     parameters: z.object({
       query: z.string().describe('What information to search for'),
     }),
@@ -227,7 +283,6 @@ export const tools = {
     },
   }),
 
-  // Get patient history
   getPatientHistory: tool({
     description: 'Get patient history and preferences if they have visited before. Use this to personalize the conversation.',
     parameters: z.object({
@@ -254,7 +309,6 @@ export const tools = {
     },
   }),
 
-  // Save patient preference
   savePatientPreference: tool({
     description: 'Save a patient preference or note for future reference (e.g., "prefers morning appointments", "allergic to latex")',
     parameters: z.object({
@@ -273,54 +327,6 @@ export const tools = {
       } catch (error) {
         console.error('Save preference error:', error)
         return { success: false, error: 'Unable to save preference' }
-      }
-    },
-  }),
-
-  // List all services
-  listServices: tool({
-    description: 'Get a list of all available services with their prices and which staff performs them.',
-    parameters: z.object({}),
-    execute: async () => {
-      try {
-        const services = getServicesWithStaff()
-        return {
-          success: true,
-          services: services.map(s => ({
-            id: s.id,
-            name: s.name,
-            duration: s.duration_minutes,
-            price: s.price,
-            category: s.category,
-            staff: s.staff.map(st => st.name),
-          }))
-        }
-      } catch (error) {
-        console.error('listServices error:', error)
-        return { success: false, error: 'Unable to list services' }
-      }
-    },
-  }),
-
-  // List all staff
-  listStaff: tool({
-    description: 'Get a list of all staff members with their roles and specialties.',
-    parameters: z.object({}),
-    execute: async () => {
-      try {
-        const staff = getAllStaff()
-        return {
-          success: true,
-          staff: staff.map(s => ({
-            id: s.id,
-            name: s.name,
-            role: s.role,
-            specialty: s.specialty,
-          }))
-        }
-      } catch (error) {
-        console.error('listStaff error:', error)
-        return { success: false, error: 'Unable to list staff' }
       }
     },
   }),

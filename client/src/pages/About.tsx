@@ -1,50 +1,56 @@
-import { Award, Users, Heart, MapPin, Phone, Mail, Clock } from 'lucide-react'
+import { Award, Users, Heart, MapPin, Phone } from 'lucide-react'
 import Navbar from '../components/clinic/Navbar'
 import Footer from '../components/clinic/Footer'
 
 const team = [
   {
     name: 'Dr. Ilan Ofeck',
-    role: 'Lead Dentist & Founder',
-    bio: 'Graduate of Tel Aviv University School of Dental Medicine with over 30 years of experience. Specializes in general dentistry and prosthodontics with a gentle, patient-focused approach.',
-    image: '👨‍⚕️',
+    role: 'Chief Dentist & Clinic Director',
+    bio: 'Graduated from Tel Aviv University School of Dental Medicine. Over 30 years of experience in general and aesthetic dentistry, specializing in prosthodontics and smile design.',
+    image: '/images/staff/dr-ilan-ofeck.jpg',
+    services: ['Restorations', 'Veneers', 'Crowns', 'Botox'],
   },
   {
-    name: 'Endodontic Specialist',
-    role: 'Root Canal Expert',
-    bio: 'Our endodontic specialist handles all root canal treatments with precision and care, using the latest techniques for optimal outcomes.',
-    image: '🦷',
+    name: 'Katy Fridman',
+    role: 'Dental Hygienist',
+    bio: 'Licensed dental hygienist specializing in tartar removal and patient education on proper oral care. Known for her gentle and thorough approach.',
+    image: '/images/staff/katy-fridman.jpg',
+    services: ['Dental Hygiene', 'Teeth Whitening'],
   },
   {
-    name: 'Periodontal Specialist',
-    role: 'Gum Disease Expert',
-    bio: 'Specializing in gum disease treatment and prevention, including natural herbal therapies for healthier gums.',
-    image: '🦷',
+    name: 'Dr. Sahar Nadel',
+    role: 'Oral & Maxillofacial Surgeon',
+    bio: 'Graduated from Hebrew University School of Dental Medicine (2010). Completed specialized training in oral surgery, focusing on implants and periodontal procedures.',
+    image: '/images/staff/dr-sahar-nadel.jpg',
+    services: ['Dental Implants', 'Periodontal Surgery'],
   },
   {
-    name: 'Oral Surgeon',
-    role: 'Surgical Specialist',
-    bio: 'Our oral and maxillofacial surgeon performs implants, extractions, and other surgical procedures with expertise.',
-    image: '👨‍⚕️',
+    name: 'Dr. Maayan Granit',
+    role: 'Endodontist',
+    bio: 'Completed endodontics residency at Hebrew University in Jerusalem (2013). Specialist in root canal treatments using advanced techniques for patient comfort.',
+    image: '/images/staff/dr-maayan-granit.jpg',
+    services: ['Root Canal Treatment'],
   },
   {
-    name: 'Pediatric Dentist',
-    role: 'Children\'s Specialist',
-    bio: 'Making dental visits fun for kids! Our pediatric dentist creates positive experiences for young patients.',
-    image: '👩‍⚕️',
+    name: 'Dr. Dan Zitoni',
+    role: 'Dentist',
+    bio: 'General dentist providing comprehensive dental care and restorative treatments. Focused on patient comfort and quality results.',
+    image: '/images/staff/dr-dan-zitoni.jpg',
+    services: ['Composite Restorations'],
   },
   {
-    name: 'Dental Hygienist',
-    role: 'Cleaning Specialist',
-    bio: 'Dedicated to patient comfort and education, providing thorough cleanings and personalized oral health guidance.',
-    image: '👩‍⚕️',
+    name: 'Shir Formoza',
+    role: 'Dental Hygienist',
+    bio: 'Licensed dental hygienist with a unique approach using natural treatment methods. Dedicated to patient education and preventive care.',
+    image: '/images/staff/shir-formoza.jpg',
+    services: ['Dental Hygiene', 'Teeth Whitening'],
   },
 ]
 
 const stats = [
   { icon: Users, value: '10,000+', label: 'Happy Patients' },
   { icon: Award, value: '30+', label: 'Years Experience' },
-  { icon: Heart, value: '99%', label: 'Patient Satisfaction' },
+  { icon: Heart, value: '98%', label: 'Patient Satisfaction' },
 ]
 
 export default function About() {
@@ -57,9 +63,9 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4">About Our Clinic</h1>
           <p className="text-teal-100 max-w-2xl">
-            Since 1994, Dr. Ilan Ofeck's Dental Clinic has been providing exceptional
-            dental care to families in Tel Aviv. Our mission is to deliver the highest
-            quality treatment in a comfortable, caring environment.
+            Dr. Ilan Ofeck's dental clinic has been providing exceptional care in Tel Aviv
+            for over 30 years. Our team of specialists ensures every patient receives
+            personalized treatment with the latest techniques.
           </p>
         </div>
       </section>
@@ -92,14 +98,35 @@ export default function About() {
             {team.map((member) => (
               <div
                 key={member.name}
-                className="bg-white border border-gray-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
+                className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
               >
-                <div className="w-20 h-20 bg-clinic-teal/10 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                  {member.image}
+                <div className="h-48 bg-clinic-teal/10 flex items-center justify-center">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                      target.parentElement!.innerHTML = '<span class="text-6xl">👨‍⚕️</span>'
+                    }}
+                  />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">{member.name}</h3>
-                <p className="text-clinic-teal font-medium mb-3">{member.role}</p>
-                <p className="text-gray-600 text-sm">{member.bio}</p>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900">{member.name}</h3>
+                  <p className="text-clinic-teal font-medium mb-3">{member.role}</p>
+                  <p className="text-gray-600 text-sm mb-3">{member.bio}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {member.services.map((service) => (
+                      <span
+                        key={service}
+                        className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded"
+                      >
+                        {service}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -117,8 +144,7 @@ export default function About() {
                   <MapPin className="w-5 h-5 text-clinic-teal mt-1" />
                   <div>
                     <p className="font-medium text-gray-900">Address</p>
-                    <p className="text-gray-600">Bazal Street 35, Tel Aviv</p>
-                    <p className="text-gray-600">Marom Bazal Medical Building</p>
+                    <p className="text-gray-600">Basel 35, Tel Aviv</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -126,14 +152,6 @@ export default function About() {
                   <div>
                     <p className="font-medium text-gray-900">Phone</p>
                     <p className="text-gray-600">03-5467032</p>
-                    <p className="text-gray-600">054-8667032</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-clinic-teal mt-1" />
-                  <div>
-                    <p className="font-medium text-gray-900">Email</p>
-                    <p className="text-gray-600">drofeck@gmail.com</p>
                   </div>
                 </div>
               </div>
@@ -155,15 +173,6 @@ export default function About() {
                     <span className="text-gray-600">{item.hours}</span>
                   </div>
                 ))}
-              </div>
-              <div className="mt-6 p-4 bg-clinic-teal/10 rounded-lg">
-                <div className="flex items-center gap-2 text-clinic-teal font-medium">
-                  <Clock className="w-5 h-5" />
-                  <span>Emergency appointments available</span>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  Call us for urgent dental issues - we'll do our best to see you the same day.
-                </p>
               </div>
             </div>
           </div>

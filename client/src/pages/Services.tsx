@@ -4,78 +4,94 @@ import Footer from '../components/clinic/Footer'
 
 const services = [
   {
-    name: 'Routine Checkup & Cleaning',
-    duration: '30 minutes',
-    price: '₪250',
-    description:
-      'Comprehensive oral examination and professional cleaning by our dental hygienist. Includes plaque removal, polishing, and personalized care recommendations.',
-    includes: ['Oral examination', 'Professional cleaning', 'Fluoride treatment', 'Care recommendations'],
+    name: 'Dental Hygiene & Cleaning',
+    category: 'Preventive',
+    duration: '45 minutes',
+    description: 'Professional cleaning to remove plaque and tartar buildup, stain removal, and oral hygiene guidance.',
+    includes: ['Tartar removal', 'Stain removal', 'Polishing', 'Oral hygiene tips'],
+    staff: ['Katy Fridman', 'Shir Formoza'],
   },
   {
     name: 'Teeth Whitening',
+    category: 'Aesthetic',
     duration: '60 minutes',
-    price: '₪800',
-    description:
-      'Professional in-office whitening treatment for a brighter, more confident smile. Safe and effective results in just one session.',
-    includes: ['Consultation', 'Professional whitening gel', 'LED activation', 'Post-care instructions'],
+    description: 'Professional whitening treatment available both in-office and at-home options for a brighter smile.',
+    includes: ['Consultation', 'Professional whitening', 'At-home kit option', 'Follow-up care'],
+    staff: ['Katy Fridman', 'Shir Formoza'],
+  },
+  {
+    name: 'Composite Restorations',
+    category: 'Restorative',
+    duration: '45 minutes',
+    description: 'White composite fillings replacing old amalgam restorations with better aesthetics and durability.',
+    includes: ['Old filling removal', 'Tooth preparation', 'Composite filling', 'Bite adjustment'],
+    staff: ['Dr. Ilan Ofeck', 'Dr. Dan Zitoni'],
+  },
+  {
+    name: 'Composite Veneers',
+    category: 'Aesthetic',
+    duration: '60 minutes',
+    description: 'Modern tooth reshaping technique with pre-visualization of results before treatment begins.',
+    includes: ['Smile design', 'Pre-visualization', 'Veneer application', 'Final polishing'],
+    staff: ['Dr. Ilan Ofeck'],
+  },
+  {
+    name: 'Porcelain Veneers',
+    category: 'Aesthetic',
+    duration: '60 minutes',
+    description: 'Thin porcelain shells to close gaps, whiten, reshape, and dramatically improve smile aesthetics.',
+    includes: ['Consultation', 'Impressions', 'Custom fabrication', 'Bonding'],
+    staff: ['Dr. Ilan Ofeck'],
+  },
+  {
+    name: 'Porcelain Crowns',
+    category: 'Restorative',
+    duration: '60 minutes',
+    description: 'Complete tooth coverage for structural restoration and aesthetic improvement of damaged teeth.',
+    includes: ['Tooth preparation', 'Impressions', 'Temporary crown', 'Permanent crown fitting'],
+    staff: ['Dr. Ilan Ofeck'],
   },
   {
     name: 'Root Canal Treatment',
+    category: 'Endodontics',
     duration: '90 minutes',
-    price: '₪1,500',
-    description:
-      'Expert endodontic treatment by our specialist to save an infected tooth. Modern techniques ensure minimal discomfort and excellent outcomes.',
-    includes: ['Local anesthesia', 'Pulp removal', 'Canal cleaning & shaping', 'Permanent filling'],
+    description: 'Deep cleaning and filling of root canals to treat decay and inflammation, preserving the natural tooth.',
+    includes: ['Diagnosis', 'Anesthesia', 'Canal cleaning', 'Permanent sealing'],
+    staff: ['Dr. Maayan Granit'],
+  },
+  {
+    name: 'Periodontal Surgery',
+    category: 'Surgery',
+    duration: '90 minutes',
+    description: 'Treatment for gum disease, bacterial infections, gum recession, and bone loss around teeth.',
+    includes: ['Assessment', 'Gum treatment', 'Bone grafting if needed', 'Post-op care'],
+    staff: ['Dr. Sahar Nadel'],
   },
   {
     name: 'Dental Implants',
-    duration: 'Multiple visits',
-    price: 'From ₪4,500',
-    description:
-      'State-of-the-art implant placement by our oral surgeon. A permanent solution to replace missing teeth that looks and feels natural.',
-    includes: ['Consultation & planning', '3D imaging', 'Implant surgery', 'Crown placement'],
+    category: 'Surgery',
+    duration: '120 minutes',
+    description: 'Titanium or zirconia implants as artificial tooth roots with over 95% success rates.',
+    includes: ['CT scan planning', 'Implant placement', 'Healing period', 'Crown restoration'],
+    staff: ['Dr. Sahar Nadel'],
   },
   {
-    name: 'Gum Disease Treatment',
-    duration: '45-90 minutes',
-    price: 'From ₪400',
-    description:
-      'Periodontal therapy by our specialist, including natural herbal treatments. We treat all stages of gum disease to restore your oral health.',
-    includes: ['Deep cleaning', 'Scaling & root planing', 'Herbal treatments', 'Maintenance plan'],
-  },
-  {
-    name: 'Pediatric Dentistry',
+    name: 'Botox Treatment',
+    category: 'Aesthetic',
     duration: '30 minutes',
-    price: '₪200',
-    description:
-      'Gentle, child-friendly dental care by our pediatric dentist. We make dental visits fun and stress-free for your little ones.',
-    includes: ['Kid-friendly exam', 'Gentle cleaning', 'Fluoride treatment', 'Parent guidance'],
-  },
-  {
-    name: 'Aesthetic Dentistry',
-    duration: 'Varies',
-    price: 'From ₪1,200',
-    description:
-      'Transform your smile with crowns, veneers, and other cosmetic treatments. Custom-designed for natural, beautiful results.',
-    includes: ['Smile design', 'Porcelain veneers', 'Dental crowns', 'Composite bonding'],
-  },
-  {
-    name: 'Oral Surgery',
-    duration: 'Varies',
-    price: 'From ₪500',
-    description:
-      'Expert surgical procedures by our oral and maxillofacial surgeon. From wisdom teeth removal to complex extractions.',
-    includes: ['Wisdom teeth removal', 'Complex extractions', 'Bone grafting', 'Post-op care'],
-  },
-  {
-    name: 'Anxiety Management',
-    duration: 'Added to any service',
-    price: '₪150',
-    description:
-      'Nitrous oxide (laughing gas) sedation for anxious patients. Relax and feel comfortable during your dental treatment.',
-    includes: ['Nitrous oxide sedation', 'Calm environment', 'Patient monitoring', 'Gentle approach'],
+    description: 'Relaxes jaw muscles to reduce teeth grinding, clenching, and associated pain or headaches.',
+    includes: ['Consultation', 'Treatment planning', 'Botox injection', 'Follow-up'],
+    staff: ['Dr. Ilan Ofeck'],
   },
 ]
+
+const categoryColors: Record<string, string> = {
+  Preventive: 'bg-green-100 text-green-800',
+  Aesthetic: 'bg-purple-100 text-purple-800',
+  Restorative: 'bg-blue-100 text-blue-800',
+  Endodontics: 'bg-orange-100 text-orange-800',
+  Surgery: 'bg-red-100 text-red-800',
+}
 
 export default function Services() {
   return (
@@ -87,8 +103,8 @@ export default function Services() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4">Our Services</h1>
           <p className="text-teal-100 max-w-2xl">
-            Comprehensive dental care with a team of specialists. From routine checkups
-            to advanced procedures, we've got you covered.
+            Dr. Ilan Ofeck's clinic offers comprehensive dental care with a team of
+            specialists. Each treatment is matched with the right professional for optimal results.
           </p>
         </div>
       </section>
@@ -96,7 +112,7 @@ export default function Services() {
       {/* Services List */}
       <section className="py-16 flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8">
+          <div className="grid gap-6">
             {services.map((service) => (
               <div
                 key={service.name}
@@ -104,12 +120,17 @@ export default function Services() {
               >
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">
-                      {service.name}
-                    </h2>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h2 className="text-xl font-bold text-gray-900">
+                        {service.name}
+                      </h2>
+                      <span className={`text-xs px-2 py-1 rounded-full ${categoryColors[service.category]}`}>
+                        {service.category}
+                      </span>
+                    </div>
                     <p className="text-gray-600 mb-4">{service.description}</p>
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 mb-3">
                       {service.includes.map((item) => (
                         <span
                           key={item}
@@ -119,15 +140,17 @@ export default function Services() {
                         </span>
                       ))}
                     </div>
+
+                    <p className="text-sm text-gray-500">
+                      <span className="font-medium">Performed by:</span>{' '}
+                      {service.staff.join(', ')}
+                    </p>
                   </div>
 
-                  <div className="flex md:flex-col items-center md:items-end gap-4 md:gap-2">
+                  <div className="flex md:flex-col items-center md:items-end gap-4 md:gap-3">
                     <div className="flex items-center gap-1 text-gray-600">
                       <Clock className="w-4 h-4" />
                       <span className="text-sm">{service.duration}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-clinic-teal font-bold text-lg">
-                      <span>{service.price}</span>
                     </div>
                     <button
                       onClick={() => {
@@ -151,22 +174,21 @@ export default function Services() {
       {/* Insurance Section */}
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Insurance & Payment</h2>
-          <p className="text-gray-600 mb-4">We work with most major health funds and insurance providers:</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Insurance</h2>
+          <p className="text-gray-600 mb-4">We accept most major insurance providers:</p>
           <div className="flex flex-wrap gap-3">
             {[
               'Maccabi Healthcare',
               'Clalit Health Services',
               'Meuhedet',
               'Leumit Health Fund',
-              'Private Insurance',
-              'Credit Card Payments',
-            ].map((item) => (
+              'Most private insurance',
+            ].map((insurance) => (
               <span
-                key={item}
+                key={insurance}
                 className="bg-white border border-gray-200 px-4 py-2 rounded-lg text-sm text-gray-700"
               >
-                {item}
+                {insurance}
               </span>
             ))}
           </div>

@@ -29,9 +29,10 @@ export function initDatabase() {
     CREATE TABLE IF NOT EXISTS services (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
+      name_hebrew TEXT,
       description TEXT,
       duration_minutes INTEGER NOT NULL,
-      price TEXT NOT NULL,
+      price TEXT,
       category TEXT,
       is_active INTEGER DEFAULT 1,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -51,7 +52,7 @@ export function initDatabase() {
     )
   `)
 
-  // Appointments table (updated with staff_id)
+  // Appointments table (with staff_id)
   db.exec(`
     CREATE TABLE IF NOT EXISTS appointments (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,7 +87,7 @@ export function initDatabase() {
     )
   `)
 
-  // Conversation history table (for context)
+  // Conversation history table
   db.exec(`
     CREATE TABLE IF NOT EXISTS conversations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,70 +112,108 @@ function seedInitialData() {
 
   console.log('Seeding initial data...')
 
-  // Insert staff members
+  // Insert staff members with MOCK SCHEDULES
   const insertStaff = db.prepare(`
     INSERT INTO staff (name, role, specialty, image_url, bio, working_hours)
     VALUES (?, ?, ?, ?, ?, ?)
   `)
 
-  const defaultHours = JSON.stringify({
-    sunday: ['08:00-18:00'],
-    monday: ['08:00-18:00'],
-    tuesday: ['08:00-18:00'],
-    wednesday: ['08:00-18:00'],
-    thursday: ['08:00-18:00'],
-    friday: ['08:00-13:00'],
-    saturday: []
-  })
-
   const staffData = [
     {
       name: 'Dr. Ilan Ofeck',
-      role: 'Lead Dentist',
-      specialty: 'General Dentistry, Prosthodontics',
-      image_url: '/images/staff/dr-ofeck.jpg',
-      bio: 'Graduate of Tel Aviv University School of Dental Medicine with over 30 years of experience. Specializes in general dentistry and prosthodontics with a gentle, patient-focused approach.',
-      working_hours: defaultHours
+      role: 'Chief Dentist & Clinic Director',
+      specialty: 'General Dentistry, Prosthodontics, Aesthetic Dentistry',
+      image_url: '/images/staff/dr-ilan-ofeck.jpg',
+      bio: 'Graduated from Tel Aviv University School of Dental Medicine. Over 30 years of experience in general and aesthetic dentistry.',
+      working_hours: JSON.stringify({
+        sunday: ['08:00-18:00'],
+        monday: ['08:00-18:00'],
+        tuesday: ['08:00-18:00'],
+        wednesday: ['08:00-18:00'],
+        thursday: ['08:00-18:00'],
+        friday: ['08:00-13:00'],
+        saturday: []
+      })
     },
     {
-      name: 'Endodontic Specialist',
-      role: 'Specialist',
-      specialty: 'Endodontics',
-      image_url: '/images/staff/endodontist.jpg',
-      bio: 'Our endodontic specialist handles all root canal treatments with precision and care, using the latest techniques for optimal outcomes.',
-      working_hours: defaultHours
+      name: 'Katy Fridman',
+      role: 'Dental Hygienist',
+      specialty: 'Dental Hygiene, Teeth Cleaning, Patient Education',
+      image_url: '/images/staff/katy-fridman.jpg',
+      bio: 'Licensed dental hygienist specializing in tartar removal and patient education on proper oral care.',
+      working_hours: JSON.stringify({
+        sunday: ['08:00-14:00'],
+        monday: [],
+        tuesday: ['08:00-14:00'],
+        wednesday: [],
+        thursday: ['08:00-14:00'],
+        friday: [],
+        saturday: []
+      })
     },
     {
-      name: 'Periodontal Specialist',
-      role: 'Specialist',
-      specialty: 'Periodontics',
-      image_url: '/images/staff/periodontist.jpg',
-      bio: 'Specializing in gum disease treatment and prevention, including natural herbal therapies for healthier gums.',
-      working_hours: defaultHours
+      name: 'Dr. Sahar Nadel',
+      role: 'Oral & Maxillofacial Surgeon',
+      specialty: 'Oral Surgery, Dental Implants, Periodontal Surgery',
+      image_url: '/images/staff/dr-sahar-nadel.jpg',
+      bio: 'Graduated from Hebrew University School of Dental Medicine (2010). Completed specialized training in oral surgery.',
+      working_hours: JSON.stringify({
+        sunday: [],
+        monday: ['14:00-18:00'],
+        tuesday: [],
+        wednesday: ['14:00-18:00'],
+        thursday: [],
+        friday: [],
+        saturday: []
+      })
     },
     {
-      name: 'Oral Surgeon',
-      role: 'Specialist',
-      specialty: 'Oral Surgery',
-      image_url: '/images/staff/oral-surgeon.jpg',
-      bio: 'Our oral and maxillofacial surgeon performs implants, extractions, and other surgical procedures with expertise.',
-      working_hours: defaultHours
+      name: 'Dr. Maayan Granit',
+      role: 'Endodontist',
+      specialty: 'Root Canal Treatment, Endodontics',
+      image_url: '/images/staff/dr-maayan-granit.jpg',
+      bio: 'Completed endodontics residency at Hebrew University in Jerusalem (2013). Specialist in root canal treatments.',
+      working_hours: JSON.stringify({
+        sunday: [],
+        monday: ['08:00-14:00'],
+        tuesday: [],
+        wednesday: ['08:00-14:00'],
+        thursday: [],
+        friday: ['08:00-13:00'],
+        saturday: []
+      })
     },
     {
-      name: 'Pediatric Dentist',
-      role: 'Specialist',
-      specialty: 'Pediatrics',
-      image_url: '/images/staff/pediatric-dentist.jpg',
-      bio: 'Making dental visits fun for kids! Our pediatric dentist creates positive experiences for young patients.',
-      working_hours: defaultHours
+      name: 'Dr. Dan Zitoni',
+      role: 'Dentist',
+      specialty: 'General Dentistry, Restorations',
+      image_url: '/images/staff/dr-dan-zitoni.jpg',
+      bio: 'General dentist providing comprehensive dental care and restorative treatments.',
+      working_hours: JSON.stringify({
+        sunday: ['14:00-18:00'],
+        monday: [],
+        tuesday: ['14:00-18:00'],
+        wednesday: [],
+        thursday: ['14:00-18:00'],
+        friday: [],
+        saturday: []
+      })
     },
     {
-      name: 'Dental Hygienist',
-      role: 'Hygienist',
-      specialty: 'Dental Hygiene',
-      image_url: '/images/staff/hygienist.jpg',
-      bio: 'Dedicated to patient comfort and education, providing thorough cleanings and personalized oral health guidance.',
-      working_hours: defaultHours
+      name: 'Shir Formoza',
+      role: 'Dental Hygienist',
+      specialty: 'Dental Hygiene, Natural Treatment Approaches',
+      image_url: '/images/staff/shir-formoza.jpg',
+      bio: 'Licensed dental hygienist with a unique approach using natural treatment methods.',
+      working_hours: JSON.stringify({
+        sunday: [],
+        monday: ['08:00-14:00'],
+        tuesday: [],
+        wednesday: ['08:00-14:00'],
+        thursday: [],
+        friday: ['08:00-13:00'],
+        saturday: []
+      })
     }
   ]
 
@@ -184,85 +223,85 @@ function seedInitialData() {
 
   // Insert services
   const insertService = db.prepare(`
-    INSERT INTO services (name, description, duration_minutes, price, category)
+    INSERT INTO services (name, name_hebrew, description, duration_minutes, category)
     VALUES (?, ?, ?, ?, ?)
   `)
 
   const servicesData = [
     {
-      name: 'Routine Checkup & Cleaning',
-      description: 'Comprehensive oral examination and professional cleaning by our dental hygienist. Includes plaque removal, polishing, and personalized care recommendations.',
-      duration_minutes: 30,
-      price: '₪250',
-      category: 'General'
+      name: 'Dental Hygiene & Cleaning',
+      name_hebrew: 'טיפולי שיננית',
+      description: 'Professional cleaning to remove plaque and tartar buildup, stain removal, and oral hygiene guidance.',
+      duration_minutes: 45,
+      category: 'Preventive'
     },
     {
       name: 'Teeth Whitening',
-      description: 'Professional in-office whitening treatment for a brighter, more confident smile. Safe and effective results in just one session.',
+      name_hebrew: 'הלבנת שיניים',
+      description: 'Professional whitening treatment available both in-office and at-home options.',
       duration_minutes: 60,
-      price: '₪800',
-      category: 'Cosmetic'
+      category: 'Aesthetic'
+    },
+    {
+      name: 'Composite Restorations',
+      name_hebrew: 'שחזורים',
+      description: 'White composite fillings replacing old amalgam restorations with better aesthetics.',
+      duration_minutes: 45,
+      category: 'Restorative'
+    },
+    {
+      name: 'Composite Veneers',
+      name_hebrew: 'ציפויי קומפוזיט',
+      description: 'Modern tooth reshaping technique with pre-visualization of results before treatment.',
+      duration_minutes: 60,
+      category: 'Aesthetic'
+    },
+    {
+      name: 'Porcelain Veneers',
+      name_hebrew: 'ציפויי חרסינה',
+      description: 'Thin porcelain shells to close gaps, whiten, reshape, and improve smile aesthetics.',
+      duration_minutes: 60,
+      category: 'Aesthetic'
+    },
+    {
+      name: 'Porcelain Crowns',
+      name_hebrew: 'כתרי חרסינה',
+      description: 'Complete tooth coverage for structural restoration and aesthetic improvement.',
+      duration_minutes: 60,
+      category: 'Restorative'
     },
     {
       name: 'Root Canal Treatment',
-      description: 'Expert endodontic treatment to save an infected tooth. Modern techniques ensure minimal discomfort and excellent outcomes.',
+      name_hebrew: 'טיפולי שורש',
+      description: 'Deep cleaning and filling of root canals to treat decay and inflammation, preserving the tooth.',
       duration_minutes: 90,
-      price: '₪1,500',
-      category: 'Specialist'
+      category: 'Endodontics'
+    },
+    {
+      name: 'Periodontal Surgery',
+      name_hebrew: 'ניתוחי חניכיים',
+      description: 'Treatment for gum disease, bacterial infections, gum recession, and bone loss.',
+      duration_minutes: 90,
+      category: 'Surgery'
     },
     {
       name: 'Dental Implants',
-      description: 'State-of-the-art implant placement by our oral surgeon. A permanent solution to replace missing teeth that looks and feels natural.',
+      name_hebrew: 'שתלים דנטליים',
+      description: 'Titanium or zirconia implants as artificial tooth roots with 95%+ success rates.',
       duration_minutes: 120,
-      price: 'From ₪4,500',
-      category: 'Specialist'
+      category: 'Surgery'
     },
     {
-      name: 'Gum Disease Treatment',
-      description: 'Periodontal therapy including natural herbal treatments. We treat all stages of gum disease to restore your oral health.',
-      duration_minutes: 60,
-      price: 'From ₪400',
-      category: 'Specialist'
-    },
-    {
-      name: 'Pediatric Dentistry',
-      description: 'Gentle, child-friendly dental care. We make dental visits fun and stress-free for your little ones.',
+      name: 'Botox Treatment',
+      name_hebrew: 'בוטוקס',
+      description: 'Relaxes jaw muscles to reduce teeth grinding/clenching and associated pain.',
       duration_minutes: 30,
-      price: '₪200',
-      category: 'General'
-    },
-    {
-      name: 'Aesthetic Dentistry',
-      description: 'Transform your smile with crowns, veneers, and other cosmetic treatments. Custom-designed for natural, beautiful results.',
-      duration_minutes: 60,
-      price: 'From ₪1,200',
-      category: 'Cosmetic'
-    },
-    {
-      name: 'Oral Surgery',
-      description: 'Expert surgical procedures including wisdom teeth removal and complex extractions.',
-      duration_minutes: 60,
-      price: 'From ₪500',
-      category: 'Specialist'
-    },
-    {
-      name: 'Anxiety Management',
-      description: 'Nitrous oxide (laughing gas) sedation for anxious patients. Relax and feel comfortable during your dental treatment.',
-      duration_minutes: 0,
-      price: '₪150',
-      category: 'Add-on'
-    },
-    {
-      name: 'General Consultation',
-      description: 'Meet with Dr. Ofeck to discuss your dental health, treatment options, and create a personalized care plan.',
-      duration_minutes: 20,
-      price: '₪150',
-      category: 'General'
+      category: 'Aesthetic'
     }
   ]
 
   for (const service of servicesData) {
-    insertService.run(service.name, service.description, service.duration_minutes, service.price, service.category)
+    insertService.run(service.name, service.name_hebrew, service.description, service.duration_minutes, service.category)
   }
 
   // Create staff-services relationships
@@ -270,34 +309,35 @@ function seedInitialData() {
     INSERT INTO staff_services (staff_id, service_id) VALUES (?, ?)
   `)
 
-  // Staff ID mapping (based on insert order):
-  // 1: Dr. Ofeck, 2: Endodontist, 3: Periodontist, 4: Oral Surgeon, 5: Pediatric, 6: Hygienist
-
-  // Service ID mapping:
-  // 1: Checkup, 2: Whitening, 3: Root Canal, 4: Implants, 5: Gum Disease
-  // 6: Pediatric, 7: Aesthetic, 8: Oral Surgery, 9: Anxiety, 10: Consultation
+  // Staff IDs: 1=Ofeck, 2=Katy, 3=Sahar, 4=Maayan, 5=Dan, 6=Shir
+  // Service IDs: 1=Cleaning, 2=Whitening, 3=Composite Rest, 4=Composite Veneer,
+  //              5=Porcelain Veneer, 6=Porcelain Crown, 7=Root Canal, 8=Perio Surgery, 9=Implants, 10=Botox
 
   const staffServiceRelations = [
-    // Dr. Ofeck (1) - General Consultation, Aesthetic
-    { staffId: 1, serviceId: 7 },  // Aesthetic Dentistry
-    { staffId: 1, serviceId: 10 }, // General Consultation
+    // Katy Fridman (2) - Hygienist
+    { staffId: 2, serviceId: 1 },  // Dental Hygiene & Cleaning
+    { staffId: 2, serviceId: 2 },  // Teeth Whitening
 
-    // Endodontist (2) - Root Canal
-    { staffId: 2, serviceId: 3 },  // Root Canal Treatment
-
-    // Periodontist (3) - Gum Disease
-    { staffId: 3, serviceId: 5 },  // Gum Disease Treatment
-
-    // Oral Surgeon (4) - Implants, Oral Surgery
-    { staffId: 4, serviceId: 4 },  // Dental Implants
-    { staffId: 4, serviceId: 8 },  // Oral Surgery
-
-    // Pediatric Dentist (5) - Pediatric Dentistry
-    { staffId: 5, serviceId: 6 },  // Pediatric Dentistry
-
-    // Hygienist (6) - Checkup, Whitening
-    { staffId: 6, serviceId: 1 },  // Routine Checkup & Cleaning
+    // Shir Formoza (6) - Hygienist
+    { staffId: 6, serviceId: 1 },  // Dental Hygiene & Cleaning
     { staffId: 6, serviceId: 2 },  // Teeth Whitening
+
+    // Dr. Ilan Ofeck (1) - Chief Dentist
+    { staffId: 1, serviceId: 3 },  // Composite Restorations
+    { staffId: 1, serviceId: 4 },  // Composite Veneers
+    { staffId: 1, serviceId: 5 },  // Porcelain Veneers
+    { staffId: 1, serviceId: 6 },  // Porcelain Crowns
+    { staffId: 1, serviceId: 10 }, // Botox Treatment
+
+    // Dr. Dan Zitoni (5) - Dentist
+    { staffId: 5, serviceId: 3 },  // Composite Restorations
+
+    // Dr. Maayan Granit (4) - Endodontist
+    { staffId: 4, serviceId: 7 },  // Root Canal Treatment
+
+    // Dr. Sahar Nadel (3) - Oral Surgeon
+    { staffId: 3, serviceId: 8 },  // Periodontal Surgery
+    { staffId: 3, serviceId: 9 },  // Dental Implants
   ]
 
   for (const relation of staffServiceRelations) {

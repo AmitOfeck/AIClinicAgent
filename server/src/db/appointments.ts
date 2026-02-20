@@ -18,7 +18,7 @@ export interface Appointment {
 
 export interface AppointmentWithDetails extends Appointment {
   staff_name?: string
-  staff_specialty?: string
+  staff_role?: string
 }
 
 export interface CreateAppointmentInput {
@@ -64,7 +64,7 @@ export function getAppointmentById(id: number): Appointment | undefined {
 
 export function getAppointmentWithDetails(id: number): AppointmentWithDetails | undefined {
   const stmt = db.prepare(`
-    SELECT a.*, s.name as staff_name, s.specialty as staff_specialty
+    SELECT a.*, s.name as staff_name, s.role as staff_role
     FROM appointments a
     LEFT JOIN staff s ON a.staff_id = s.id
     WHERE a.id = ?
@@ -109,20 +109,11 @@ export function getPendingAppointments(): Appointment[] {
 
 export function getPendingAppointmentsWithDetails(): AppointmentWithDetails[] {
   const stmt = db.prepare(`
-    SELECT a.*, s.name as staff_name, s.specialty as staff_specialty
+    SELECT a.*, s.name as staff_name, s.role as staff_role
     FROM appointments a
     LEFT JOIN staff s ON a.staff_id = s.id
     WHERE a.status = 'PENDING'
     ORDER BY a.created_at DESC
   `)
   return stmt.all() as AppointmentWithDetails[]
-}
-
-export function getAppointmentsByStaff(staffId: number): Appointment[] {
-  const stmt = db.prepare(`
-    SELECT * FROM appointments
-    WHERE staff_id = ?
-    ORDER BY date_time DESC
-  `)
-  return stmt.all(staffId) as Appointment[]
 }

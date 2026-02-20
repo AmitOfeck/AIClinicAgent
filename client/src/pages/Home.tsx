@@ -1,36 +1,38 @@
 import { Link } from 'react-router-dom'
-import { Calendar, Shield, Heart, Star, ArrowRight, CheckCircle, Smile } from 'lucide-react'
+import { Calendar, Shield, Heart, Star, ArrowRight, CheckCircle, Users } from 'lucide-react'
 import Navbar from '../components/clinic/Navbar'
 import Footer from '../components/clinic/Footer'
 
 const features = [
   {
-    icon: Calendar,
-    title: 'Easy Online Booking',
-    description: 'Book your appointment instantly with our AI assistant',
-  },
-  {
     icon: Shield,
     title: '30+ Years Experience',
-    description: 'Trusted dental care since 1994',
+    description: 'Dr. Ilan Ofeck brings three decades of expertise in aesthetic and restorative dentistry',
+  },
+  {
+    icon: Users,
+    title: 'Specialist Team',
+    description: 'Dedicated specialists for implants, endodontics, and periodontal care',
   },
   {
     icon: Heart,
-    title: 'Anxiety-Free Care',
-    description: 'Nitrous oxide available for nervous patients',
+    title: 'Patient-Centered Care',
+    description: 'Personalized treatment plans with focus on comfort and results',
   },
   {
-    icon: Star,
-    title: 'Expert Specialists',
-    description: 'Full team of dental specialists on-site',
+    icon: Calendar,
+    title: 'Smart Booking',
+    description: 'AI assistant matches you with the right specialist instantly',
   },
 ]
 
-const services = [
-  { name: 'Routine Checkup & Cleaning', price: '₪250' },
-  { name: 'Teeth Whitening', price: '₪800' },
-  { name: 'Root Canal Treatment', price: '₪1,500' },
-  { name: 'Dental Implants', price: '₪4,500' },
+const highlightedServices = [
+  'Porcelain Veneers & Smile Design',
+  'Dental Implants',
+  'Root Canal Treatment',
+  'Teeth Whitening',
+  'Composite Restorations',
+  'Periodontal Surgery',
 ]
 
 export default function Home() {
@@ -42,14 +44,15 @@ export default function Home() {
       <section className="relative bg-gradient-to-br from-clinic-teal to-clinic-teal-dark text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="max-w-2xl">
+            <p className="text-teal-200 font-medium mb-3">Dr. Ilan Ofeck Dental Clinic</p>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Dr. Ilan Ofeck
+              Aesthetic Dentistry
               <br />
-              <span className="text-teal-200">Dental Clinic</span>
+              <span className="text-teal-200">in Tel Aviv</span>
             </h1>
             <p className="text-lg text-teal-100 mb-8">
-              Over 30 years of excellence in dental care. Experience compassionate,
-              professional treatment with our expert team in the heart of Tel Aviv.
+              Over 30 years of creating beautiful smiles. Specializing in veneers,
+              implants, and comprehensive dental care with a team of dedicated specialists.
             </p>
             <div className="flex flex-wrap gap-4">
               <button
@@ -59,11 +62,11 @@ export default function Home() {
                 }}
                 className="bg-white text-clinic-teal hover:bg-teal-50 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"
               >
-                Book with AI Assistant
+                Book Appointment
                 <ArrowRight className="w-4 h-4" />
               </button>
               <a
-                href="tel:03-5467032"
+                href="tel:+97235467032"
                 className="border border-white/30 hover:bg-white/10 px-6 py-3 rounded-lg font-semibold transition-colors"
               >
                 Call 03-5467032
@@ -98,24 +101,21 @@ export default function Home() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Services</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Treatments</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Comprehensive dental care for the whole family - from routine checkups
-              to advanced procedures, all under one roof.
+              Comprehensive dental care from preventive hygiene to complex surgical procedures,
+              each performed by the appropriate specialist.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-            {services.map((service) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {highlightedServices.map((service) => (
               <div
-                key={service.name}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                key={service}
+                className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg"
               >
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-clinic-teal" />
-                  <span className="font-medium text-gray-900">{service.name}</span>
-                </div>
-                <span className="text-clinic-teal font-semibold">{service.price}</span>
+                <CheckCircle className="w-5 h-5 text-clinic-teal flex-shrink-0" />
+                <span className="font-medium text-gray-900">{service}</span>
               </div>
             ))}
           </div>
@@ -132,46 +132,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Anxiety Free Section */}
-      <section className="py-16 bg-teal-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="flex-1">
-              <div className="w-16 h-16 bg-clinic-teal/10 rounded-full flex items-center justify-center mb-4">
-                <Smile className="w-8 h-8 text-clinic-teal" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Nervous About Dental Visits?
-              </h2>
-              <p className="text-gray-600 mb-4">
-                We understand dental anxiety. Our clinic offers nitrous oxide (laughing gas)
-                and a calming environment to make your experience as comfortable as possible.
-              </p>
-              <p className="text-gray-600">
-                Dr. Ofeck and his team specialize in treating anxious patients with care
-                and patience. You're in good hands.
-              </p>
-            </div>
-            <div className="flex-1 text-center">
-              <div className="bg-white p-8 rounded-2xl shadow-lg">
-                <p className="text-5xl mb-4">😌</p>
-                <p className="text-lg font-medium text-gray-900">Relaxed Atmosphere</p>
-                <p className="text-gray-600">Modern techniques for pain-free treatment</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-16 bg-clinic-teal">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Book Your Appointment?
+            Ready to Start Your Treatment?
           </h2>
           <p className="text-teal-100 mb-8 max-w-2xl mx-auto">
-            Chat with our AI assistant to find the perfect appointment time, or
-            give us a call. We're located in Tel Aviv, Bazal Street 35.
+            Chat with our AI assistant to find the right specialist and book your appointment,
+            or call us directly at 03-5467032.
           </p>
           <button
             onClick={() => {
@@ -180,7 +149,7 @@ export default function Home() {
             }}
             className="bg-white text-clinic-teal hover:bg-teal-50 px-8 py-3 rounded-lg font-semibold transition-colors"
           >
-            Start Chat Now
+            Book Now
           </button>
         </div>
       </section>

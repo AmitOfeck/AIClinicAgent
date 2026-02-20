@@ -10,11 +10,11 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🦷</span>
               <span className="font-bold text-xl text-white">
-                Dr. Ilan Ofeck
+                Dr. Ofeck's Dental
               </span>
             </div>
             <p className="text-sm text-gray-400">
-              Over 30 years of professional dental care in Tel Aviv.
+              Professional dental care in a modern, comfortable environment.
               Your smile is our priority.
             </p>
           </div>
@@ -25,7 +25,7 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-clinic-teal" />
-                Bazal Street 35, Tel Aviv
+                123 Smile Street, Tel Aviv
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-clinic-teal" />
@@ -33,7 +33,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-clinic-teal" />
-                drofeck@gmail.com
+                info@dr-ofeck.co.il
               </li>
             </ul>
           </div>
@@ -44,7 +44,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-clinic-teal" />
-                Sun–Thu: 8AM – 6PM
+                Sun–Thu: 8AM – 5PM
               </li>
               <li className="pl-6">Fri: 8AM – 1PM</li>
               <li className="pl-6">Sat: Closed</li>
@@ -66,8 +66,8 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://dr-ofeck.co.il" target="_blank" rel="noopener noreferrer" className="hover:text-clinic-teal transition-colors">
-                  Hebrew Website
+                <a href="#" className="hover:text-clinic-teal transition-colors">
+                  Insurance
                 </a>
               </li>
             </ul>
@@ -75,7 +75,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} Dr. Ilan Ofeck Dental Clinic. All rights reserved.
+          © {new Date().getFullYear()} Dr. Ofeck's Dental Clinic. All rights reserved.
         </div>
       </div>
     </footer>

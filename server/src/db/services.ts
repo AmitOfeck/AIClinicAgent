@@ -1,12 +1,12 @@
 import { db } from './index.js'
-import { Staff } from './staff.js'
 
 export interface Service {
   id: number
   name: string
+  name_hebrew: string | null
   description: string | null
   duration_minutes: number
-  price: string
+  price: string | null
   category: string | null
   is_active: number
   created_at: string
@@ -73,7 +73,7 @@ export function findServiceByKeywords(keywords: string): Service | undefined {
 
   if (service) return service
 
-  // Try partial match
+  // Try partial match on English name
   service = db.prepare(`
     SELECT * FROM services WHERE name LIKE ? AND is_active = 1
   `).get(`%${keywords}%`) as Service | undefined
@@ -82,35 +82,29 @@ export function findServiceByKeywords(keywords: string): Service | undefined {
 
   // Try matching by common keywords
   const keywordMap: Record<string, string> = {
-    'cleaning': 'Routine Checkup & Cleaning',
-    'checkup': 'Routine Checkup & Cleaning',
-    'check up': 'Routine Checkup & Cleaning',
+    'cleaning': 'Dental Hygiene & Cleaning',
+    'hygiene': 'Dental Hygiene & Cleaning',
+    'checkup': 'Dental Hygiene & Cleaning',
     'whitening': 'Teeth Whitening',
     'whiten': 'Teeth Whitening',
+    'bleaching': 'Teeth Whitening',
+    'filling': 'Composite Restorations',
+    'restoration': 'Composite Restorations',
+    'composite veneer': 'Composite Veneers',
+    'porcelain veneer': 'Porcelain Veneers',
+    'veneer': 'Porcelain Veneers',
+    'laminate': 'Porcelain Veneers',
+    'crown': 'Porcelain Crowns',
     'root canal': 'Root Canal Treatment',
     'endodontic': 'Root Canal Treatment',
+    'gum': 'Periodontal Surgery',
+    'periodontal': 'Periodontal Surgery',
+    'gum surgery': 'Periodontal Surgery',
     'implant': 'Dental Implants',
     'implants': 'Dental Implants',
-    'gum': 'Gum Disease Treatment',
-    'periodontal': 'Gum Disease Treatment',
-    'gums': 'Gum Disease Treatment',
-    'kids': 'Pediatric Dentistry',
-    'children': 'Pediatric Dentistry',
-    'child': 'Pediatric Dentistry',
-    'pediatric': 'Pediatric Dentistry',
-    'cosmetic': 'Aesthetic Dentistry',
-    'aesthetic': 'Aesthetic Dentistry',
-    'veneer': 'Aesthetic Dentistry',
-    'crown': 'Aesthetic Dentistry',
-    'surgery': 'Oral Surgery',
-    'extraction': 'Oral Surgery',
-    'wisdom': 'Oral Surgery',
-    'anxiety': 'Anxiety Management',
-    'nervous': 'Anxiety Management',
-    'sedation': 'Anxiety Management',
-    'laughing gas': 'Anxiety Management',
-    'consultation': 'General Consultation',
-    'consult': 'General Consultation',
+    'botox': 'Botox Treatment',
+    'grinding': 'Botox Treatment',
+    'clenching': 'Botox Treatment',
   }
 
   const lowerKeywords = keywords.toLowerCase()

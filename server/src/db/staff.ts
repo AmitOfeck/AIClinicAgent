@@ -29,11 +29,10 @@ export function getStaffById(id: number): Staff | undefined {
   `).get(id) as Staff | undefined
 }
 
-export function getStaffBySpecialty(specialty: string): Staff[] {
+export function getStaffByName(name: string): Staff | undefined {
   return db.prepare(`
-    SELECT * FROM staff
-    WHERE specialty LIKE ? AND is_active = 1
-  `).all(`%${specialty}%`) as Staff[]
+    SELECT * FROM staff WHERE name LIKE ? AND is_active = 1
+  `).get(`%${name}%`) as Staff | undefined
 }
 
 export function getStaffForService(serviceName: string): Staff[] {
@@ -87,7 +86,6 @@ export function isStaffAvailable(staffId: number, dayOfWeek: string, time: strin
   const dayHours = hours[dayOfWeek.toLowerCase()]
   if (!dayHours || dayHours.length === 0) return false
 
-  // Parse time slots like "08:00-18:00"
   for (const slot of dayHours) {
     const [start, end] = slot.split('-')
     if (time >= start && time < end) {
