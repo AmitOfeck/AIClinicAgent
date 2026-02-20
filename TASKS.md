@@ -88,7 +88,50 @@
 
 ## Pending Tasks
 
-### Phase 6: End-to-End Testing (Next)
+### Phase 6: Frontend Refactor & Improvements (Current)
+
+See [FRONTEND-REFACTOR-PLAN.md](./FRONTEND-REFACTOR-PLAN.md) for detailed implementation plan.
+See [STANDARDS-FRONTEND.md](./STANDARDS-FRONTEND.md) for coding standards.
+
+#### 6.1 Foundation
+- [ ] Create folder structure (types/, constants/, hooks/)
+- [ ] Create `types/clinic.ts` - Service, TeamMember, ClinicInfo
+- [ ] Create `types/chat.ts` - ChatMessage, ToolInvocation
+- [ ] Create `constants/clinic.ts` - Clinic info, hours, location
+- [ ] Create `constants/services.ts` - Services array, category colors
+- [ ] Create `constants/team.ts` - Team members, stats
+
+#### 6.2 UI Component Library
+- [ ] Create `Button` component (variants, sizes, icons)
+- [ ] Create `Card` component (variants, padding, hover)
+- [ ] Create `Badge` component (colors, sizes)
+- [ ] Create `Section` component (backgrounds, padding)
+- [ ] Create `Container` component (max-widths)
+
+#### 6.3 Home Page Redesign
+- [ ] Create `HeroSection` - Impressive hero with CTAs
+- [ ] Create `FeaturesSection` - 4 feature cards
+- [ ] Create `VideoSection` - YouTube embed (REp2xUsrUQA)
+- [ ] Create `LocationSection` - Google Maps + contact info
+- [ ] Create `ServicesPreview` - 6 highlighted services
+- [ ] Create `CTASection` - Final call-to-action
+
+#### 6.4 Component Refactoring
+- [ ] Refactor all components to arrow functions
+- [ ] Extract inline handlers to named functions
+- [ ] Move data from components to constants
+- [ ] Add proper TypeScript types
+- [ ] Refactor ChatWidget folder structure
+
+#### 6.5 Visual Enhancements
+- [ ] Add clinic interior images
+- [ ] Add smooth animations and transitions
+- [ ] Improve gradient backgrounds
+- [ ] Test responsive design (mobile, tablet, desktop)
+
+---
+
+### Phase 7: End-to-End Testing
 - [ ] Test chat without API key (graceful error)
 - [ ] Test complete booking flow in browser
 - [ ] Test self-correction (book taken slot → suggest alternatives)
@@ -99,7 +142,7 @@
 - [ ] Verify staff images display correctly
 - [ ] Test different services route to correct specialist
 
-### Phase 7: Google Calendar Integration
+### Phase 8: Google Calendar Integration
 - [ ] Set up Google Cloud project
 - [ ] Create service account with Calendar API access
 - [ ] Share clinic calendar with service account email
@@ -107,14 +150,14 @@
 - [ ] Test real availability checking
 - [ ] Test calendar event creation on approval
 
-### Phase 8: Email Integration
+### Phase 9: Email Integration
 - [ ] Set up Resend account
 - [ ] Verify domain for sending
 - [ ] Add RESEND_API_KEY to environment
 - [ ] Test confirmation emails
 - [ ] Test decline emails
 
-### Phase 9: Deployment
+### Phase 10: Deployment
 - [ ] Deploy client to Vercel
 - [ ] Deploy server to Railway/Render
 - [ ] Configure production environment variables
@@ -122,7 +165,7 @@
 - [ ] Update CORS for production domain
 - [ ] Final production testing
 
-### Phase 10: Demo & Documentation
+### Phase 11: Demo & Documentation
 - [ ] Record demo video showing:
   - Website tour (home, services, about)
   - Booking flow with tool visualization
