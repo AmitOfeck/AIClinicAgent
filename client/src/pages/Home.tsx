@@ -63,10 +63,10 @@ export default function Home() {
                 <ArrowRight className="w-4 h-4" />
               </button>
               <a
-                href="tel:+15551234567"
+                href="tel:+97235467032"
                 className="border border-white/30 hover:bg-white/10 px-6 py-3 rounded-lg font-semibold transition-colors"
               >
-                Call (555) 123-4567
+                Call 03-5467032
               </a>
             </div>
           </div>

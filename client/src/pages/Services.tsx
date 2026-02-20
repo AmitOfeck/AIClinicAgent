@@ -1,57 +1,97 @@
-import { Clock, DollarSign } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import Navbar from '../components/clinic/Navbar'
 import Footer from '../components/clinic/Footer'
 
 const services = [
   {
-    name: 'Routine Checkup & Cleaning',
-    duration: '30 minutes',
-    price: '$80',
-    description:
-      'Comprehensive oral examination and professional cleaning to maintain your dental health. Includes X-rays if needed and personalized care recommendations.',
-    includes: ['Oral examination', 'Professional cleaning', 'Fluoride treatment', 'Care recommendations'],
+    name: 'Dental Hygiene & Cleaning',
+    category: 'Preventive',
+    duration: '45 minutes',
+    description: 'Professional cleaning to remove plaque and tartar buildup, stain removal, and oral hygiene guidance.',
+    includes: ['Tartar removal', 'Stain removal', 'Polishing', 'Oral hygiene tips'],
+    staff: ['Katy Fridman', 'Shir Formoza'],
   },
   {
     name: 'Teeth Whitening',
+    category: 'Aesthetic',
     duration: '60 minutes',
-    price: '$250',
-    description:
-      'Professional in-office whitening treatment for a brighter, more confident smile. See results in just one session.',
-    includes: ['Consultation', 'Professional whitening gel', 'LED activation', 'Post-care kit'],
+    description: 'Professional whitening treatment available both in-office and at-home options for a brighter smile.',
+    includes: ['Consultation', 'Professional whitening', 'At-home kit option', 'Follow-up care'],
+    staff: ['Katy Fridman', 'Shir Formoza'],
   },
   {
-    name: 'Dental Implant Consultation',
+    name: 'Composite Restorations',
+    category: 'Restorative',
     duration: '45 minutes',
-    price: '$120',
-    description:
-      'Evaluation and planning for dental implants, including X-rays and discussion of treatment options.',
-    includes: ['Comprehensive exam', 'Digital X-rays', 'Treatment planning', 'Cost estimate'],
+    description: 'White composite fillings replacing old amalgam restorations with better aesthetics and durability.',
+    includes: ['Old filling removal', 'Tooth preparation', 'Composite filling', 'Bite adjustment'],
+    staff: ['Dr. Ilan Ofeck', 'Dr. Dan Zitoni'],
+  },
+  {
+    name: 'Composite Veneers',
+    category: 'Aesthetic',
+    duration: '60 minutes',
+    description: 'Modern tooth reshaping technique with pre-visualization of results before treatment begins.',
+    includes: ['Smile design', 'Pre-visualization', 'Veneer application', 'Final polishing'],
+    staff: ['Dr. Ilan Ofeck'],
+  },
+  {
+    name: 'Porcelain Veneers',
+    category: 'Aesthetic',
+    duration: '60 minutes',
+    description: 'Thin porcelain shells to close gaps, whiten, reshape, and dramatically improve smile aesthetics.',
+    includes: ['Consultation', 'Impressions', 'Custom fabrication', 'Bonding'],
+    staff: ['Dr. Ilan Ofeck'],
+  },
+  {
+    name: 'Porcelain Crowns',
+    category: 'Restorative',
+    duration: '60 minutes',
+    description: 'Complete tooth coverage for structural restoration and aesthetic improvement of damaged teeth.',
+    includes: ['Tooth preparation', 'Impressions', 'Temporary crown', 'Permanent crown fitting'],
+    staff: ['Dr. Ilan Ofeck'],
   },
   {
     name: 'Root Canal Treatment',
+    category: 'Endodontics',
     duration: '90 minutes',
-    price: '$600',
-    description:
-      'Treatment to save an infected tooth by removing the damaged pulp and sealing the canal. Modern techniques ensure minimal discomfort.',
-    includes: ['Local anesthesia', 'Pulp removal', 'Canal cleaning', 'Permanent filling'],
+    description: 'Deep cleaning and filling of root canals to treat decay and inflammation, preserving the natural tooth.',
+    includes: ['Diagnosis', 'Anesthesia', 'Canal cleaning', 'Permanent sealing'],
+    staff: ['Dr. Maayan Granit'],
   },
   {
-    name: 'Orthodontic Consultation',
-    duration: '45 minutes',
-    price: '$100',
-    description:
-      'Assessment for braces or clear aligners to straighten your teeth. We offer both traditional braces and Invisalign.',
-    includes: ['Bite analysis', 'Digital impressions', 'Treatment options', 'Timeline & cost'],
+    name: 'Periodontal Surgery',
+    category: 'Surgery',
+    duration: '90 minutes',
+    description: 'Treatment for gum disease, bacterial infections, gum recession, and bone loss around teeth.',
+    includes: ['Assessment', 'Gum treatment', 'Bone grafting if needed', 'Post-op care'],
+    staff: ['Dr. Sahar Nadel'],
   },
   {
-    name: 'Emergency Dental Care',
-    duration: 'Varies',
-    price: 'Starting at $150',
-    description:
-      'Immediate care for dental emergencies like severe pain, broken teeth, or infections. Same-day appointments available.',
-    includes: ['Pain relief', 'Diagnosis', 'Immediate treatment', 'Follow-up plan'],
+    name: 'Dental Implants',
+    category: 'Surgery',
+    duration: '120 minutes',
+    description: 'Titanium or zirconia implants as artificial tooth roots with over 95% success rates.',
+    includes: ['CT scan planning', 'Implant placement', 'Healing period', 'Crown restoration'],
+    staff: ['Dr. Sahar Nadel'],
+  },
+  {
+    name: 'Botox Treatment',
+    category: 'Aesthetic',
+    duration: '30 minutes',
+    description: 'Relaxes jaw muscles to reduce teeth grinding, clenching, and associated pain or headaches.',
+    includes: ['Consultation', 'Treatment planning', 'Botox injection', 'Follow-up'],
+    staff: ['Dr. Ilan Ofeck'],
   },
 ]
+
+const categoryColors: Record<string, string> = {
+  Preventive: 'bg-green-100 text-green-800',
+  Aesthetic: 'bg-purple-100 text-purple-800',
+  Restorative: 'bg-blue-100 text-blue-800',
+  Endodontics: 'bg-orange-100 text-orange-800',
+  Surgery: 'bg-red-100 text-red-800',
+}
 
 export default function Services() {
   return (
@@ -63,8 +103,8 @@ export default function Services() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4">Our Services</h1>
           <p className="text-teal-100 max-w-2xl">
-            We offer a comprehensive range of dental services using the latest
-            technology and techniques. Your comfort and care are our top priorities.
+            Dr. Ilan Ofeck's clinic offers comprehensive dental care with a team of
+            specialists. Each treatment is matched with the right professional for optimal results.
           </p>
         </div>
       </section>
@@ -72,7 +112,7 @@ export default function Services() {
       {/* Services List */}
       <section className="py-16 flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8">
+          <div className="grid gap-6">
             {services.map((service) => (
               <div
                 key={service.name}
@@ -80,12 +120,17 @@ export default function Services() {
               >
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">
-                      {service.name}
-                    </h2>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h2 className="text-xl font-bold text-gray-900">
+                        {service.name}
+                      </h2>
+                      <span className={`text-xs px-2 py-1 rounded-full ${categoryColors[service.category]}`}>
+                        {service.category}
+                      </span>
+                    </div>
                     <p className="text-gray-600 mb-4">{service.description}</p>
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 mb-3">
                       {service.includes.map((item) => (
                         <span
                           key={item}
@@ -95,16 +140,17 @@ export default function Services() {
                         </span>
                       ))}
                     </div>
+
+                    <p className="text-sm text-gray-500">
+                      <span className="font-medium">Performed by:</span>{' '}
+                      {service.staff.join(', ')}
+                    </p>
                   </div>
 
-                  <div className="flex md:flex-col items-center md:items-end gap-4 md:gap-2">
+                  <div className="flex md:flex-col items-center md:items-end gap-4 md:gap-3">
                     <div className="flex items-center gap-1 text-gray-600">
                       <Clock className="w-4 h-4" />
                       <span className="text-sm">{service.duration}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-clinic-teal font-bold text-lg">
-                      <DollarSign className="w-4 h-4" />
-                      <span>{service.price.replace('$', '')}</span>
                     </div>
                     <button
                       onClick={() => {

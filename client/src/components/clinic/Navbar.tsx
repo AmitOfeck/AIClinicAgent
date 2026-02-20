@@ -37,10 +37,10 @@ export default function Navbar() {
               </Link>
             ))}
             <a
-              href="tel:+15551234567"
+              href="tel:+97235467032"
               className="bg-clinic-teal hover:bg-clinic-teal-dark text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             >
-              (555) 123-4567
+              03-5467032
             </a>
           </div>
         </div>

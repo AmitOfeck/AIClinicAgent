@@ -1,31 +1,55 @@
-import { Award, Users, Heart, MapPin, Phone, Mail } from 'lucide-react'
+import { Award, Users, Heart, MapPin, Phone } from 'lucide-react'
 import Navbar from '../components/clinic/Navbar'
 import Footer from '../components/clinic/Footer'
 
 const team = [
   {
-    name: 'Dr. Amit Opek',
-    role: 'Lead Dentist & Founder',
-    bio: 'Dr. Opek has over 15 years of experience in general and cosmetic dentistry. He graduated from Tel Aviv University School of Dental Medicine and is passionate about creating beautiful, healthy smiles.',
-    image: '👨‍⚕️',
+    name: 'Dr. Ilan Ofeck',
+    role: 'Chief Dentist & Clinic Director',
+    bio: 'Graduated from Tel Aviv University School of Dental Medicine. Over 30 years of experience in general and aesthetic dentistry, specializing in prosthodontics and smile design.',
+    image: '/images/staff/dr-ilan-ofeck.jpg',
+    services: ['Restorations', 'Veneers', 'Crowns', 'Botox'],
   },
   {
-    name: 'Dr. Sarah Cohen',
-    role: 'Orthodontist',
-    bio: 'Specializing in Invisalign and traditional braces, Dr. Cohen helps patients of all ages achieve their dream smiles. She completed her orthodontic residency at Hebrew University.',
-    image: '👩‍⚕️',
-  },
-  {
-    name: 'Maya Levy',
+    name: 'Katy Fridman',
     role: 'Dental Hygienist',
-    bio: 'Maya is dedicated to patient comfort and education. With her gentle approach, she makes every cleaning a pleasant experience while ensuring optimal oral health.',
-    image: '👩‍⚕️',
+    bio: 'Licensed dental hygienist specializing in tartar removal and patient education on proper oral care. Known for her gentle and thorough approach.',
+    image: '/images/staff/katy-fridman.jpg',
+    services: ['Dental Hygiene', 'Teeth Whitening'],
+  },
+  {
+    name: 'Dr. Sahar Nadel',
+    role: 'Oral & Maxillofacial Surgeon',
+    bio: 'Graduated from Hebrew University School of Dental Medicine (2010). Completed specialized training in oral surgery, focusing on implants and periodontal procedures.',
+    image: '/images/staff/dr-sahar-nadel.jpg',
+    services: ['Dental Implants', 'Periodontal Surgery'],
+  },
+  {
+    name: 'Dr. Maayan Granit',
+    role: 'Endodontist',
+    bio: 'Completed endodontics residency at Hebrew University in Jerusalem (2013). Specialist in root canal treatments using advanced techniques for patient comfort.',
+    image: '/images/staff/dr-maayan-granit.jpg',
+    services: ['Root Canal Treatment'],
+  },
+  {
+    name: 'Dr. Dan Zitoni',
+    role: 'Dentist',
+    bio: 'General dentist providing comprehensive dental care and restorative treatments. Focused on patient comfort and quality results.',
+    image: '/images/staff/dr-dan-zitoni.jpg',
+    services: ['Composite Restorations'],
+  },
+  {
+    name: 'Shir Formoza',
+    role: 'Dental Hygienist',
+    bio: 'Licensed dental hygienist with a unique approach using natural treatment methods. Dedicated to patient education and preventive care.',
+    image: '/images/staff/shir-formoza.jpg',
+    services: ['Dental Hygiene', 'Teeth Whitening'],
   },
 ]
 
 const stats = [
-  { icon: Users, value: '5,000+', label: 'Happy Patients' },
-  { icon: Award, value: '15+', label: 'Years Experience' },
+  { icon: Users, value: '10,000+', label: 'Happy Patients' },
+  { icon: Award, value: '30+', label: 'Years Experience' },
   { icon: Heart, value: '98%', label: 'Patient Satisfaction' },
 ]
 
@@ -39,9 +63,9 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4">About Our Clinic</h1>
           <p className="text-teal-100 max-w-2xl">
-            Since 2009, we've been providing exceptional dental care to our
-            community. Our mission is to make every patient feel comfortable
-            while delivering the highest quality treatment.
+            Dr. Ilan Ofeck's dental clinic has been providing exceptional care in Tel Aviv
+            for over 30 years. Our team of specialists ensures every patient receives
+            personalized treatment with the latest techniques.
           </p>
         </div>
       </section>
@@ -70,18 +94,39 @@ export default function About() {
             Meet Our Team
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {team.map((member) => (
               <div
                 key={member.name}
-                className="bg-white border border-gray-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
+                className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
               >
-                <div className="w-24 h-24 bg-clinic-teal/10 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
-                  {member.image}
+                <div className="h-48 bg-clinic-teal/10 flex items-center justify-center">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                      target.parentElement!.innerHTML = '<span class="text-6xl">👨‍⚕️</span>'
+                    }}
+                  />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">{member.name}</h3>
-                <p className="text-clinic-teal font-medium mb-3">{member.role}</p>
-                <p className="text-gray-600 text-sm">{member.bio}</p>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900">{member.name}</h3>
+                  <p className="text-clinic-teal font-medium mb-3">{member.role}</p>
+                  <p className="text-gray-600 text-sm mb-3">{member.bio}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {member.services.map((service) => (
+                      <span
+                        key={service}
+                        className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded"
+                      >
+                        {service}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -99,21 +144,14 @@ export default function About() {
                   <MapPin className="w-5 h-5 text-clinic-teal mt-1" />
                   <div>
                     <p className="font-medium text-gray-900">Address</p>
-                    <p className="text-gray-600">123 Smile Street, Tel Aviv, Israel</p>
+                    <p className="text-gray-600">Basel 35, Tel Aviv</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Phone className="w-5 h-5 text-clinic-teal mt-1" />
                   <div>
                     <p className="font-medium text-gray-900">Phone</p>
-                    <p className="text-gray-600">(555) 123-4567</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-clinic-teal mt-1" />
-                  <div>
-                    <p className="font-medium text-gray-900">Email</p>
-                    <p className="text-gray-600">info@dropek-dental.com</p>
+                    <p className="text-gray-600">03-5467032</p>
                   </div>
                 </div>
               </div>
@@ -123,7 +161,7 @@ export default function About() {
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Hours</h2>
               <div className="space-y-2">
                 {[
-                  { day: 'Sunday – Thursday', hours: '8:00 AM – 5:00 PM' },
+                  { day: 'Sunday – Thursday', hours: '8:00 AM – 6:00 PM' },
                   { day: 'Friday', hours: '8:00 AM – 1:00 PM' },
                   { day: 'Saturday', hours: 'Closed' },
                 ].map((item) => (
