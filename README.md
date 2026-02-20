@@ -1,101 +1,82 @@
-# 🦷 SmartClinic Agent
+# SmartClinic Agent
 
-An AI-powered dental clinic assistant that handles appointment scheduling with human-in-the-loop approval via Telegram.
+AI-powered dental clinic assistant that handles appointment scheduling with human-in-the-loop approval via Telegram.
 
-## Project Overview
+## Overview
 
-A patient-facing website for a dental clinic with an embedded AI chat agent. Patients can browse clinic info and chat with the agent to book appointments. The clinic owner receives real-time Telegram notifications for each new booking request and can approve or decline with a single tap.
+A patient-facing website for **Dr. Ilan Ofeck's Dental Clinic** in Tel Aviv with an embedded AI chat agent. Patients can browse clinic info and chat with the agent to book appointments. The clinic owner receives real-time Telegram notifications and can approve or decline with a single tap.
 
-This project demonstrates a **production-grade agentic workflow** that goes beyond simple chat — the agent **thinks** (plans multi-step actions), **acts** (calls external tools), and **self-corrects** (handles errors and retries with alternatives).
+This project demonstrates a **production-grade agentic workflow**:
+- **Thinks** - Plans multi-step actions using ReAct pattern
+- **Acts** - Calls external tools (8 available)
+- **Self-corrects** - Handles errors with structured responses
+- **Remembers** - Recognizes returning patients
+- **Searches** - Uses RAG for pricing/policy questions
+
+---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        React Frontend                            │
-│  ┌──────────────┐  ┌─────────────────────────────────────────┐  │
-│  │  Clinic Info  │  │         Chat Widget (@ai-sdk/react)     │  │
-│  │  Pages        │  │  useChat() ←→ /api/chat (streaming)     │  │
-│  └──────────────┘  └──────────────────────────────────────────┘  │
-└─────────────────────────────────────┬────────────────────────────┘
-                                      │
-                           ┌──────────▼──────────┐
-                           │   Express Backend    │
-                           │   ReAct Agent Loop   │
-                           │   (Vercel AI SDK)    │
-                           │                      │
-                           │  LLM: Gemini 2.5     │
-                           │  Flash (free tier)   │
-                           └──────────┬───────────┘
-                                      │
-        ┌─────────────────────────────┼─────────────────────────────┐
-        │                             │                             │
-        ▼                             ▼                             ▼
-┌───────────────┐           ┌───────────────┐           ┌───────────────┐
-│    Google     │           │   Telegram    │           │    Resend     │
-│   Calendar    │           │   Bot API     │           │    Email      │
-│    (free)     │           │   (free)      │           │   (free)      │
-└───────────────┘           └───────┬───────┘           └───────────────┘
-                                    │
-                             ┌──────▼──────┐
-                             │   Clinic    │
-                             │   Owner     │
-                             │  (Approve/  │
-                             │   Decline)  │
-                             └─────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                         React Frontend                               │
+│  ┌──────────────────┐  ┌─────────────────────────────────────────┐  │
+│  │  Clinic Website  │  │         Chat Widget (@ai-sdk/react)     │  │
+│  │  - Home          │  │  useChat() ←→ /api/chat (SSE streaming) │  │
+│  │  - Services      │  │  Tool invocation visualization          │  │
+│  │  - About         │  └─────────────────────────────────────────┘  │
+│  └──────────────────┘                                                │
+└─────────────────────────────────┬────────────────────────────────────┘
+                                  │
+                       ┌──────────▼──────────┐
+                       │   Express Backend    │
+                       │   ReAct Agent Loop   │
+                       │   (Vercel AI SDK)    │
+                       │                      │
+                       │  LLM: Gemini 2.5     │
+                       │  Flash (paid tier)   │
+                       └──────────┬───────────┘
+                                  │
+        ┌─────────────────────────┼─────────────────────────────┐
+        │                         │                             │
+        ▼                         ▼                             ▼
+┌───────────────┐       ┌───────────────┐           ┌───────────────┐
+│    SQLite     │       │   Telegram    │           │    Resend     │
+│   Database    │       │   Bot API     │           │    Email      │
+└───────────────┘       └───────┬───────┘           └───────────────┘
+                                │
+                         ┌──────▼──────┐
+                         │   Clinic    │
+                         │   Owner     │
+                         │  (Approve/  │
+                         │   Decline)  │
+                         └─────────────┘
 ```
 
-## Core Requirements Coverage
+---
 
-### ✅ 1. Agentic Logic (ReAct Pattern)
+## Features
 
-The agent uses **Vercel AI SDK's `streamText` with `maxSteps`** to implement a reasoning loop:
+### Core Requirements
 
-1. Patient: "I want to book a cleaning for next Tuesday"
-2. Agent **thinks**: "I need to check availability for Tuesday"
-3. Agent **acts**: Calls `checkAvailability` tool
-4. Agent **thinks**: "I see 3 available slots, I should present them"
-5. Agent **acts**: Responds with options
-6. After patient picks: Agent calls `createAppointment` → `notifyClinicOwner`
+| Feature | Implementation |
+|---------|----------------|
+| **Agentic Logic** | ReAct pattern with `maxSteps: 10` |
+| **Tool Use** | 8 tools with Zod schemas |
+| **Self-Correction** | Structured error types + suggestions |
+| **Human-in-the-Loop** | Telegram approve/decline buttons |
 
-### ✅ 2. Tool Use (5 External Tools)
+### Nice-to-Have Features
 
-| Tool | Purpose | API |
-|------|---------|-----|
-| `checkAvailability` | Check available appointment slots | Google Calendar API |
-| `createAppointment` | Create pending appointment in DB | SQLite |
-| `searchKnowledgeBase` | Search clinic info (services, pricing, hours) | Local JSON |
-| `getPatientHistory` | Retrieve patient preferences & history | SQLite |
-| `savePatientPreference` | Store patient preferences for future | SQLite |
+| Feature | Implementation |
+|---------|----------------|
+| **Long-Term Memory** | Patient preferences in SQLite |
+| **Proactive Recognition** | Greets returning patients by name |
+| **Agentic RAG** | Knowledge base search for policies/pricing |
+| **Step Tracing** | Console logging + `/api/chat/trace` endpoint |
+| **Retry Logic** | Exponential backoff for external APIs |
 
-Plus external services:
-- **Telegram Bot** - Owner notifications with approve/decline buttons
-- **Resend Email** - Patient confirmation/rejection emails
-
-### ✅ 3. Self-Correction
-
-The agent handles errors gracefully:
-- **Slot taken**: Retries with alternative slots
-- **Invalid date**: Asks for clarification
-- **API failure**: Falls back gracefully with explanation
-- **Missing info**: Asks for required fields before proceeding
-
-## Nice-to-Have Features
-
-### 🧠 Long-Term Memory
-- Stores patient preferences in SQLite
-- Retrieves history for returning patients
-- Examples: "David prefers morning appointments"
-
-### 🔍 Agentic RAG
-- Knowledge base with clinic info (services, pricing, hours, team)
-- Agent **decides** when to query knowledge base vs. answer from context
-- Uses `searchKnowledgeBase` tool with keyword matching
-
-### 🎨 Polished UI
-- Modern clinic website with hero, services, team pages
-- Floating chat widget with tool invocation visualization
-- Responsive design, works on mobile
+---
 
 ## Tech Stack
 
@@ -108,34 +89,40 @@ The agent handles errors gracefully:
 | **AI SDK** | Vercel AI SDK v4 |
 | **LLM** | Google Gemini 2.5 Flash |
 | **Database** | SQLite (better-sqlite3) |
-| **Calendar** | Google Calendar API |
 | **Notifications** | Telegram Bot API |
-| **Email** | Resend |
+| **Email** | Resend (mocked) |
+| **Calendar** | Google Calendar API (mocked) |
+
+---
 
 ## Project Structure
 
 ```
-smart-clinic-agent/
+AIClinicAgent/
 ├── server/
 │   ├── src/
 │   │   ├── index.ts              # Express entry point
 │   │   ├── routes/
-│   │   │   ├── chat.ts           # AI chat endpoint (streaming)
-│   │   │   └── telegram.ts       # Telegram webhook handler
+│   │   │   ├── chat.ts           # AI chat (streaming + tracing)
+│   │   │   └── telegram.ts       # Webhook handler
 │   │   ├── agent/
 │   │   │   ├── index.ts          # System prompt
-│   │   │   └── tools/index.ts    # Tool definitions
+│   │   │   └── tools/index.ts    # 8 agent tools
 │   │   ├── services/
-│   │   │   ├── calendar.ts       # Google Calendar integration
-│   │   │   ├── telegram.ts       # Telegram Bot service
-│   │   │   ├── email.ts          # Resend email service
-│   │   │   └── knowledge.ts      # Knowledge base search
-│   │   └── db/
-│   │       ├── index.ts          # SQLite connection
-│   │       ├── appointments.ts   # Appointment CRUD
-│   │       └── patients.ts       # Patient preferences
+│   │   │   ├── calendar.ts       # Google Calendar (with retry)
+│   │   │   ├── telegram.ts       # Bot + notifications
+│   │   │   ├── email.ts          # Resend (with retry)
+│   │   │   └── knowledge.ts      # RAG knowledge base
+│   │   ├── db/
+│   │   │   ├── index.ts          # SQLite setup + seed
+│   │   │   ├── staff.ts          # Staff queries
+│   │   │   ├── services.ts       # Service queries
+│   │   │   ├── appointments.ts   # Appointment CRUD
+│   │   │   └── patients.ts       # Patient preferences
+│   │   └── utils/
+│   │       └── retry.ts          # Exponential backoff
 │   └── data/
-│       └── clinic-knowledge.json # Clinic information
+│       └── clinic-knowledge.json
 │
 ├── client/
 │   ├── src/
@@ -152,10 +139,16 @@ smart-clinic-agent/
 │   │       └── clinic/
 │   │           ├── Navbar.tsx
 │   │           └── Footer.tsx
-│   └── index.html
+│   └── public/images/staff/
 │
-└── README.md
+├── PLAN.md          # Implementation plan
+├── SPEC.md          # Technical specification
+├── TASKS.md         # Task tracker
+├── STANDARDS.md     # Code conventions
+└── README.md        # This file
 ```
+
+---
 
 ## Getting Started
 
@@ -168,7 +161,7 @@ smart-clinic-agent/
 ```bash
 # Clone the repository
 git clone <repo-url>
-cd smart-clinic-agent
+cd AIClinicAgent
 
 # Install all dependencies
 npm run install:all
@@ -187,13 +180,13 @@ Configure the following variables in `server/.env`:
 # Required: Google Gemini API Key
 GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
 
-# Optional: Google Calendar (falls back to mock data if not set)
-GOOGLE_CALENDAR_ID=your_calendar_id
-GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
-
-# Optional: Telegram (logs to console if not set)
+# Required: Telegram notifications
 TELEGRAM_BOT_TOKEN=your_bot_token
 TELEGRAM_OWNER_CHAT_ID=your_chat_id
+
+# Optional: Google Calendar (falls back to mock data)
+GOOGLE_CALENDAR_ID=your_calendar_id
+GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
 
 # Optional: Email (logs to console if not set)
 RESEND_API_KEY=your_resend_api_key
@@ -216,7 +209,9 @@ npm run dev:client  # Frontend on http://localhost:5173
 2. Click the chat bubble in the bottom-right corner
 3. Try: "I'd like to book a teeth cleaning for next Tuesday"
 
-## Appointment Flow
+---
+
+## Booking Flow
 
 ### Happy Path
 
@@ -226,37 +221,71 @@ Patient (Chat)                Agent                    Owner (Telegram)
       │  "Book a cleaning       │                           │
       │   for next Tuesday"     │                           │
       │────────────────────────▶│                           │
+      │                         │──▶ getStaffForService()   │
       │                         │──▶ checkAvailability()    │
       │                         │◀── [9:00, 10:30, 14:00]   │
       │  "I have 3 slots..."    │                           │
       │◀────────────────────────│                           │
-      │  "10:30, I'm David,     │                           │
+      │  "10:30, my email is    │                           │
       │   david@email.com"      │                           │
       │────────────────────────▶│                           │
+      │                         │──▶ getPatientHistory()    │
       │                         │──▶ createAppointment()    │
-      │                         │──▶ notifyOwner() ────────▶│
+      │                         │──▶ sendTelegramNotif() ──▶│
       │  "Pending approval!"    │                           │ [Approve] [Decline]
       │◀────────────────────────│                           │
       │                         │      Owner taps Approve   │
       │                         │◀─────────────────────────│
-      │                         │──▶ confirmAppointment()   │
-      │                         │──▶ sendEmail() ──────────▶│ Patient gets email
+      │                         │──▶ sendEmail()            │
+      │                         │──▶ createCalendarEvent()  │
 ```
 
 ### Self-Correction Example
 
 ```
 Patient: "Book me for Tuesday at 10:30"
-Agent: [checkAvailability(tuesday, 10:30)]
-Tool: ERROR — slot already taken
-
-Agent: [checkAvailability(tuesday, all)]
-Tool: [9:00, 14:00, 15:30]
+Agent: [checkAvailability(staffId, tuesday)]
+Tool: { errorType: "NO_SLOTS", suggestion: "Try 9:00, 14:00, or 15:30" }
 
 Agent: "Sorry, 10:30 is no longer available.
         I have 9:00 AM, 2:00 PM, or 3:30 PM.
         Would any of these work?"
 ```
+
+---
+
+## Agent Tools
+
+| Tool | Purpose |
+|------|---------|
+| `getServices` | List all dental services with categories |
+| `getStaffForService` | Find specialists for a treatment |
+| `checkAvailability` | Check staff schedule for a date |
+| `createAppointment` | Book pending appointment + notify owner |
+| `getClinicTeam` | Get team member information |
+| `searchKnowledgeBase` | RAG search for pricing/policies |
+| `getPatientHistory` | Lookup returning patients |
+| `savePatientPreference` | Store patient preferences |
+
+---
+
+## Error Handling
+
+All tools return structured errors for AI self-correction:
+
+```typescript
+interface ToolError {
+  errorType: 'NOT_FOUND' | 'NO_SLOTS' | 'STAFF_NOT_WORKING' |
+             'VALIDATION_ERROR' | 'API_ERROR' | 'DATABASE_ERROR'
+  message: string
+  suggestion?: string
+  retryable: boolean
+}
+```
+
+The AI uses these to provide helpful alternatives instead of generic errors.
+
+---
 
 ## External Service Setup
 
@@ -266,14 +295,17 @@ Agent: "Sorry, 10:30 is no longer available.
 2. Create an API key
 3. Add to `.env`: `GOOGLE_GENERATIVE_AI_API_KEY=your_key`
 
-### Telegram Bot (Optional)
+### Telegram Bot (Required for notifications)
 
 1. Message [@BotFather](https://t.me/botfather) on Telegram
 2. Create a new bot with `/newbot`
 3. Copy the token to `.env`: `TELEGRAM_BOT_TOKEN=your_token`
 4. Get your chat ID by messaging [@userinfobot](https://t.me/userinfobot)
 5. Add to `.env`: `TELEGRAM_OWNER_CHAT_ID=your_chat_id`
-6. Set webhook (for production): `https://api.telegram.org/bot<TOKEN>/setWebhook?url=<YOUR_URL>/api/telegram/webhook`
+6. Set webhook (for production):
+   ```
+   https://api.telegram.org/bot<TOKEN>/setWebhook?url=<YOUR_URL>/api/telegram/webhook
+   ```
 
 ### Google Calendar (Optional)
 
@@ -290,6 +322,51 @@ Agent: "Sorry, 10:30 is no longer available.
 2. Create an API key
 3. Add to `.env`: `RESEND_API_KEY=your_key`
 
+---
+
+## Development
+
+### Build
+
+```bash
+cd server && npm run build
+cd client && npm run build
+```
+
+### Type Check
+
+```bash
+cd server && npx tsc --noEmit
+cd client && npx tsc --noEmit
+```
+
+### Debug Agent Steps
+
+Check console for step-by-step logging:
+```
+[Step 1] Tool call: getStaffForService {"serviceName":"cleaning"}
+[Step 1] Tool result: getStaffForService [{"id":2,"name":"Katy Fridman"...}]
+[Agent finished] Reason: end_turn, Steps: 4, Tools: [getStaffForService, checkAvailability]
+```
+
+Or call the trace endpoint:
+```
+GET /api/chat/trace
+```
+
+---
+
+## Documentation
+
+| File | Description |
+|------|-------------|
+| [PLAN.md](./PLAN.md) | Implementation plan with phase progress |
+| [SPEC.md](./SPEC.md) | Technical specification |
+| [TASKS.md](./TASKS.md) | Task tracker (completed/pending) |
+| [STANDARDS.md](./STANDARDS.md) | Code conventions |
+
+---
+
 ## Demo Video
 
 [Link to demo video - to be added]
@@ -299,7 +376,9 @@ Demonstrates:
 2. Owner approval via Telegram
 3. Self-correction when slot is taken
 4. Knowledge base queries (pricing, hours)
-5. Tool invocation visualization in chat
+5. Returning patient recognition
+
+---
 
 ## License
 

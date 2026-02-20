@@ -25,6 +25,23 @@ import {
   getStaffWithServices,
 } from '../../db/staff.js'
 
+// Structured error types for self-correction
+export type ToolErrorType =
+  | 'NOT_FOUND'           // Entity not found (service, staff, patient)
+  | 'NO_SLOTS'            // No available appointment slots
+  | 'STAFF_NOT_WORKING'   // Staff doesn't work on requested day
+  | 'VALIDATION_ERROR'    // Invalid input parameters
+  | 'API_ERROR'           // External API failure
+  | 'DATABASE_ERROR'      // Database operation failed
+
+export interface ToolError {
+  success: false
+  errorType: ToolErrorType
+  message: string
+  suggestion?: string
+  retryable?: boolean
+}
+
 export const tools = {
   getServices: tool({
     description: 'Get all available dental services with their details. Use this when a patient asks about services or treatments.',
@@ -45,7 +62,13 @@ export const tools = {
         }
       } catch (error) {
         console.error('Get services error:', error)
-        return { success: false, error: 'Unable to fetch services' }
+        return {
+          success: false,
+          errorType: 'DATABASE_ERROR',
+          message: 'Unable to fetch services',
+          suggestion: 'Please try again or call the clinic directly at (555) 123-4567',
+          retryable: true,
+        } as ToolError
       }
     },
   }),
@@ -61,16 +84,22 @@ export const tools = {
         if (!service) {
           return {
             success: false,
-            message: `Service "${serviceName}" not found. Please ask the patient to clarify which treatment they need.`,
-          }
+            errorType: 'NOT_FOUND',
+            message: `Service "${serviceName}" not found`,
+            suggestion: 'Ask the patient to clarify which treatment they need, or use getServices to show all available services',
+            retryable: false,
+          } as ToolError
         }
 
         const staff = getStaffForServiceById(service.id)
         if (staff.length === 0) {
           return {
             success: false,
+            errorType: 'NOT_FOUND',
             message: `No staff members available for ${service.name}`,
-          }
+            suggestion: 'This service may not be currently offered. Use getServices to find alternative treatments',
+            retryable: false,
+          } as ToolError
         }
 
         return {
@@ -90,7 +119,13 @@ export const tools = {
         }
       } catch (error) {
         console.error('Get staff for service error:', error)
-        return { success: false, error: 'Unable to find staff for this service' }
+        return {
+          success: false,
+          errorType: 'DATABASE_ERROR',
+          message: 'Unable to find staff for this service',
+          suggestion: 'Please try again or call the clinic directly',
+          retryable: true,
+        } as ToolError
       }
     },
   }),
@@ -106,7 +141,14 @@ export const tools = {
       try {
         const staff = getStaffById(staffId)
         if (!staff) {
-          return { available: false, message: 'Staff member not found', slots: [] }
+          return {
+            available: false,
+            errorType: 'NOT_FOUND',
+            message: 'Staff member not found',
+            suggestion: 'Use getStaffForService to find valid staff members for the requested service',
+            slots: [],
+            retryable: false,
+          }
         }
 
         const dateObj = new Date(date)
@@ -115,11 +157,23 @@ export const tools = {
 
         const workingHours = getStaffWorkingHours(staffId)
         if (!workingHours || !workingHours[dayOfWeek] || workingHours[dayOfWeek].length === 0) {
+          // Get staff's actual working days to provide helpful suggestion
+          const workingDays = workingHours
+            ? Object.entries(workingHours)
+                .filter(([_, hours]) => hours && hours.length > 0)
+                .map(([day]) => day)
+            : []
           return {
             available: false,
+            errorType: 'STAFF_NOT_WORKING',
             message: `${staff.name} does not work on ${dayOfWeek}s`,
+            suggestion: workingDays.length > 0
+              ? `${staff.name} works on: ${workingDays.join(', ')}. Try one of these days instead.`
+              : 'Try a different staff member using getStaffForService',
             slots: [],
             staffName: staff.name,
+            workingDays,
+            retryable: false,
           }
         }
 
@@ -161,9 +215,12 @@ export const tools = {
         if (slots.length === 0) {
           return {
             available: false,
+            errorType: 'NO_SLOTS',
             message: `No available slots for ${staff.name} on ${date}`,
+            suggestion: 'Try a different date, or use getStaffForService to find another staff member who can perform this service',
             slots: [],
             staffName: staff.name,
+            retryable: false,
           }
         }
 
@@ -178,8 +235,11 @@ export const tools = {
         console.error('Check availability error:', error)
         return {
           available: false,
-          error: 'Unable to check availability. Please try again.',
+          errorType: 'DATABASE_ERROR',
+          message: 'Unable to check availability',
+          suggestion: 'Please try again or call the clinic directly at (555) 123-4567',
           slots: [],
+          retryable: true,
         }
       }
     },
@@ -203,7 +263,13 @@ export const tools = {
         }
       } catch (error) {
         console.error('Get clinic team error:', error)
-        return { success: false, error: 'Unable to fetch team information' }
+        return {
+          success: false,
+          errorType: 'DATABASE_ERROR',
+          message: 'Unable to fetch team information',
+          suggestion: 'Please try again or call the clinic directly',
+          retryable: true,
+        } as ToolError
       }
     },
   }),
@@ -223,7 +289,13 @@ export const tools = {
       try {
         const staff = getStaffById(staffId)
         if (!staff) {
-          return { success: false, error: 'Staff member not found' }
+          return {
+            success: false,
+            errorType: 'NOT_FOUND',
+            message: 'Staff member not found',
+            suggestion: 'Use getStaffForService to find valid staff members for the requested service',
+            retryable: false,
+          } as ToolError
         }
 
         // Create the appointment in the database
@@ -261,30 +333,48 @@ export const tools = {
         console.error('Create appointment error:', error)
         return {
           success: false,
-          error: 'Failed to create appointment. Please try again or call us directly.',
-        }
+          errorType: 'DATABASE_ERROR',
+          message: 'Failed to create appointment',
+          suggestion: 'Please try again or call the clinic directly at (555) 123-4567',
+          retryable: true,
+        } as ToolError
       }
     },
   }),
 
   searchKnowledgeBase: tool({
-    description: 'Search the clinic knowledge base for information about services, pricing, hours, insurance, team, etc.',
+    description: 'Search the clinic knowledge base for information about services, pricing, hours, insurance, team, etc. Use this when patients ask about clinic policies, pricing, insurance, emergency procedures, or any general clinic information.',
     parameters: z.object({
       query: z.string().describe('What information to search for'),
     }),
     execute: async ({ query }) => {
       try {
         const results = searchKnowledge(query)
+        if (!results || results.length === 0) {
+          return {
+            found: false,
+            errorType: 'NOT_FOUND',
+            message: `No information found for: "${query}"`,
+            suggestion: 'Try different keywords or ask the patient to rephrase their question',
+            retryable: false,
+          }
+        }
         return { found: true, results }
       } catch (error) {
         console.error('Knowledge search error:', error)
-        return { found: false, error: 'Unable to search knowledge base' }
+        return {
+          found: false,
+          errorType: 'DATABASE_ERROR',
+          message: 'Unable to search knowledge base',
+          suggestion: 'Please try again or contact the clinic directly for this information',
+          retryable: true,
+        }
       }
     },
   }),
 
   getPatientHistory: tool({
-    description: 'Get patient history and preferences if they have visited before. Use this to personalize the conversation.',
+    description: 'Get patient history and preferences if they have visited before. ALWAYS use this when a patient provides their email to personalize the conversation and remember their preferences.',
     parameters: z.object({
       email: z.string().email().describe('Patient email to look up'),
     }),
@@ -294,23 +384,35 @@ export const tools = {
         const appointments = getAppointmentsByEmail(email)
 
         if (!patient && appointments.length === 0) {
-          return { found: false, message: 'New patient - no previous history' }
+          return {
+            found: false,
+            isNewPatient: true,
+            message: 'New patient - no previous history',
+            suggestion: 'Welcome them as a new patient and offer to help them book their first appointment',
+          }
         }
 
         return {
           found: true,
+          isNewPatient: false,
           patient: patient || null,
           previousAppointments: appointments.slice(0, 5),
         }
       } catch (error) {
         console.error('Patient history error:', error)
-        return { found: false, error: 'Unable to retrieve patient history' }
+        return {
+          found: false,
+          errorType: 'DATABASE_ERROR',
+          message: 'Unable to retrieve patient history',
+          suggestion: 'Continue with the conversation - treat as a new patient',
+          retryable: true,
+        }
       }
     },
   }),
 
   savePatientPreference: tool({
-    description: 'Save a patient preference or note for future reference (e.g., "prefers morning appointments", "allergic to latex")',
+    description: 'Save a patient preference or note for future reference (e.g., "prefers morning appointments", "allergic to latex"). Use this when a patient mentions any preference, allergy, or special requirement.',
     parameters: z.object({
       email: z.string().email().describe('Patient email'),
       preference: z.string().describe('Preference or note to save'),
@@ -323,10 +425,20 @@ export const tools = {
 
         upsertPatientPreferences(email, { preferences: JSON.stringify(existingPrefs) })
 
-        return { success: true, message: 'Preference saved' }
+        return {
+          success: true,
+          message: 'Preference saved',
+          totalPreferences: existingPrefs.length,
+        }
       } catch (error) {
         console.error('Save preference error:', error)
-        return { success: false, error: 'Unable to save preference' }
+        return {
+          success: false,
+          errorType: 'DATABASE_ERROR',
+          message: 'Unable to save preference',
+          suggestion: 'The preference was not saved but the conversation can continue',
+          retryable: true,
+        } as ToolError
       }
     },
   }),

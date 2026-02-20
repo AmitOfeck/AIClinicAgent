@@ -1,3 +1,5 @@
+import { withRetry, checkServiceConfig } from '../utils/retry.js'
+
 const TELEGRAM_API = 'https://api.telegram.org/bot'
 
 interface AppointmentNotification {
@@ -9,15 +11,26 @@ interface AppointmentNotification {
   staffName?: string
 }
 
-export async function sendOwnerNotification(data: AppointmentNotification): Promise<boolean> {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN
-  const ownerChatId = process.env.TELEGRAM_OWNER_CHAT_ID
+export interface TelegramResult {
+  success: boolean
+  sent: boolean  // Whether notification was actually sent (false if not configured)
+  error?: string
+  retryAttempts?: number
+}
 
-  if (!botToken || !ownerChatId) {
+export async function sendOwnerNotification(data: AppointmentNotification): Promise<TelegramResult> {
+  const config = checkServiceConfig(['TELEGRAM_BOT_TOKEN', 'TELEGRAM_OWNER_CHAT_ID'])
+
+  if (!config.configured) {
     console.log('Telegram not configured, skipping notification')
+    console.log('Missing:', config.missingKeys?.join(', '))
     console.log('Would send notification:', data)
-    return true
+    // Return sent: false to indicate notification wasn't actually sent
+    return { success: true, sent: false, error: 'Telegram not configured' }
   }
+
+  const botToken = process.env.TELEGRAM_BOT_TOKEN!
+  const ownerChatId = process.env.TELEGRAM_OWNER_CHAT_ID!
 
   const dateObj = new Date(data.dateTime)
   const formattedDate = dateObj.toLocaleDateString('en-US', {
@@ -53,7 +66,7 @@ Please approve or decline this appointment.
     ],
   }
 
-  try {
+  const result = await withRetry(async () => {
     const response = await fetch(`${TELEGRAM_API}${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -65,31 +78,43 @@ Please approve or decline this appointment.
       }),
     })
 
-    const result = await response.json()
-    if (!result.ok) {
-      console.error('Telegram API error:', result)
-      return false
+    const json = await response.json()
+    if (!json.ok) {
+      const error = new Error(`Telegram API error: ${json.description}`) as any
+      error.status = json.error_code
+      throw error
     }
 
-    return true
-  } catch (error) {
-    console.error('Telegram notification error:', error)
-    return false
+    return json
+  })
+
+  if (!result.success) {
+    console.error('Telegram notification failed after retries:', result.error)
+    return {
+      success: false,
+      sent: false,
+      error: result.error,
+      retryAttempts: result.attempts,
+    }
   }
+
+  return { success: true, sent: true, retryAttempts: result.attempts }
 }
 
 export async function sendPatientNotification(
   chatId: string,
   message: string
-): Promise<boolean> {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN
+): Promise<TelegramResult> {
+  const config = checkServiceConfig(['TELEGRAM_BOT_TOKEN'])
 
-  if (!botToken) {
+  if (!config.configured) {
     console.log('Telegram not configured, skipping patient notification')
-    return true
+    return { success: true, sent: false, error: 'Telegram not configured' }
   }
 
-  try {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN!
+
+  const result = await withRetry(async () => {
     const response = await fetch(`${TELEGRAM_API}${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -100,26 +125,43 @@ export async function sendPatientNotification(
       }),
     })
 
-    const result = await response.json()
-    return result.ok
-  } catch (error) {
-    console.error('Telegram patient notification error:', error)
-    return false
+    const json = await response.json()
+    if (!json.ok) {
+      const error = new Error(`Telegram API error: ${json.description}`) as any
+      error.status = json.error_code
+      throw error
+    }
+
+    return json
+  })
+
+  if (!result.success) {
+    console.error('Telegram patient notification failed:', result.error)
+    return {
+      success: false,
+      sent: false,
+      error: result.error,
+      retryAttempts: result.attempts,
+    }
   }
+
+  return { success: true, sent: true, retryAttempts: result.attempts }
 }
 
 export async function editMessage(
   chatId: string,
   messageId: number,
   newText: string
-): Promise<boolean> {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN
+): Promise<TelegramResult> {
+  const config = checkServiceConfig(['TELEGRAM_BOT_TOKEN'])
 
-  if (!botToken) {
-    return true
+  if (!config.configured) {
+    return { success: true, sent: false, error: 'Telegram not configured' }
   }
 
-  try {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN!
+
+  const result = await withRetry(async () => {
     const response = await fetch(`${TELEGRAM_API}${botToken}/editMessageText`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -131,12 +173,27 @@ export async function editMessage(
       }),
     })
 
-    const result = await response.json()
-    return result.ok
-  } catch (error) {
-    console.error('Telegram edit message error:', error)
-    return false
+    const json = await response.json()
+    if (!json.ok) {
+      const error = new Error(`Telegram API error: ${json.description}`) as any
+      error.status = json.error_code
+      throw error
+    }
+
+    return json
+  })
+
+  if (!result.success) {
+    console.error('Telegram edit message failed:', result.error)
+    return {
+      success: false,
+      sent: false,
+      error: result.error,
+      retryAttempts: result.attempts,
+    }
   }
+
+  return { success: true, sent: true, retryAttempts: result.attempts }
 }
 
 export async function handleTelegramWebhook(update: any): Promise<void> {
@@ -149,6 +206,7 @@ export async function handleTelegramWebhook(update: any): Promise<void> {
 
     // Import here to avoid circular dependency
     const { updateAppointmentStatus, getAppointmentById } = await import('../db/appointments.js')
+    const { getServiceById, getServiceByName } = await import('../db/services.js')
     const { sendEmail } = await import('./email.js')
     const { createCalendarEvent } = await import('./calendar.js')
 
@@ -162,11 +220,27 @@ export async function handleTelegramWebhook(update: any): Promise<void> {
       // Update status
       updateAppointmentStatus(parseInt(appointmentId), 'APPROVED')
 
-      // Create calendar event
+      // Get service duration from database
+      let durationMinutes = 30 // Default fallback
+      if (appointment.service_id) {
+        const service = getServiceById(appointment.service_id)
+        if (service) {
+          durationMinutes = service.duration_minutes
+        }
+      } else {
+        // Try to look up by service name if service_id is not set
+        const service = getServiceByName(appointment.service)
+        if (service) {
+          durationMinutes = service.duration_minutes
+        }
+      }
+
+      // Create calendar event with correct duration
       await createCalendarEvent(
         `${appointment.service} - ${appointment.patient_name}`,
         `Patient: ${appointment.patient_name}\nEmail: ${appointment.patient_email}\nPhone: ${appointment.patient_phone || 'N/A'}`,
-        appointment.date_time
+        appointment.date_time,
+        durationMinutes
       )
 
       // Send confirmation email

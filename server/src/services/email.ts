@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { withRetry, checkServiceConfig } from '../utils/retry.js'
 
 interface EmailOptions {
   to: string
@@ -6,19 +7,28 @@ interface EmailOptions {
   html: string
 }
 
-export async function sendEmail(options: EmailOptions): Promise<boolean> {
-  const apiKey = process.env.RESEND_API_KEY
+export interface EmailResult {
+  success: boolean
+  sent: boolean  // Whether email was actually sent (false if not configured)
+  error?: string
+  retryAttempts?: number
+}
 
-  if (!apiKey || apiKey === 'your_resend_api_key') {
+export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
+  const config = checkServiceConfig(['RESEND_API_KEY'])
+
+  if (!config.configured) {
     console.log('Resend not configured, skipping email')
     console.log('Would send email:', options)
-    return true
+    // Return sent: false to indicate email wasn't actually sent
+    return { success: true, sent: false, error: 'Resend not configured' }
   }
 
-  try {
-    const resend = new Resend(apiKey)
+  const apiKey = process.env.RESEND_API_KEY!
+  const resend = new Resend(apiKey)
 
-    const { error } = await resend.emails.send({
+  const result = await withRetry(async () => {
+    const { data, error } = await resend.emails.send({
       from: 'Dr. Ilan Ofeck Dental Clinic <appointments@resend.dev>',
       to: options.to,
       subject: options.subject,
@@ -26,13 +36,28 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     })
 
     if (error) {
-      console.error('Resend API error:', error)
-      return false
+      const err = new Error(`Resend API error: ${error.message}`) as any
+      // Check if it's a rate limit or server error
+      if (error.name === 'rate_limit_exceeded') {
+        err.status = 429
+      } else if (error.name === 'internal_server_error') {
+        err.status = 500
+      }
+      throw err
     }
 
-    return true
-  } catch (error) {
-    console.error('Email send error:', error)
-    return false
+    return data
+  })
+
+  if (!result.success) {
+    console.error('Email send failed after retries:', result.error)
+    return {
+      success: false,
+      sent: false,
+      error: result.error,
+      retryAttempts: result.attempts,
+    }
   }
+
+  return { success: true, sent: true, retryAttempts: result.attempts }
 }
