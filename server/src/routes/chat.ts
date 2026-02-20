@@ -6,8 +6,8 @@ import { SYSTEM_PROMPT } from '../agent/index.js'
 
 const router = Router()
 
-// Use gemini-2.5-flash (free tier)
-const model = google('gemini-2.5-flash')
+// Use gemini-2.5-flash-lite (free tier - might have separate quota)
+const model = google('gemini-2.5-flash-lite')
 
 router.post('/', async (req, res) => {
   try {

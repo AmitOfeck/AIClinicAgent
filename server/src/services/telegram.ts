@@ -5,6 +5,7 @@ interface AppointmentNotification {
   patientName: string
   patientEmail: string
   service: string
+  staffName?: string
   dateTime: string
 }
 
@@ -30,13 +31,15 @@ export async function sendOwnerNotification(data: AppointmentNotification): Prom
     minute: '2-digit',
   })
 
+  const staffLine = data.staffName ? `*Staff:* ${data.staffName}\n` : ''
+
   const message = `
 🦷 *New Appointment Request*
 
 *Patient:* ${data.patientName}
 *Email:* ${data.patientEmail}
 *Service:* ${data.service}
-*Date:* ${formattedDate}
+${staffLine}*Date:* ${formattedDate}
 *Time:* ${formattedTime}
 
 Please approve or decline this appointment.
@@ -146,15 +149,17 @@ export async function handleTelegramWebhook(update: any): Promise<void> {
     const messageId = update.callback_query.message.message_id
 
     // Import here to avoid circular dependency
-    const { updateAppointmentStatus, getAppointmentById } = await import('../db/appointments.js')
+    const { updateAppointmentStatus, getAppointmentWithDetails } = await import('../db/appointments.js')
     const { sendEmail } = await import('./email.js')
     const { createCalendarEvent } = await import('./calendar.js')
 
-    const appointment = getAppointmentById(parseInt(appointmentId))
+    const appointment = getAppointmentWithDetails(parseInt(appointmentId))
     if (!appointment) {
       console.error('Appointment not found:', appointmentId)
       return
     }
+
+    const staffInfo = appointment.staff_name ? ` with ${appointment.staff_name}` : ''
 
     if (action === 'approve') {
       // Update status
@@ -162,28 +167,30 @@ export async function handleTelegramWebhook(update: any): Promise<void> {
 
       // Create calendar event
       await createCalendarEvent(
-        `${appointment.service} - ${appointment.patient_name}`,
-        `Patient: ${appointment.patient_name}\nEmail: ${appointment.patient_email}\nPhone: ${appointment.patient_phone || 'N/A'}`,
+        `${appointment.service} - ${appointment.patient_name}${staffInfo}`,
+        `Patient: ${appointment.patient_name}\nEmail: ${appointment.patient_email}\nPhone: ${appointment.patient_phone || 'N/A'}\nStaff: ${appointment.staff_name || 'Not assigned'}`,
         appointment.date_time
       )
 
       // Send confirmation email
       await sendEmail({
         to: appointment.patient_email,
-        subject: '✅ Your appointment at Dr. Opek\'s Dental Clinic is confirmed!',
+        subject: '✅ Your appointment at Dr. Ilan Ofeck Dental Clinic is confirmed!',
         html: `
           <h2>Appointment Confirmed!</h2>
           <p>Dear ${appointment.patient_name},</p>
           <p>Your appointment has been approved.</p>
           <p><strong>Service:</strong> ${appointment.service}</p>
+          ${appointment.staff_name ? `<p><strong>With:</strong> ${appointment.staff_name}</p>` : ''}
           <p><strong>Date & Time:</strong> ${new Date(appointment.date_time).toLocaleString()}</p>
+          <p><strong>Location:</strong> Bazal Street 35, Tel Aviv (Marom Bazal Medical Building)</p>
           <p>We look forward to seeing you!</p>
-          <p>Best regards,<br>Dr. Opek's Dental Clinic</p>
+          <p>Best regards,<br>Dr. Ilan Ofeck Dental Clinic<br>03-5467032</p>
         `,
       })
 
       // Update Telegram message
-      await editMessage(chatId, messageId, `✅ *Approved*\n\nAppointment for ${appointment.patient_name} has been confirmed.`)
+      await editMessage(chatId, messageId, `✅ *Approved*\n\nAppointment for ${appointment.patient_name}${staffInfo} has been confirmed.`)
     } else if (action === 'decline') {
       // Update status
       updateAppointmentStatus(parseInt(appointmentId), 'DECLINED')
@@ -191,21 +198,21 @@ export async function handleTelegramWebhook(update: any): Promise<void> {
       // Send decline email
       await sendEmail({
         to: appointment.patient_email,
-        subject: 'Regarding your appointment request at Dr. Opek\'s Dental Clinic',
+        subject: 'Regarding your appointment request at Dr. Ilan Ofeck Dental Clinic',
         html: `
           <h2>Appointment Update</h2>
           <p>Dear ${appointment.patient_name},</p>
           <p>Unfortunately, we are unable to accommodate your requested appointment time.</p>
           <p><strong>Requested Service:</strong> ${appointment.service}</p>
           <p><strong>Requested Time:</strong> ${new Date(appointment.date_time).toLocaleString()}</p>
-          <p>Please visit our website to book a different time, or call us at (555) 123-4567.</p>
+          <p>Please visit our website to book a different time, or call us at 03-5467032.</p>
           <p>We apologize for any inconvenience.</p>
-          <p>Best regards,<br>Dr. Opek's Dental Clinic</p>
+          <p>Best regards,<br>Dr. Ilan Ofeck Dental Clinic</p>
         `,
       })
 
       // Update Telegram message
-      await editMessage(chatId, messageId, `❌ *Declined*\n\nAppointment for ${appointment.patient_name} has been declined.`)
+      await editMessage(chatId, messageId, `❌ *Declined*\n\nAppointment for ${appointment.patient_name}${staffInfo} has been declined.`)
     }
 
     // Answer callback query to remove loading state
