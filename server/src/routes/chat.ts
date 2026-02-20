@@ -6,11 +6,14 @@ import { SYSTEM_PROMPT } from '../agent/index.js'
 
 const router = Router()
 
-const model = google('gemini-2.5-flash-preview-05-20')
+// Use gemini-2.5-flash (free tier)
+const model = google('gemini-2.5-flash')
 
 router.post('/', async (req, res) => {
   try {
     const { messages } = req.body
+
+    console.log('Chat request received:', JSON.stringify(messages).slice(0, 200))
 
     const result = streamText({
       model,
