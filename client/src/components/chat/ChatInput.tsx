@@ -17,7 +17,7 @@ export default function ChatInput({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center gap-2 p-4 border-t border-gray-100"
+      className="flex items-center gap-2 p-4 border-t border-gray-100 flex-shrink-0 bg-white"
     >
       <input
         type="text"

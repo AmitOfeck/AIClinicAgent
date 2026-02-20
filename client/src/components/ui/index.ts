@@ -1,6 +1,6 @@
 // Button
-export { Button } from './Button';
-export type { ButtonProps, ButtonVariant, ButtonSize } from './Button';
+export { Button, buttonVariants } from './Button';
+export type { ButtonProps, ButtonVariant, ButtonSize, ButtonVariants } from './Button';
 
 // Card
 export {
@@ -10,11 +10,13 @@ export {
   CardDescription,
   CardContent,
   CardFooter,
+  cardVariants,
 } from './Card';
 export type {
   CardProps,
   CardVariant,
   CardPadding,
+  CardVariants,
   CardHeaderProps,
   CardTitleProps,
   CardDescriptionProps,
@@ -23,5 +25,5 @@ export type {
 } from './Card';
 
 // Badge
-export { Badge } from './Badge';
-export type { BadgeProps, BadgeVariant, BadgeSize } from './Badge';
+export { Badge, badgeVariants } from './Badge';
+export type { BadgeProps, BadgeVariant, BadgeSize, BadgeVariants } from './Badge';

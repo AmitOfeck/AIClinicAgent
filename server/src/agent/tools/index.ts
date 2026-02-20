@@ -9,7 +9,13 @@ import {
   getAppointmentsByEmail,
   getAppointmentsByStaffAndDate,
 } from '../../db/appointments.js'
-import { getPatientByEmail, upsertPatientPreferences } from '../../db/patients.js'
+import {
+  getPatientByEmail,
+  upsertPatientPreferences,
+  addPatientInterest,
+  markPatientConverted,
+  trackPatientInteraction,
+} from '../../db/patients.js'
 import {
   getAllServices,
   getServiceById,
@@ -21,7 +27,6 @@ import {
   getStaffById,
   getStaffForServiceById,
   getStaffWorkingHours,
-  isStaffAvailable,
   getStaffWithServices,
 } from '../../db/staff.js'
 
@@ -309,8 +314,10 @@ export const tools = {
           dateTime,
         })
 
-        // Store/update patient preferences
-        upsertPatientPreferences(patientEmail, { name: patientName })
+        // Store/update patient preferences and track conversion
+        upsertPatientPreferences(patientEmail, { name: patientName, phone: patientPhone })
+        addPatientInterest(patientEmail, service)
+        markPatientConverted(patientEmail)
 
         // Notify clinic owner via Telegram
         await sendOwnerNotification({
@@ -380,6 +387,9 @@ export const tools = {
     }),
     execute: async ({ email }) => {
       try {
+        // Track that this patient interacted with us
+        trackPatientInteraction(email)
+
         const patient = getPatientByEmail(email)
         const appointments = getAppointmentsByEmail(email)
 

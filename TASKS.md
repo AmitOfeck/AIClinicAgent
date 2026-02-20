@@ -1,6 +1,6 @@
 # SmartClinic Agent - Project Tasks
 
-## Current Status: Frontend Architecture Complete - Ready for E2E Testing
+## Current Status: Frontend Standards Upgrade - CVA & i18n Prep
 
 ---
 
@@ -18,7 +18,7 @@
 
 ## Completed Tasks
 
-### Phase 6: Frontend Refactor & Architecture ✅ (Latest)
+### Phase 6: Frontend Refactor & Architecture ✅
 
 #### 6.1 Foundation ✅
 - [x] Create folder structure (types/, constants/, hooks/, config/, api/)
@@ -54,6 +54,28 @@
 - [x] Redesign Home page with hero, features, video, location sections
 - [x] Redesign Services page with categories and filtering
 - [x] Add proper TypeScript types throughout
+
+---
+
+### Phase 6.5: Landing Page & Mobile ✅ (Latest)
+
+#### 6.5.1 Single Landing Page ✅
+- [x] Consolidate Home, Services, About into single LandingPage
+- [x] Create section components (HeroSection, ServicesSection, TeamSection, etc.)
+- [x] Implement scroll-to-section navigation
+- [x] Add ChatContext for shared chat state
+- [x] Service cards open chat with service name
+
+#### 6.5.2 Mobile Responsiveness ✅
+- [x] Add mobile hamburger menu to Navbar
+- [x] ChatWidget full-screen on mobile
+- [x] Responsive grids for all sections
+- [x] Touch-friendly button sizes
+
+#### 6.5.3 Code Cleanup ✅
+- [x] Remove unused pages (Home/, Services/, About.tsx)
+- [x] Update Footer with correct links
+- [x] Clean component APIs with TypeScript interfaces
 
 ---
 
@@ -139,9 +161,41 @@
 
 ---
 
+## In Progress
+
+### Phase 7: Frontend Standards - CVA & i18n (Current)
+
+#### 7.1 Install & Configure CVA
+- [ ] Install `class-variance-authority` package
+- [ ] Update `cn()` utility to work with CVA
+
+#### 7.2 Refactor UI Components to CVA
+- [ ] Button - convert variants/sizes to CVA
+- [ ] Card - convert variants/padding to CVA
+- [ ] Badge - convert variants/sizes to CVA
+- [ ] Section - convert backgrounds/padding to CVA
+
+#### 7.3 i18n Preparation
+- [ ] Create `i18n/` folder structure
+- [ ] Create `i18n/en.ts` - English translations
+- [ ] Create `i18n/he.ts` - Hebrew translations (placeholder)
+- [ ] Extract UI strings from components to translation keys
+- [ ] Create `useTranslation` hook (simple, no library)
+
+#### 7.4 Text Extraction
+- [ ] HeroSection - title, subtitle, badges
+- [ ] ServicesSection - heading, description
+- [ ] TeamSection - heading, description
+- [ ] ContactSection - all labels
+- [ ] CTASection - all text
+- [ ] ChatWidget - welcome message, placeholders
+- [ ] Navbar & Footer - all text
+
+---
+
 ## Pending Tasks
 
-### Phase 7: End-to-End Testing (Current)
+### Phase 8: End-to-End Testing
 - [ ] Test chat without API key (graceful error)
 - [ ] Test complete booking flow in browser
 - [ ] Test self-correction (book taken slot → suggest alternatives)
@@ -175,6 +229,17 @@
   - Self-correction behavior
   - Knowledge base queries
 - [ ] Add demo link to README
+
+---
+
+## Technical Debt
+
+| Item | Priority | Notes |
+|------|----------|-------|
+| Add unit tests | Medium | Vitest for client, Jest for server |
+| Accessibility audit | Medium | ARIA labels, keyboard nav |
+| Performance audit | Low | Lighthouse, bundle analysis |
+| API documentation | Low | OpenAPI spec for endpoints |
 
 ---
 
@@ -222,6 +287,8 @@ client/src/
 │   ├── useApi.ts              # Generic API state management
 │   ├── useChatWidget.ts       # Chat UI state (open/minimize)
 │   └── useClinicHours.ts      # Clinic hours with "today" check
+├── context/
+│   └── ChatContext.tsx        # Shared chat state (open/close/message)
 ├── types/
 │   ├── clinic.ts              # Service, TeamMember, DayHours, etc.
 │   └── chat.ts                # ToolInvocation, ToolIconMap, etc.
@@ -229,11 +296,27 @@ client/src/
 │   ├── clinic.ts              # CLINIC_INFO, NAV_LINKS
 │   ├── services.ts            # SERVICES array
 │   ├── team.ts                # TEAM, STATS
+│   ├── features.ts            # FEATURES, WHY_CHOOSE_US
 │   └── chat.ts                # TOOL_ICONS, WELCOME_MESSAGE
-└── components/ui/
-    ├── Button/
-    ├── Card/
-    └── Badge/
+├── i18n/                      # (Planned) Internationalization
+│   ├── index.ts               # Hook and exports
+│   ├── en.ts                  # English translations
+│   └── he.ts                  # Hebrew translations
+├── components/
+│   ├── ui/                    # Button/, Card/, Badge/
+│   ├── layout/                # Container, Section, PageLayout
+│   ├── chat/                  # ChatWidget, ChatMessages, ChatInput
+│   └── clinic/                # Navbar, Footer
+└── pages/
+    ├── LandingPage.tsx        # Main landing page
+    └── Landing/               # Section components
+        ├── HeroSection.tsx
+        ├── ServicesSection.tsx
+        ├── TeamSection.tsx
+        ├── WhyChooseUsSection.tsx
+        ├── VideoSection.tsx
+        ├── ContactSection.tsx
+        └── CTASection.tsx
 ```
 
 ### Client Images

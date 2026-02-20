@@ -1,23 +1,17 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonVariants } from './constants';
 
-export type ButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'outline'
-  | 'ghost'
-  | 'danger'
-  | 'white'
-  | 'outline-white';
-
-export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
-
-export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'disabled'> {
+export interface ButtonProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'disabled'>,
+    ButtonVariants {
   children: ReactNode;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   fullWidth?: boolean;
 }
+
+// Re-export for backward compatibility
+export type ButtonVariant = NonNullable<ButtonVariants['variant']>;
+export type ButtonSize = NonNullable<ButtonVariants['size']>;

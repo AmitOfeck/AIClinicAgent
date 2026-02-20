@@ -314,23 +314,144 @@ export interface ButtonProps {
 }
 ```
 
-### Constants File
+### Constants File (CVA Pattern)
 
 ```tsx
-// constants.ts
-export const BUTTON_VARIANTS = {
-  primary: 'bg-clinic-teal text-white hover:bg-clinic-teal-dark',
-  secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
-  outline: 'border border-clinic-teal text-clinic-teal hover:bg-clinic-teal/10',
-  ghost: 'text-gray-600 hover:bg-gray-100',
-} as const;
+// constants.ts - Using class-variance-authority (CVA)
+import { cva, type VariantProps } from 'class-variance-authority';
 
-export const BUTTON_SIZES = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-base',
-  lg: 'px-6 py-3 text-lg',
-} as const;
+export const buttonVariants = cva(
+  // Base styles (always applied)
+  'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-clinic-teal disabled:opacity-50 disabled:cursor-not-allowed',
+  {
+    variants: {
+      variant: {
+        primary: 'bg-clinic-teal text-white hover:bg-clinic-teal-dark',
+        secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
+        outline: 'border-2 border-clinic-teal text-clinic-teal hover:bg-clinic-teal/10',
+        ghost: 'text-gray-600 hover:bg-gray-100',
+        white: 'bg-white text-clinic-teal hover:bg-gray-50',
+        'outline-white': 'border-2 border-white text-white hover:bg-white/10',
+      },
+      size: {
+        sm: 'px-3 py-1.5 text-sm',
+        md: 'px-4 py-2 text-sm',
+        lg: 'px-6 py-3 text-base',
+        xl: 'px-8 py-4 text-lg',
+      },
+    },
+    defaultVariants: {
+      variant: 'primary',
+      size: 'md',
+    },
+  }
+);
+
+// Export variant types for props
+export type ButtonVariants = VariantProps<typeof buttonVariants>;
 ```
+
+### Using CVA in Component
+
+```tsx
+// Button.tsx
+import { forwardRef } from 'react';
+import { cn } from '@/lib/utils';
+import { buttonVariants, type ButtonVariants } from './constants';
+
+interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    ButtonVariants {
+  loading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  fullWidth?: boolean;
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, fullWidth, children, ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        className={cn(
+          buttonVariants({ variant, size }),
+          fullWidth && 'w-full',
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
+);
+```
+
+### Why CVA?
+
+| Benefit | Description |
+|---------|-------------|
+| **Type Safety** | Auto-generated types for variants |
+| **Composition** | Easy to extend with `cn()` |
+| **Consistency** | Single source of truth for styles |
+| **Readability** | Clear variant definitions |
+| **Tree-shaking** | Only used variants in bundle |
+
+---
+
+## Repetitive Components Pattern
+
+When rendering the same component multiple times with different props, use an array/map pattern instead of repeating the component.
+
+### Array Pattern for Repeated Components
+
+```tsx
+// ✅ Good - Array pattern
+const contactItems = [
+  { icon: MapPin, label: 'Address', value: address },
+  { icon: Phone, label: 'Phone', value: phone, href: `tel:${phone}` },
+  { icon: Mail, label: 'Email', value: email, href: `mailto:${email}` },
+];
+
+return (
+  <div className="space-y-4">
+    {contactItems.map((item) => (
+      <ContactItem
+        key={item.label}
+        icon={item.icon}
+        label={item.label}
+        href={item.href}
+      >
+        {item.value}
+      </ContactItem>
+    ))}
+  </div>
+);
+
+// ❌ Bad - Repetitive components
+return (
+  <div className="space-y-4">
+    <ContactItem icon={MapPin} label="Address">
+      {address}
+    </ContactItem>
+    <ContactItem icon={Phone} label="Phone" href={`tel:${phone}`}>
+      {phone}
+    </ContactItem>
+    <ContactItem icon={Mail} label="Email" href={`mailto:${email}`}>
+      {email}
+    </ContactItem>
+  </div>
+);
+```
+
+### When to Use Array Pattern
+
+| Use Array Pattern | Keep Individual Components |
+|-------------------|---------------------------|
+| 3+ similar components | 1-2 components |
+| Same component type | Different component types |
+| Props are data-driven | Complex conditional logic |
+| Easy to add/remove items | Unique per-item markup |
 
 ---
 
@@ -525,6 +646,125 @@ export const useChat = (): UseChatReturn => {
 // Visually hidden but accessible
 <span className="sr-only">Opens in new tab</span>
 ```
+
+---
+
+## Internationalization (i18n)
+
+### Folder Structure
+
+```
+client/src/i18n/
+├── index.ts          # Exports, hook
+├── en.ts             # English translations
+├── he.ts             # Hebrew translations
+└── types.ts          # Translation key types
+```
+
+### Translation File Format
+
+```tsx
+// i18n/en.ts
+export const en = {
+  common: {
+    bookNow: 'Book Now',
+    learnMore: 'Learn More',
+    callUs: 'Call Us',
+    readMore: 'Read More',
+  },
+  hero: {
+    badge: "Tel Aviv's Premier Dental Clinic",
+    title: 'Your Smile,',
+    titleHighlight: 'Our Priority',
+    subtitle: 'Experience world-class dental care with Dr. Ilan Ofeck and our team of specialists.',
+    cta: 'Book with AI Assistant',
+  },
+  services: {
+    title: 'Comprehensive Dental Care',
+    subtitle: 'From routine cleanings to advanced procedures...',
+  },
+  team: {
+    title: 'Meet Our Team',
+    subtitle: 'Our team of experienced dental professionals...',
+  },
+  contact: {
+    title: 'Visit Our Clinic',
+    subtitle: 'Conveniently located in the heart of Tel Aviv',
+    getDirections: 'Get Directions',
+    todayHours: "Today's Hours",
+  },
+  chat: {
+    welcome: 'Hello! Welcome to Dr. Ilan Ofeck\'s Dental Clinic...',
+    placeholder: 'Type your message...',
+    assistant: 'SmartClinic Assistant',
+    online: 'Online • Ready to help',
+  },
+} as const;
+
+export type Translations = typeof en;
+```
+
+### Simple Translation Hook
+
+```tsx
+// i18n/index.ts
+import { en } from './en';
+import { he } from './he';
+
+type Language = 'en' | 'he';
+
+const translations = { en, he };
+
+// Simple hook (no context needed for now)
+export const useTranslation = (lang: Language = 'en') => {
+  const t = translations[lang];
+
+  return {
+    t,
+    // Helper for nested keys: t('hero.title')
+    translate: (key: string) => {
+      const keys = key.split('.');
+      let result: unknown = t;
+      for (const k of keys) {
+        result = (result as Record<string, unknown>)?.[k];
+      }
+      return result as string;
+    },
+  };
+};
+```
+
+### Usage in Components
+
+```tsx
+// HeroSection.tsx
+import { useTranslation } from '@/i18n';
+
+export const HeroSection = () => {
+  const { t } = useTranslation();
+
+  return (
+    <section>
+      <Badge>{t.hero.badge}</Badge>
+      <h1>
+        {t.hero.title}
+        <span>{t.hero.titleHighlight}</span>
+      </h1>
+      <p>{t.hero.subtitle}</p>
+      <Button>{t.hero.cta}</Button>
+    </section>
+  );
+};
+```
+
+### Translation Guidelines
+
+| Do | Don't |
+|----|-------|
+| Group by feature/page | Flat key structure |
+| Use descriptive keys | Generic keys like `text1` |
+| Include context in key | Duplicate strings |
+| Keep translations short | Long paragraphs |
 
 ---
 
