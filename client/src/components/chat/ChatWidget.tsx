@@ -8,6 +8,7 @@ import { useChatContext } from '@/context/ChatContext'
 import { API_ENDPOINTS, apiClient } from '@/api'
 import { WELCOME_MESSAGE } from '@/constants'
 import { useChatSession } from '@/hooks'
+import { env } from '@/config'
 
 interface HistoryMessage {
   id: string
@@ -60,7 +61,7 @@ export default function ChatWidget() {
   }, [sessionId])
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, error, append, setMessages } = useChat({
-    api: API_ENDPOINTS.chat,
+    api: `${env.apiBaseUrl}${API_ENDPOINTS.chat}`,
     body: { sessionId },
     initialMessages,
   })
