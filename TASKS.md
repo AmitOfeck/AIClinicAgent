@@ -227,18 +227,47 @@ Refactor agent logic into a reusable service layer to support multiple channels 
 
 ---
 
+### Phase 10: Agent Tools E2E Testing ✅
+
+#### 10.1 Automated Test Suite (`server/src/test-tools.ts`)
+- [x] Created comprehensive test script with 18 test cases
+- [x] Happy path tests (8 tests) - all passing
+- [x] Error case tests (3 tests) - all passing
+- [x] Edge case tests (2 tests) - all passing
+- [x] Create appointment tests (5 tests) - all passing
+
+#### 10.2 Test Coverage
+| Tool | Tests | Status |
+|------|-------|--------|
+| getServices | 1 | ✅ |
+| getClinicTeam | 1 | ✅ |
+| getStaffForService | 3 | ✅ |
+| checkAvailability | 4 | ✅ |
+| searchKnowledgeBase | 4 | ✅ |
+| getPatientHistory | 3 | ✅ |
+| createAppointment | 1 | ✅ |
+| savePatientPreference | 1 | ✅ |
+
+#### 10.3 Bug Found & Fixed
+- **Issue**: Declined appointments were blocking slot re-booking
+- **Fix**: `getPatientHistory` now filters `activeAppointments` to only PENDING/APPROVED status
+
+#### 10.4 Notes
+- Google Calendar integration gracefully falls back to mock slots when not configured
+- Slot API returns max 8 slots (by design for UX)
+- All structured error types working correctly (NOT_FOUND, STAFF_NOT_WORKING, etc.)
+
+---
+
 ## Pending Tasks
 
-### Phase 10: End-to-End Testing
+### Phase 10.5: Manual Testing (Optional)
 - [ ] Test chat without API key (graceful error)
 - [ ] Test complete booking flow in browser
 - [ ] Test self-correction (book taken slot → suggest alternatives)
-- [ ] Test knowledge base queries ("What are your prices?")
-- [ ] Test patient memory ("I prefer morning appointments")
 - [ ] Test Telegram approve flow → email + calendar event
 - [ ] Test Telegram decline flow → rejection email
 - [ ] Verify staff images display correctly
-- [ ] Test different services route to correct specialist
 
 ### Phase 11: Email Integration (Optional)
 - [ ] Set up Resend account
