@@ -5,7 +5,8 @@ import { env } from '@/config';
  * These are relative paths that will be prefixed with the API base URL.
  */
 export const API_ENDPOINTS = {
-  chat: `${env.apiBaseUrl}/api/chat`,
+  chat: '/api/chat',
+  chatHistory: '/api/chat/history',
   health: '/api/health',
 } as const;
 

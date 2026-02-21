@@ -115,7 +115,7 @@ services (
 )
 
 staff_services (
-  staff_id, service_id -- Many-to-many
+  staff_id, service_id -- Many-to-many junction table
 )
 
 appointments (
@@ -125,13 +125,72 @@ appointments (
 )
 
 patient_preferences (
-  id, email, preference_type, preference_value, created_at
+  id, patient_email UNIQUE, patient_name, phone, preferences,
+  interests, notes, last_interaction, converted, preferred_channel,
+  created_at, updated_at
 )
 
-conversations (
-  id, session_id, messages JSON, created_at, updated_at
+chat_sessions (
+  id, session_id UNIQUE, patient_email, created_at, updated_at
+)
+
+chat_messages (
+  id, session_id FK, role, content, created_at
 )
 ```
+
+### Entity Relationships
+
+```
+┌─────────────┐       ┌─────────────────┐       ┌─────────────┐
+│   staff     │       │  staff_services │       │  services   │
+│─────────────│       │─────────────────│       │─────────────│
+│ PK id       │──┐    │ FK staff_id     │    ┌──│ PK id       │
+│    name     │  └───>│ FK service_id   │<───┘  │    name     │
+│    role     │       └─────────────────┘       │    duration │
+└──────┬──────┘              M:N                └─────────────┘
+       │                                               │
+       │ 1:N                                      1:N  │
+       │                                               │
+       ▼                                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       appointments                           │
+│─────────────────────────────────────────────────────────────│
+│ PK id                                                        │
+│ FK staff_id ─────────────────> staff.id                      │
+│ FK service_id ───────────────> services.id                   │
+│    patient_email                                             │
+│    date_time, status                                         │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐                    ┌─────────────────┐
+│  chat_sessions  │                    │patient_preferences│
+│─────────────────│                    │─────────────────│
+│ PK id           │                    │ PK id           │
+│ UK session_id   │──┐                 │ UK patient_email│
+│    patient_email│  │                 │    preferences  │
+└─────────────────┘  │                 └─────────────────┘
+                     │ 1:N
+                     ▼
+              ┌─────────────────┐
+              │  chat_messages  │
+              │─────────────────│
+              │ PK id           │
+              │ FK session_id ──────> chat_sessions.session_id
+              │    role         │
+              │    content      │
+              └─────────────────┘
+```
+
+### Relationship Summary
+
+| Relationship | Type | Description |
+|--------------|------|-------------|
+| staff ↔ services | **Many-to-Many** | Via `staff_services` junction table. A staff member can perform multiple services; a service can be performed by multiple staff |
+| staff → appointments | **One-to-Many** | One staff member can have many appointments |
+| services → appointments | **One-to-Many** | One service can be booked in many appointments |
+| chat_sessions → chat_messages | **One-to-Many** | One session contains many messages |
+| patient_email (logical) | **Implicit** | Links `appointments`, `patient_preferences`, and `chat_sessions` by email (no FK constraint) |
 
 ### Appointment Status Flow
 
@@ -206,11 +265,14 @@ withRetry(fn, {
 ```
 POST /api/chat
 Content-Type: application/json
-Body: { messages: Message[] }
+Body: { messages: Message[], sessionId?: string }
 Response: SSE stream (Vercel AI SDK format)
 
 GET /api/chat/trace
 Response: { steps: AgentStep[], totalSteps: number, toolsUsed: string[] }
+
+GET /api/chat/history/:sessionId
+Response: { messages: [{id, role, content, createdAt}] }
 ```
 
 ### Telegram Webhook
@@ -336,7 +398,8 @@ server/src/
 │   ├── staff.ts             # Staff queries
 │   ├── services.ts          # Service queries
 │   ├── appointments.ts      # Appointment CRUD
-│   └── patients.ts          # Patient preferences
+│   ├── patients.ts          # Patient preferences
+│   └── conversations.ts     # Chat session persistence
 └── utils/
     └── retry.ts             # Exponential backoff
 

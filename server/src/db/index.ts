@@ -99,6 +99,29 @@ export function initDatabase() {
     )
   `)
 
+  // Chat sessions table (for conversation persistence)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS chat_sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id TEXT UNIQUE NOT NULL,
+      patient_email TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Chat messages table (stores individual messages)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id TEXT NOT NULL,
+      role TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (session_id) REFERENCES chat_sessions(session_id)
+    )
+  `)
+
   // Migration: Add new columns if they don't exist (for existing databases)
   const columns = db.prepare("PRAGMA table_info(patient_preferences)").all() as { name: string }[]
   const columnNames = columns.map(c => c.name)

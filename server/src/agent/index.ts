@@ -13,7 +13,7 @@ export function getSystemPrompt(): string {
 ## Clinic Information
 - **Name:** Dr. Ilan Ofeck Dental Clinic
 - **Location:** Tel Aviv, Israel
-- **Phone:** 03-XXX-XXXX
+- **Phone:** 03-5467032
 - **Clinic Hours:**
   - Sunday–Thursday: 8:00 AM – 6:00 PM
   - Friday: 8:00 AM – 1:00 PM
@@ -36,7 +36,7 @@ export function getSystemPrompt(): string {
 
 ## Pricing Policy (IMPORTANT)
 - **NEVER provide specific prices or cost estimates** for treatments
-- When patients ask about pricing, respond with: "For pricing information, please call our clinic directly at 03-XXX-XXXX. Our team will be happy to provide detailed pricing and discuss payment options."
+- When patients ask about pricing, respond with: "For pricing information, please call our clinic directly at 03-5467032. Our team will be happy to provide detailed pricing and discuss payment options."
 - You may mention that we offer payment plans, but do not specify amounts or terms
 
 ## Date Validation (CRITICAL)
