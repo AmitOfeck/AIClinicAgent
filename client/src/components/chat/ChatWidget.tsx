@@ -108,8 +108,8 @@ export default function ChatWidget() {
         <div
           className={cn(
             'fixed bg-white shadow-2xl flex flex-col z-50 transition-all duration-200',
-            // Mobile: full screen using dynamic viewport height
-            'inset-0 h-[100dvh]',
+            // Mobile: full screen with keyboard support
+            'inset-0 chat-widget-mobile',
             // Desktop: positioned bottom-right with fixed size
             'sm:inset-auto sm:bottom-6 sm:right-6 sm:w-[380px] sm:rounded-2xl sm:h-[600px] sm:max-h-[80vh]',
             // Minimized state

@@ -1,5 +1,3 @@
-import { env } from '@/config';
-
 /**
  * API endpoint paths.
  * These are relative paths that will be prefixed with the API base URL.

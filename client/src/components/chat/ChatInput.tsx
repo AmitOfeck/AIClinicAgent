@@ -1,4 +1,4 @@
-import { FormEvent } from 'react'
+import { FormEvent, useRef } from 'react'
 import { Send } from 'lucide-react'
 
 interface ChatInputProps {
@@ -14,15 +14,26 @@ export default function ChatInput({
   handleSubmit,
   isLoading,
 }: ChatInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleFocus = () => {
+    // Delay to wait for keyboard to appear
+    setTimeout(() => {
+      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }, 300)
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
       className="flex items-center gap-2 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-gray-100 flex-shrink-0 bg-white sm:rounded-b-2xl"
     >
       <input
+        ref={inputRef}
         type="text"
         value={input}
         onChange={handleInputChange}
+        onFocus={handleFocus}
         placeholder="Type your message..."
         disabled={isLoading}
         autoComplete="off"

@@ -44,3 +44,11 @@ body {
     min-height: 44px;
   }
 }
+
+/* Chat widget mobile full-screen with keyboard support */
+@media (max-width: 639px) {
+  .chat-widget-mobile {
+    height: 100dvh !important;
+    height: -webkit-fill-available !important;
+  }
+}
