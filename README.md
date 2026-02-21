@@ -2,7 +2,8 @@
 
 AI-powered dental clinic assistant that handles appointment scheduling with human-in-the-loop approval via Telegram.
 
-[![Demo Video](https://img.shields.io/badge/Demo-Watch%20Video-red?style=for-the-badge&logo=google-drive)](https://drive.google.com/file/d/1QWU9e2aGP2vp3V4n_lAqCb3uF-LBUiof/view?usp=sharing)
+[![Live Demo](https://img.shields.io/badge/Live-Try%20It%20Now-brightgreen?style=for-the-badge&logo=vercel)](https://ai-clinic-agent.vercel.app/)
+[![Demo Video](https://img.shields.io/badge/Video-Watch%20Demo-red?style=for-the-badge&logo=google-drive)](https://drive.google.com/file/d/1QWU9e2aGP2vp3V4n_lAqCb3uF-LBUiof/view?usp=sharing)
 
 ## Overview
 
