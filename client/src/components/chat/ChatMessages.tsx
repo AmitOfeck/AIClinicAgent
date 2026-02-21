@@ -18,7 +18,7 @@ export default function ChatMessages({ messages, isLoading }: ChatMessagesProps)
   }, [messages])
 
   return (
-    <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-4 scroll-smooth">
+    <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 space-y-4 scroll-smooth">
       {messages.map((message) => (
         <div key={message.id}>
           {/* Tool invocations */}
