@@ -398,7 +398,7 @@ GET /api/chat/trace
 | Gemini AI | ✅ Real | Paid API (gemini-2.5-flash) |
 | Telegram Bot | ✅ Real | Notifications + approve/decline |
 | Google Calendar | ✅ Real | Integrated into checkAvailability |
-| Email (Resend) | 🔶 Optional | Logs to console if not configured |
+| Email (Resend) | ✅ Real | Confirmation + decline emails |
 
 ---
 
@@ -406,11 +406,9 @@ GET /api/chat/trace
 
 | File | Description |
 |------|-------------|
-| [PLAN.md](./PLAN.md) | Implementation plan with phase progress |
-| [SPEC.md](./SPEC.md) | Technical specification |
 | [TASKS.md](./TASKS.md) | Task tracker (completed/pending) |
-| [STANDARDS.md](./STANDARDS.md) | Backend code conventions |
-| [STANDARDS-FRONTEND.md](./STANDARDS-FRONTEND.md) | Frontend code conventions |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Technical architecture, API, database schema |
+| [STANDARDS.md](./STANDARDS.md) | Code conventions (backend + frontend) |
 
 ---
 
