@@ -22,6 +22,7 @@ export interface AgentTrace {
   steps: AgentStep[]
   totalSteps: number
   toolsUsed: string[]
+  finalResponse?: string
 }
 
 // Callback type for step tracing
@@ -120,11 +121,12 @@ export async function streamChat(
         console.log(`[Step ${trace.totalSteps}] Text generated: ${text.slice(0, 100)}...`)
       }
     },
-    onFinish: ({ usage, finishReason }) => {
+    onFinish: ({ usage, finishReason, text }) => {
       console.log(`[Agent finished] Reason: ${finishReason}, Steps: ${trace.totalSteps}, Tools: [${trace.toolsUsed.join(', ')}]`)
       if (usage) {
         console.log(`[Token usage] Prompt: ${usage.promptTokens}, Completion: ${usage.completionTokens}`)
       }
+      trace.finalResponse = text
       onFinish?.(trace)
     },
     onError: (error) => {

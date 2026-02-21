@@ -128,8 +128,12 @@ patient_preferences (
   id, email, preference_type, preference_value, created_at
 )
 
-conversations (
-  id, session_id, messages JSON, created_at, updated_at
+chat_sessions (
+  id, session_id UNIQUE, patient_email, created_at, updated_at
+)
+
+chat_messages (
+  id, session_id FK, role, content, created_at
 )
 ```
 
@@ -206,11 +210,14 @@ withRetry(fn, {
 ```
 POST /api/chat
 Content-Type: application/json
-Body: { messages: Message[] }
+Body: { messages: Message[], sessionId?: string }
 Response: SSE stream (Vercel AI SDK format)
 
 GET /api/chat/trace
 Response: { steps: AgentStep[], totalSteps: number, toolsUsed: string[] }
+
+GET /api/chat/history/:sessionId
+Response: { messages: [{id, role, content, createdAt}] }
 ```
 
 ### Telegram Webhook
@@ -336,7 +343,8 @@ server/src/
 │   ├── staff.ts             # Staff queries
 │   ├── services.ts          # Service queries
 │   ├── appointments.ts      # Appointment CRUD
-│   └── patients.ts          # Patient preferences
+│   ├── patients.ts          # Patient preferences
+│   └── conversations.ts     # Chat session persistence
 └── utils/
     └── retry.ts             # Exponential backoff
 

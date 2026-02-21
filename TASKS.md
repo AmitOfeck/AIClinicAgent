@@ -65,18 +65,24 @@
 - [x] Confirmation email on approve
 - [x] Decline email on decline
 
+### Phase 12: Chat Persistence ✅
+- [x] SQLite tables for chat sessions and messages
+- [x] localStorage session ID management
+- [x] History endpoint to restore conversations
+- [x] "New Chat" button to start fresh
+
 ---
 
 ## Pending Tasks
 
-### Phase 12: Deployment
+### Phase 13: Deployment
 - [ ] Deploy client to Vercel
 - [ ] Deploy server to Railway/Render
 - [ ] Configure production environment variables
 - [ ] Set Telegram webhook to production URL
 - [ ] Update CORS for production domain
 
-### Phase 13: Demo
+### Phase 14: Demo
 - [ ] Record demo video
 - [ ] Add demo link to README
 
