@@ -1,6 +1,6 @@
 # SmartClinic Agent - Project Tasks
 
-## Current Status: Frontend Standards Upgrade - CVA & i18n Prep
+## Current Status: Multi-Channel Agent Architecture
 
 ---
 
@@ -195,27 +195,88 @@
 
 ---
 
+### Phase 9: Multi-Channel Agent Service ✅ (Current)
+
+Refactor agent logic into a reusable service layer to support multiple channels (Web, WhatsApp, Telegram).
+
+#### 9.1 Agent Service Layer
+- [x] Create `services/agent.ts` - Core agent service
+- [x] Implement `streamChat()` - For web (SSE streaming)
+- [x] Implement `generateChat()` - For WhatsApp/other (text response)
+- [x] Move model config, tools, prompt into service
+- [x] Add proper TypeScript types
+
+#### 9.2 Route Updates
+- [x] Update `routes/chat.ts` to use `streamChat()` from service
+- [x] Preserve step tracing functionality
+- [x] Verify web chat still works
+
+#### 9.3 Architecture Result
+```
+                    ┌─────────────────────────┐
+                    │   services/agent.ts     │
+                    │  streamChat()           │ → Web (SSE)
+                    │  generateChat()         │ → WhatsApp (text)
+                    └───────────┬─────────────┘
+                                │
+          ┌─────────────────────┼─────────────────────┐
+          │                     │                     │
+    routes/chat.ts      routes/whatsapp.ts     (future channels)
+       (Web)              (Ready to add)
+```
+
+---
+
+### Phase 10: Agent Tools E2E Testing ✅
+
+#### 10.1 Automated Test Suite (`server/src/test-tools.ts`)
+- [x] Created comprehensive test script with 18 test cases
+- [x] Happy path tests (8 tests) - all passing
+- [x] Error case tests (3 tests) - all passing
+- [x] Edge case tests (2 tests) - all passing
+- [x] Create appointment tests (5 tests) - all passing
+
+#### 10.2 Test Coverage
+| Tool | Tests | Status |
+|------|-------|--------|
+| getServices | 1 | ✅ |
+| getClinicTeam | 1 | ✅ |
+| getStaffForService | 3 | ✅ |
+| checkAvailability | 4 | ✅ |
+| searchKnowledgeBase | 4 | ✅ |
+| getPatientHistory | 3 | ✅ |
+| createAppointment | 1 | ✅ |
+| savePatientPreference | 1 | ✅ |
+
+#### 10.3 Bug Found & Fixed
+- **Issue**: Declined appointments were blocking slot re-booking
+- **Fix**: `getPatientHistory` now filters `activeAppointments` to only PENDING/APPROVED status
+
+#### 10.4 Notes
+- Google Calendar integration gracefully falls back to mock slots when not configured
+- Slot API returns max 8 slots (by design for UX)
+- All structured error types working correctly (NOT_FOUND, STAFF_NOT_WORKING, etc.)
+
+---
+
 ## Pending Tasks
 
-### Phase 9: End-to-End Testing
+### Phase 10.5: Manual Testing (Optional)
 - [ ] Test chat without API key (graceful error)
 - [ ] Test complete booking flow in browser
 - [ ] Test self-correction (book taken slot → suggest alternatives)
-- [ ] Test knowledge base queries ("What are your prices?")
-- [ ] Test patient memory ("I prefer morning appointments")
 - [ ] Test Telegram approve flow → email + calendar event
 - [ ] Test Telegram decline flow → rejection email
 - [ ] Verify staff images display correctly
-- [ ] Test different services route to correct specialist
 
-### Phase 10: Email Integration
+### Phase 11: Email Integration (Optional)
 - [ ] Set up Resend account
 - [ ] Verify domain for sending
 - [ ] Add RESEND_API_KEY to environment
 - [ ] Test confirmation emails
 - [ ] Test decline emails
 
-### Phase 11: Deployment
+### Phase 12: Deployment
 - [ ] Deploy client to Vercel
 - [ ] Deploy server to Railway/Render
 - [ ] Configure production environment variables
@@ -223,7 +284,7 @@
 - [ ] Update CORS for production domain
 - [ ] Final production testing
 
-### Phase 12: Demo & Documentation
+### Phase 13: Demo & Documentation
 - [ ] Record demo video showing:
   - Website tour (home, services, about)
   - Booking flow with tool visualization
@@ -249,6 +310,7 @@
 
 ### Agent Core
 ```
+server/src/services/agent.ts       # Agent service (streamChat, generateChat)
 server/src/agent/index.ts          # System prompt (with RAG triggers)
 server/src/agent/tools/index.ts    # 8 tools with structured errors
 ```
@@ -264,6 +326,7 @@ server/src/db/patients.ts          # Patient preferences
 
 ### Services (with retry logic)
 ```
+server/src/services/agent.ts       # Multi-channel agent (web + WhatsApp ready)
 server/src/services/telegram.ts    # Notifications + webhook handler
 server/src/services/calendar.ts    # Availability + event creation
 server/src/services/email.ts       # Confirmation/decline emails

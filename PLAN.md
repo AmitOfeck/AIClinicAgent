@@ -12,48 +12,41 @@ AI-powered dental clinic booking assistant for **Dr. Ilan Ofeck's Dental Clinic*
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         React Frontend                               │
 │  ┌──────────────────┐  ┌─────────────────────────────────────────┐  │
-│  │  Clinic Website  │  │         Chat Widget (@ai-sdk/react)     │  │
-│  │  - Home          │  │  useChat() ←→ /api/chat (SSE streaming) │  │
+│  │  Landing Page    │  │         Chat Widget (@ai-sdk/react)     │  │
+│  │  - Hero          │  │  useChat() ←→ /api/chat (SSE streaming) │  │
 │  │  - Services      │  │  Tool invocation visualization          │  │
-│  │  - About         │  └─────────────────────────────────────────┘  │
+│  │  - Team/Contact  │  └─────────────────────────────────────────┘  │
 │  └──────────────────┘                                                │
-└─────────────────────────────────┬────────────────────────────────────┘
-                                  │
-                       ┌──────────▼──────────┐
-                       │   Express Backend    │
-                       │                      │
-                       │  ┌────────────────┐  │
-                       │  │  ReAct Agent   │  │
-                       │  │  (Gemini 2.5)  │  │
-                       │  │  maxSteps: 10  │  │
-                       │  └───────┬────────┘  │
-                       │          │           │
-                       │  ┌───────▼────────┐  │
-                       │  │  8 Agent Tools │  │
-                       │  │  + Step Trace  │  │
-                       │  └───────┬────────┘  │
-                       │          │           │
-                       │  ┌───────▼────────┐  │
-                       │  │ Retry + Error  │  │
-                       │  │   Handling     │  │
-                       │  └────────────────┘  │
-                       └──────────┬───────────┘
-                                  │
-        ┌─────────────────────────┼─────────────────────────────┐
-        │                         │                             │
-        ▼                         ▼                             ▼
-┌───────────────┐       ┌───────────────┐           ┌───────────────┐
-│    SQLite     │       │   Telegram    │           │    Resend     │
-│   Database    │       │   Bot API     │           │    Email      │
-│  (real data)  │       │  (real API)   │           │  (mocked)     │
-└───────────────┘       └───────┬───────┘           └───────────────┘
-                                │
-                                ▼
-                        ┌───────────────┐
-                        │ Google        │
-                        │ Calendar      │
-                        │ (mocked)      │
-                        └───────────────┘
+└─────────────────────────────────────┬────────────────────────────────┘
+                                      │
+                           ┌──────────▼──────────┐
+                           │   Express Backend    │
+                           │                      │
+                           │  ┌────────────────┐  │
+                           │  │  ReAct Agent   │  │
+                           │  │  (Gemini 2.5)  │  │
+                           │  │  maxSteps: 10  │  │
+                           │  └───────┬────────┘  │
+                           │          │           │
+                           │  ┌───────▼────────┐  │
+                           │  │  8 Agent Tools │  │
+                           │  │  + Step Trace  │  │
+                           │  └───────┬────────┘  │
+                           │          │           │
+                           │  ┌───────▼────────┐  │
+                           │  │ Retry + Error  │  │
+                           │  │   Handling     │  │
+                           │  └────────────────┘  │
+                           └──────────┬───────────┘
+                                      │
+            ┌─────────────────────────┼─────────────────────────────┐
+            │                         │                             │
+            ▼                         ▼                             ▼
+    ┌───────────────┐       ┌───────────────┐           ┌───────────────┐
+    │    SQLite     │       │   Telegram    │           │    Google     │
+    │   Database    │       │   Bot API     │           │   Calendar    │
+    │   (real)      │       │   (real)      │           │   (real)      │
+    └───────────────┘       └───────────────┘           └───────────────┘
 ```
 
 ---
@@ -65,11 +58,15 @@ AI-powered dental clinic booking assistant for **Dr. Ilan Ofeck's Dental Clinic*
 | Phase 0: Foundation | ✅ Complete | Project setup, DB, agent, tools |
 | Phase 1: UI Updates | ✅ Complete | Clinic branding, staff, services |
 | Phase 5: Robustness | ✅ Complete | Error types, retry, tracing |
-| Phase 6: E2E Testing | 🔄 Next | Full booking flow testing |
-| Phase 7: Calendar | ⏳ Pending | Real Google Calendar |
-| Phase 8: Email | ⏳ Pending | Real Resend integration |
-| Phase 9: Deployment | ⏳ Pending | Vercel + Railway |
-| Phase 10: Demo | ⏳ Pending | Video recording |
+| Phase 6: Frontend Refactor | ✅ Complete | Types, constants, components |
+| Phase 6.5: Landing Page | ✅ Complete | Single page, mobile responsive |
+| Phase 7: CVA & i18n | ✅ Complete | Component variants, translations |
+| Phase 8: Google Calendar | ✅ Complete | Real calendar integration |
+| Phase 9: Multi-Channel Agent | ✅ Complete | Agent service for Web + WhatsApp |
+| Phase 10: E2E Testing | ⏳ Pending | Full booking flow testing |
+| Phase 11: Email | ⏳ Skipped | Resend integration (optional) |
+| Phase 12: Deployment | ⏳ Pending | Vercel + Railway |
+| Phase 13: Demo | ⏳ Pending | Video recording |
 
 ---
 
@@ -88,10 +85,10 @@ AI-powered dental clinic booking assistant for **Dr. Ilan Ofeck's Dental Clinic*
 - [x] `staff_services` - Many-to-many relationship
 - [x] `appointments` - Bookings with status
 - [x] `patient_preferences` - Long-term memory
-- [x] `conversations` - Chat history
+- [x] `conversations` - Chat history persistence
 
 ### Agent Configuration
-- [x] System prompt with clinic context
+- [x] System prompt with clinic context (dynamic with date)
 - [x] Gemini 2.5 Flash model
 - [x] `maxSteps: 10` for multi-step reasoning
 - [x] 8 tools with Zod schemas
@@ -115,7 +112,7 @@ AI-powered dental clinic booking assistant for **Dr. Ilan Ofeck's Dental Clinic*
 
 ---
 
-## Phase 5: Agent Robustness ✅ (Latest)
+## Phase 5: Agent Robustness ✅
 
 ### Structured Error Types
 - [x] `ToolError` interface: `{ errorType, message, suggestion, retryable }`
@@ -154,43 +151,179 @@ AI-powered dental clinic booking assistant for **Dr. Ilan Ofeck's Dental Clinic*
 
 ---
 
-## Phase 6: E2E Testing (Next)
+## Phase 6: Frontend Refactor ✅
 
-### Test Scenarios
-- [ ] Chat without API key → graceful error
-- [ ] Complete booking flow → pending appointment
-- [ ] Self-correction → alternative slots
-- [ ] Knowledge queries → RAG response
-- [ ] Patient memory → preference storage
-- [ ] Telegram approve → email + calendar
-- [ ] Telegram decline → rejection email
-- [ ] Service routing → correct specialist
+### Foundation
+- [x] Folder structure (types/, constants/, hooks/, config/, api/)
+- [x] `types/clinic.ts` - Service, TeamMember, ClinicInfo, DayHours
+- [x] `types/chat.ts` - ChatMessage, ToolInvocation, ToolIconMap
+- [x] Constants extracted (clinic, services, team, features, chat)
+
+### UI Component Library
+- [x] `Button` component (variants, sizes, icons)
+- [x] `Card` component (variants, padding, hover)
+- [x] `Badge` component (colors, sizes)
+- [x] `Section` component (backgrounds, padding)
+- [x] `Container` component (max-widths)
+- [x] `PageLayout` component (consistent page structure)
+
+### Client Architecture
+- [x] `config/env.ts` - Environment configuration
+- [x] `api/apiClient.ts` - Generic API client with error handling
+- [x] `api/endpoints.ts` - Centralized API endpoints
+- [x] `hooks/useApi.ts` - Generic API state management
+- [x] `hooks/useChatWidget.ts` - Chat UI state management
+- [x] `hooks/useClinicHours.ts` - Clinic hours with "today" highlighting
+- [x] `context/ChatContext.tsx` - Shared chat state
 
 ---
 
-## Phase 7-10: Future Phases
+## Phase 6.5: Landing Page & Mobile ✅
 
-### Phase 7: Google Calendar
-- [ ] Google Cloud project setup
-- [ ] Service account creation
-- [ ] Calendar sharing
-- [ ] Real availability checking
+### Single Landing Page
+- [x] Consolidated Home, Services, About into single LandingPage
+- [x] Section components (HeroSection, ServicesSection, TeamSection, etc.)
+- [x] Scroll-to-section navigation
+- [x] Service cards open chat with service name
 
-### Phase 8: Email (Resend)
-- [ ] Account setup
-- [ ] Domain verification
-- [ ] Real email sending
+### Mobile Responsiveness
+- [x] Mobile hamburger menu in Navbar
+- [x] ChatWidget full-screen on mobile
+- [x] Responsive grids for all sections
+- [x] Touch-friendly button sizes
 
-### Phase 9: Deployment
-- [ ] Frontend → Vercel
-- [ ] Backend → Railway/Render
-- [ ] Environment configuration
-- [ ] Telegram webhook URL
+### Code Cleanup
+- [x] Removed unused pages (Home/, Services/, About.tsx)
+- [x] Updated Footer with correct links
+- [x] Clean component APIs with TypeScript interfaces
 
-### Phase 10: Demo
-- [ ] Screen recording
-- [ ] Voiceover/captions
-- [ ] README link
+---
+
+## Phase 7: CVA & i18n ✅
+
+### CVA (class-variance-authority)
+- [x] Installed `class-variance-authority` package
+- [x] Button - converted to CVA variants/sizes
+- [x] Card - converted to CVA variants/padding
+- [x] Badge - converted to CVA variants/sizes
+
+### i18n Preparation
+- [x] Created `i18n/` folder structure
+- [x] `i18n/types.ts` - Translation interface
+- [x] `i18n/en.ts` - English translations
+- [x] `i18n/he.ts` - Hebrew translations
+- [x] `useTranslation` hook (simple, no library)
+
+### Text Extraction
+- [x] HeroSection - title, subtitle, badges
+- [x] ServicesSection - heading, description
+- [x] TeamSection - heading, description
+- [x] ContactSection - all labels
+- [x] CTASection - all text
+- [x] WhyChooseUsSection - all text
+- [x] VideoSection - all text
+
+### Code Patterns
+- [x] Array pattern for repeated components
+- [x] Updated STANDARDS-FRONTEND.md with patterns
+
+---
+
+## Phase 8: Google Calendar Integration ✅
+
+- [x] Integration code in `server/src/services/calendar.ts`
+- [x] `checkCalendarAvailability()` - fetches busy slots from Google Calendar
+- [x] `createCalendarEvent()` - creates events on approval
+- [x] Retry logic with exponential backoff
+- [x] Graceful fallback to mock slots when not configured
+- [x] **Integrated into `checkAvailability` tool** - now checks both DB appointments AND Google Calendar
+
+---
+
+## Phase 9: Multi-Channel Agent Service ✅
+
+Refactored agent logic into a reusable service layer to support multiple channels.
+
+### Architecture
+
+```
+                    ┌─────────────────────────┐
+                    │   services/agent.ts     │
+                    │                         │
+                    │  - model config         │
+                    │  - tools                │
+                    │  - system prompt        │
+                    │                         │
+                    │  streamChat()           │ → Web (SSE streaming)
+                    │  generateChat()         │ → WhatsApp (text response)
+                    └───────────┬─────────────┘
+                                │
+          ┌─────────────────────┼─────────────────────┐
+          │                     │                     │
+    routes/chat.ts      routes/whatsapp.ts     (future channels)
+       (Web)              (Ready to add)
+```
+
+### Implementation
+- [x] Create `services/agent.ts` - Core agent service
+- [x] `streamChat(messages)` - Returns stream for web SSE
+- [x] `generateChat(messages)` - Returns text for WhatsApp/other
+- [x] Update `routes/chat.ts` to use service
+- [x] Preserve step tracing functionality
+
+### Benefits
+- **Web chat**: Works exactly the same (streaming)
+- **WhatsApp ready**: Just import `generateChat()` when needed
+- **Single source of truth**: Model, tools, prompt in one place
+- **Easy to extend**: Add Telegram, SMS, or other channels
+
+---
+
+## Phase 10: End-to-End Testing (Pending)
+
+### Test Scenarios
+- [ ] Server builds successfully
+- [ ] Client builds successfully
+- [ ] Chat endpoint responds
+- [ ] Database operations work
+- [ ] Tool invocations execute correctly
+- [ ] Knowledge base queries return results
+- [ ] Patient history lookup works
+
+---
+
+## Phase 11: Email Integration (Skipped)
+
+Resend integration is optional - email logs to console when not configured.
+
+- [ ] Set up Resend account
+- [ ] Verify domain for sending
+- [ ] Add RESEND_API_KEY to environment
+- [ ] Test confirmation emails
+- [ ] Test decline emails
+
+---
+
+## Phase 12: Deployment (Pending)
+
+- [ ] Deploy client to Vercel
+- [ ] Deploy server to Railway/Render
+- [ ] Configure production environment variables
+- [ ] Set Telegram webhook to production URL
+- [ ] Update CORS for production domain
+- [ ] Final production testing
+
+---
+
+## Phase 13: Demo (Pending)
+
+- [ ] Record demo video showing:
+  - Website tour (landing page sections)
+  - Booking flow with tool visualization
+  - Telegram approve/decline
+  - Self-correction behavior
+  - Knowledge base queries
+- [ ] Add demo link to README
 
 ---
 
@@ -205,9 +338,10 @@ AIClinicAgent/
 │   │   │   ├── chat.ts              # AI chat + tracing
 │   │   │   └── telegram.ts          # Webhook handler
 │   │   ├── agent/
-│   │   │   ├── index.ts             # System prompt
+│   │   │   ├── index.ts             # System prompt (dynamic)
 │   │   │   └── tools/index.ts       # 8 tools
 │   │   ├── services/
+│   │   │   ├── agent.ts             # Multi-channel agent service
 │   │   │   ├── calendar.ts          # Google Calendar (retry)
 │   │   │   ├── telegram.ts          # Bot + notifications
 │   │   │   ├── email.ts             # Resend (retry)
@@ -217,35 +351,38 @@ AIClinicAgent/
 │   │   │   ├── staff.ts             # Staff queries
 │   │   │   ├── services.ts          # Service queries
 │   │   │   ├── appointments.ts      # Appointment CRUD
-│   │   │   └── patients.ts          # Patient preferences
-│   │   ├── utils/
-│   │   │   └── retry.ts             # Exponential backoff
-│   │   └── data/
-│   │       └── clinic-knowledge.json
+│   │   │   ├── patients.ts          # Patient preferences
+│   │   │   └── conversations.ts     # Chat persistence
+│   │   └── utils/
+│   │       └── retry.ts             # Exponential backoff
 │   ├── data/                        # SQLite DB file
 │   └── .env
 │
 ├── client/
 │   ├── src/
 │   │   ├── App.tsx
-│   │   ├── pages/
-│   │   │   ├── Home.tsx
-│   │   │   ├── Services.tsx
-│   │   │   └── About.tsx
-│   │   └── components/
-│   │       ├── chat/
-│   │       │   ├── ChatWidget.tsx
-│   │       │   ├── ChatMessages.tsx
-│   │       │   └── ChatInput.tsx
-│   │       └── clinic/
-│   │           ├── Navbar.tsx
-│   │           └── Footer.tsx
+│   │   ├── config/env.ts            # Environment config
+│   │   ├── api/                     # API client + endpoints
+│   │   ├── hooks/                   # Custom hooks
+│   │   ├── context/                 # ChatContext
+│   │   ├── types/                   # TypeScript types
+│   │   ├── constants/               # Extracted data
+│   │   ├── i18n/                    # Translations (en, he)
+│   │   ├── components/
+│   │   │   ├── ui/                  # Button/, Card/, Badge/ (CVA)
+│   │   │   ├── layout/              # Section, Container
+│   │   │   ├── chat/                # ChatWidget, ChatMessages
+│   │   │   └── clinic/              # Navbar, Footer
+│   │   └── pages/
+│   │       ├── LandingPage.tsx      # Main page
+│   │       └── Landing/             # Section components
 │   └── public/images/staff/
 │
 ├── PLAN.md          # This file
 ├── SPEC.md          # Technical specification
 ├── TASKS.md         # Task tracker
-├── STANDARDS.md     # Code conventions
+├── STANDARDS.md     # Backend conventions
+├── STANDARDS-FRONTEND.md  # Frontend conventions
 └── README.md        # Project overview
 ```
 
@@ -280,7 +417,7 @@ APP_URL=http://localhost:3001
 |------|---------|---------|
 | `getServices` | List all dental services | Service[] |
 | `getStaffForService` | Find specialists for treatment | Staff[] + schedules |
-| `checkAvailability` | Check staff schedule for date | Slots[] or error |
+| `checkAvailability` | Check staff schedule + calendar | Slots[] or error |
 | `createAppointment` | Book pending appointment | Appointment + Telegram |
 | `getClinicTeam` | Get team information | Staff[] |
 | `searchKnowledgeBase` | RAG search clinic info | Results[] |
@@ -296,6 +433,9 @@ APP_URL=http://localhost:3001
 - [x] Recognizes returning patients
 - [x] Uses RAG for pricing/policy questions
 - [x] Step tracing works in console
-- [ ] Full booking flow completes
-- [ ] Telegram approve creates calendar event
-- [ ] Email confirmations send correctly
+- [x] Google Calendar integrated into availability check
+- [x] Frontend responsive on mobile
+- [x] CVA component variants working
+- [x] i18n translations ready (en + he)
+- [ ] Full booking flow completes (testing)
+- [ ] Deployed to production

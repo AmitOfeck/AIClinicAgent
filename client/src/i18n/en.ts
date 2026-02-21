@@ -83,7 +83,7 @@ export const en: Translations = {
   },
   chat: {
     title: 'SmartClinic Assistant',
-    status: 'Online • Ready to help',
+    status: 'Online',
     placeholder: 'Type your message...',
     welcome:
       "Hello! Welcome to Dr. Ilan Ofeck's Dental Clinic. I'm here to help you book appointments, answer questions about our services, or provide information about our clinic. How can I assist you today?",

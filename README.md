@@ -21,10 +21,11 @@ This project demonstrates a **production-grade agentic workflow**:
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         React Frontend                               │
 │  ┌──────────────────┐  ┌─────────────────────────────────────────┐  │
-│  │  Clinic Website  │  │         Chat Widget (@ai-sdk/react)     │  │
-│  │  - Home          │  │  useChat() ←→ /api/chat (SSE streaming) │  │
+│  │  Landing Page    │  │         Chat Widget (@ai-sdk/react)     │  │
+│  │  - Hero          │  │  useChat() ←→ /api/chat (SSE streaming) │  │
 │  │  - Services      │  │  Tool invocation visualization          │  │
-│  │  - About         │  └─────────────────────────────────────────┘  │
+│  │  - Team          │  └─────────────────────────────────────────┘  │
+│  │  - Contact       │                                                │
 │  └──────────────────┘                                                │
 └─────────────────────────────────┬────────────────────────────────────┘
                                   │
@@ -41,8 +42,8 @@ This project demonstrates a **production-grade agentic workflow**:
         │                         │                             │
         ▼                         ▼                             ▼
 ┌───────────────┐       ┌───────────────┐           ┌───────────────┐
-│    SQLite     │       │   Telegram    │           │    Resend     │
-│   Database    │       │   Bot API     │           │    Email      │
+│    SQLite     │       │   Telegram    │           │    Google     │
+│   Database    │       │   Bot API     │           │   Calendar    │
 └───────────────┘       └───────┬───────┘           └───────────────┘
                                 │
                          ┌──────▼──────┐
@@ -59,22 +60,23 @@ This project demonstrates a **production-grade agentic workflow**:
 
 ### Core Requirements
 
-| Feature | Implementation |
-|---------|----------------|
-| **Agentic Logic** | ReAct pattern with `maxSteps: 10` |
-| **Tool Use** | 8 tools with Zod schemas |
-| **Self-Correction** | Structured error types + suggestions |
-| **Human-in-the-Loop** | Telegram approve/decline buttons |
+| Feature | Status | Implementation |
+|---------|--------|----------------|
+| **Agentic Logic** | ✅ | ReAct pattern with `maxSteps: 10` |
+| **Tool Use** | ✅ | 8 tools with Zod schemas |
+| **Self-Correction** | ✅ | Structured error types + suggestions |
+| **Human-in-the-Loop** | ✅ | Telegram approve/decline buttons |
 
 ### Nice-to-Have Features
 
-| Feature | Implementation |
-|---------|----------------|
-| **Long-Term Memory** | Patient preferences in SQLite |
-| **Proactive Recognition** | Greets returning patients by name |
-| **Agentic RAG** | Knowledge base search for policies/pricing |
-| **Step Tracing** | Console logging + `/api/chat/trace` endpoint |
-| **Retry Logic** | Exponential backoff for external APIs |
+| Feature | Status | Implementation |
+|---------|--------|----------------|
+| **Long-Term Memory** | ✅ | Patient preferences in SQLite |
+| **Proactive Recognition** | ✅ | Greets returning patients by name |
+| **Agentic RAG** | ✅ | Knowledge base search for policies/pricing |
+| **Step Tracing** | ✅ | Console logging + `/api/chat/trace` endpoint |
+| **Retry Logic** | ✅ | Exponential backoff for external APIs |
+| **Google Calendar** | ✅ | Real-time availability checking |
 
 ---
 
@@ -83,15 +85,16 @@ This project demonstrates a **production-grade agentic workflow**:
 | Layer | Technology |
 |-------|-----------|
 | **Frontend** | React 18 + TypeScript + Vite |
-| **Styling** | Tailwind CSS |
+| **Styling** | Tailwind CSS + CVA (class-variance-authority) |
 | **AI Chat** | @ai-sdk/react (useChat) |
+| **i18n** | Custom hook (English + Hebrew ready) |
 | **Backend** | Node.js + Express + TypeScript |
 | **AI SDK** | Vercel AI SDK v4 |
 | **LLM** | Google Gemini 2.5 Flash |
 | **Database** | SQLite (better-sqlite3) |
 | **Notifications** | Telegram Bot API |
-| **Email** | Resend (mocked) |
-| **Calendar** | Google Calendar API (mocked) |
+| **Calendar** | Google Calendar API |
+| **Email** | Resend (optional) |
 
 ---
 
@@ -106,7 +109,7 @@ AIClinicAgent/
 │   │   │   ├── chat.ts           # AI chat (streaming + tracing)
 │   │   │   └── telegram.ts       # Webhook handler
 │   │   ├── agent/
-│   │   │   ├── index.ts          # System prompt
+│   │   │   ├── index.ts          # System prompt (dynamic)
 │   │   │   └── tools/index.ts    # 8 agent tools
 │   │   ├── services/
 │   │   │   ├── calendar.ts       # Google Calendar (with retry)
@@ -118,7 +121,8 @@ AIClinicAgent/
 │   │   │   ├── staff.ts          # Staff queries
 │   │   │   ├── services.ts       # Service queries
 │   │   │   ├── appointments.ts   # Appointment CRUD
-│   │   │   └── patients.ts       # Patient preferences
+│   │   │   ├── patients.ts       # Patient preferences
+│   │   │   └── conversations.ts  # Chat persistence
 │   │   └── utils/
 │   │       └── retry.ts          # Exponential backoff
 │   └── data/
@@ -127,24 +131,53 @@ AIClinicAgent/
 ├── client/
 │   ├── src/
 │   │   ├── App.tsx
-│   │   ├── pages/
-│   │   │   ├── Home.tsx
-│   │   │   ├── Services.tsx
-│   │   │   └── About.tsx
-│   │   └── components/
-│   │       ├── chat/
-│   │       │   ├── ChatWidget.tsx
-│   │       │   ├── ChatMessages.tsx
-│   │       │   └── ChatInput.tsx
-│   │       └── clinic/
-│   │           ├── Navbar.tsx
-│   │           └── Footer.tsx
+│   │   ├── config/
+│   │   │   └── env.ts            # Environment config
+│   │   ├── api/
+│   │   │   ├── apiClient.ts      # Fetch wrapper
+│   │   │   └── endpoints.ts      # API endpoints
+│   │   ├── hooks/
+│   │   │   ├── useApi.ts         # API state management
+│   │   │   ├── useChatWidget.ts  # Chat UI state
+│   │   │   └── useClinicHours.ts # Hours with "today" check
+│   │   ├── context/
+│   │   │   └── ChatContext.tsx   # Shared chat state
+│   │   ├── types/
+│   │   │   ├── clinic.ts         # Service, TeamMember, etc.
+│   │   │   └── chat.ts           # ToolInvocation, etc.
+│   │   ├── constants/
+│   │   │   ├── clinic.ts         # CLINIC_INFO, NAV_LINKS
+│   │   │   ├── services.ts       # SERVICES array
+│   │   │   ├── team.ts           # TEAM, STATS
+│   │   │   ├── features.ts       # FEATURES
+│   │   │   └── chat.ts           # TOOL_ICONS
+│   │   ├── i18n/
+│   │   │   ├── index.ts          # useTranslation hook
+│   │   │   ├── types.ts          # Translation interface
+│   │   │   ├── en.ts             # English translations
+│   │   │   └── he.ts             # Hebrew translations
+│   │   ├── components/
+│   │   │   ├── ui/               # Button/, Card/, Badge/ (CVA)
+│   │   │   ├── layout/           # Container, Section
+│   │   │   ├── chat/             # ChatWidget, ChatMessages
+│   │   │   └── clinic/           # Navbar, Footer
+│   │   └── pages/
+│   │       ├── LandingPage.tsx   # Main landing page
+│   │       └── Landing/          # Section components
+│   │           ├── HeroSection.tsx
+│   │           ├── ServicesSection.tsx
+│   │           ├── TeamSection.tsx
+│   │           ├── WhyChooseUsSection.tsx
+│   │           ├── VideoSection.tsx
+│   │           ├── ContactSection.tsx
+│   │           └── CTASection.tsx
 │   └── public/images/staff/
 │
 ├── PLAN.md          # Implementation plan
 ├── SPEC.md          # Technical specification
 ├── TASKS.md         # Task tracker
-├── STANDARDS.md     # Code conventions
+├── STANDARDS.md     # Backend code conventions
+├── STANDARDS-FRONTEND.md  # Frontend code conventions
 └── README.md        # This file
 ```
 
@@ -223,6 +256,7 @@ Patient (Chat)                Agent                    Owner (Telegram)
       │────────────────────────▶│                           │
       │                         │──▶ getStaffForService()   │
       │                         │──▶ checkAvailability()    │
+      │                         │    (checks DB + Calendar) │
       │                         │◀── [9:00, 10:30, 14:00]   │
       │  "I have 3 slots..."    │                           │
       │◀────────────────────────│                           │
@@ -260,7 +294,7 @@ Agent: "Sorry, 10:30 is no longer available.
 |------|---------|
 | `getServices` | List all dental services with categories |
 | `getStaffForService` | Find specialists for a treatment |
-| `checkAvailability` | Check staff schedule for a date |
+| `checkAvailability` | Check staff schedule + Google Calendar |
 | `createAppointment` | Book pending appointment + notify owner |
 | `getClinicTeam` | Get team member information |
 | `searchKnowledgeBase` | RAG search for pricing/policies |
@@ -356,6 +390,18 @@ GET /api/chat/trace
 
 ---
 
+## Integration Status
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| SQLite DB | ✅ Real | Staff, services, appointments, patients |
+| Gemini AI | ✅ Real | Paid API (gemini-2.5-flash) |
+| Telegram Bot | ✅ Real | Notifications + approve/decline |
+| Google Calendar | ✅ Real | Integrated into checkAvailability |
+| Email (Resend) | 🔶 Optional | Logs to console if not configured |
+
+---
+
 ## Documentation
 
 | File | Description |
@@ -363,20 +409,8 @@ GET /api/chat/trace
 | [PLAN.md](./PLAN.md) | Implementation plan with phase progress |
 | [SPEC.md](./SPEC.md) | Technical specification |
 | [TASKS.md](./TASKS.md) | Task tracker (completed/pending) |
-| [STANDARDS.md](./STANDARDS.md) | Code conventions |
-
----
-
-## Demo Video
-
-[Link to demo video - to be added]
-
-Demonstrates:
-1. Booking flow with slot selection
-2. Owner approval via Telegram
-3. Self-correction when slot is taken
-4. Knowledge base queries (pricing, hours)
-5. Returning patient recognition
+| [STANDARDS.md](./STANDARDS.md) | Backend code conventions |
+| [STANDARDS-FRONTEND.md](./STANDARDS-FRONTEND.md) | Frontend code conventions |
 
 ---
 
