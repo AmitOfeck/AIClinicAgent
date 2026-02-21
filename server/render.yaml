@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: smartclinic-api
+    runtime: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: GOOGLE_GENERATIVE_AI_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_OWNER_CHAT_ID
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: GOOGLE_CALENDAR_ID
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT_KEY
+        sync: false
