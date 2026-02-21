@@ -54,29 +54,6 @@ This project demonstrates a **production-grade agentic workflow**:
                          └─────────────┘
 ```
 
----
-
-## Features
-
-### Core Requirements
-
-| Feature | Status | Implementation |
-|---------|--------|----------------|
-| **Agentic Logic** | ✅ | ReAct pattern with `maxSteps: 10` |
-| **Tool Use** | ✅ | 8 tools with Zod schemas |
-| **Self-Correction** | ✅ | Structured error types + suggestions |
-| **Human-in-the-Loop** | ✅ | Telegram approve/decline buttons |
-
-### Nice-to-Have Features
-
-| Feature | Status | Implementation |
-|---------|--------|----------------|
-| **Long-Term Memory** | ✅ | Patient preferences in SQLite |
-| **Proactive Recognition** | ✅ | Greets returning patients by name |
-| **Agentic RAG** | ✅ | Knowledge base search for policies/pricing |
-| **Step Tracing** | ✅ | Console logging + `/api/chat/trace` endpoint |
-| **Retry Logic** | ✅ | Exponential backoff for external APIs |
-| **Google Calendar** | ✅ | Real-time availability checking |
 
 ---
 
