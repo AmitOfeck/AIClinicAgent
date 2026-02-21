@@ -12,7 +12,7 @@
 | Gemini AI | ✅ Real | Paid API (gemini-2.5-flash) |
 | Telegram Bot | ✅ Real | Notifications + approve/decline |
 | Google Calendar | ✅ Real | Credentials configured in server/.env |
-| Email (Resend) | 🔶 Mocked | Logs to console (with retry) |
+| Email (Resend) | ✅ Real | Confirmation + decline emails |
 
 ---
 
@@ -269,12 +269,12 @@ Refactor agent logic into a reusable service layer to support multiple channels 
 - [ ] Test Telegram decline flow → rejection email
 - [ ] Verify staff images display correctly
 
-### Phase 11: Email Integration (Optional)
-- [ ] Set up Resend account
-- [ ] Verify domain for sending
-- [ ] Add RESEND_API_KEY to environment
-- [ ] Test confirmation emails
-- [ ] Test decline emails
+### Phase 11: Email Integration ✅
+- [x] Set up Resend account
+- [x] Add RESEND_API_KEY to environment
+- [x] Confirmation email template (on approve)
+- [x] Decline email template (on decline)
+- [ ] (Optional) Verify custom domain for branded sender
 
 ### Phase 12: Deployment
 - [ ] Deploy client to Vercel

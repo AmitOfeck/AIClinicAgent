@@ -398,7 +398,7 @@ GET /api/chat/trace
 | Gemini AI | ✅ Real | Paid API (gemini-2.5-flash) |
 | Telegram Bot | ✅ Real | Notifications + approve/decline |
 | Google Calendar | ✅ Real | Integrated into checkAvailability |
-| Email (Resend) | 🔶 Optional | Logs to console if not configured |
+| Email (Resend) | ✅ Real | Confirmation + decline emails |
 
 ---
 

@@ -297,8 +297,8 @@ Agent: [calls searchKnowledgeBase {"query": "prices"}]
 | SQLite Database | ✅ Real | Local file storage |
 | Gemini AI | ✅ Real | Paid API (gemini-2.5-flash) |
 | Telegram Bot | ✅ Real | @DRIlanOfeckClinic_bot |
-| Google Calendar | 🔶 Mocked | Returns mock availability |
-| Email (Resend) | 🔶 Mocked | Logs to console |
+| Google Calendar | ✅ Real | Availability + event creation |
+| Email (Resend) | ✅ Real | Confirmation + decline emails |
 
 ---
 
