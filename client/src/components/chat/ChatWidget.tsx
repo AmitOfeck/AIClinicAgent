@@ -1,12 +1,20 @@
-import { useEffect } from 'react'
-import { MessageCircle, X, Minimize2 } from 'lucide-react'
+import { useEffect, useState, useCallback } from 'react'
+import { MessageCircle, X, Minimize2, RotateCcw } from 'lucide-react'
 import ChatMessages from './ChatMessages'
 import ChatInput from './ChatInput'
-import { useChat } from '@ai-sdk/react'
+import { useChat, Message } from '@ai-sdk/react'
 import { cn } from '../../lib/utils'
 import { useChatContext } from '@/context/ChatContext'
-import { API_ENDPOINTS } from '@/api'
+import { API_ENDPOINTS, apiClient } from '@/api'
 import { WELCOME_MESSAGE } from '@/constants'
+import { useChatSession } from '@/hooks'
+
+interface HistoryMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  createdAt: string
+}
 
 export default function ChatWidget() {
   const {
@@ -19,16 +27,57 @@ export default function ChatWidget() {
     clearPendingMessage,
   } = useChatContext()
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error, append } = useChat({
+  const { getSessionId, clearSession } = useChatSession()
+  const [sessionId, setSessionId] = useState<string>(() => getSessionId())
+  const [initialMessages, setInitialMessages] = useState<Message[]>([
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: WELCOME_MESSAGE,
+    },
+  ])
+  // Fetch chat history on mount
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const response = await apiClient.get<{ messages: HistoryMessage[] }>(
+          `${API_ENDPOINTS.chatHistory}/${sessionId}`
+        )
+        if (response.data.messages && response.data.messages.length > 0) {
+          const historyMessages: Message[] = response.data.messages.map((msg) => ({
+            id: msg.id,
+            role: msg.role,
+            content: msg.content,
+          }))
+          setInitialMessages(historyMessages)
+        }
+      } catch (error) {
+        console.error('Failed to fetch chat history:', error)
+      }
+    }
+
+    fetchHistory()
+  }, [sessionId])
+
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error, append, setMessages } = useChat({
     api: API_ENDPOINTS.chat,
-    initialMessages: [
+    body: { sessionId },
+    initialMessages,
+  })
+
+  // Handle new chat - clear session and reset messages
+  const handleNewChat = useCallback(() => {
+    clearSession()
+    const newSessionId = getSessionId()
+    setSessionId(newSessionId)
+    setMessages([
       {
         id: 'welcome',
         role: 'assistant',
         content: WELCOME_MESSAGE,
       },
-    ],
-  })
+    ])
+  }, [clearSession, getSessionId, setMessages])
 
   // Auto-send pending message when chat opens
   useEffect(() => {
@@ -59,13 +108,12 @@ export default function ChatWidget() {
         <div
           className={cn(
             'fixed bg-white shadow-2xl flex flex-col z-50 transition-all duration-200',
-            // Mobile: full screen with safe areas
-            'inset-0 sm:inset-auto sm:bottom-6 sm:right-6',
-            // Desktop: fixed width with rounded corners
-            'sm:w-[380px] sm:rounded-2xl',
-            // Mobile: no rounded corners on top
-            'rounded-none sm:rounded-2xl',
-            isMinimized ? 'h-14' : 'sm:h-[600px] sm:max-h-[80vh]'
+            // Mobile: full screen using dynamic viewport height
+            'inset-0 h-[100dvh]',
+            // Desktop: positioned bottom-right with fixed size
+            'sm:inset-auto sm:bottom-6 sm:right-6 sm:w-[380px] sm:rounded-2xl sm:h-[600px] sm:max-h-[80vh]',
+            // Minimized state
+            isMinimized && 'h-14 sm:h-14'
           )}
         >
           {/* Header */}
@@ -83,6 +131,14 @@ export default function ChatWidget() {
               </div>
             </div>
             <div className="flex items-center gap-1">
+              <button
+                onClick={handleNewChat}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                aria-label="New chat"
+                title="New chat"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
               <button
                 onClick={toggleMinimize}
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"

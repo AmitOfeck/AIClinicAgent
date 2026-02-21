@@ -4,6 +4,7 @@
  */
 export const API_ENDPOINTS = {
   chat: '/api/chat',
+  chatHistory: '/api/chat/history',
   health: '/api/health',
 } as const;
 

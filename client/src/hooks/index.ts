@@ -3,3 +3,5 @@ export type { UseApiState, UseApiReturn } from './useApi';
 
 export { useClinicHours } from './useClinicHours';
 export type { UseClinicHoursReturn } from './useClinicHours';
+
+export { useChatSession } from './useChatSession';
