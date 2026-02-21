@@ -1,9 +1,16 @@
 import Database, { Database as DatabaseType } from 'better-sqlite3'
 import path from 'path'
+import fs from 'fs'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const dbPath = path.join(__dirname, '../../data/clinic.db')
+const dataDir = path.join(__dirname, '../../data')
+const dbPath = path.join(dataDir, 'clinic.db')
+
+// Create data directory if it doesn't exist
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true })
+}
 
 export const db: DatabaseType = new Database(dbPath)
 
