@@ -76,7 +76,10 @@ export default function ChatWidget() {
               </div>
               <div>
                 <h3 className="font-semibold text-sm">SmartClinic Assistant</h3>
-                <p className="text-xs text-white/80">Online • Ready to help</p>
+                <p className="text-xs text-white/80 flex items-center gap-1.5">
+                  <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                  Online
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-1">
