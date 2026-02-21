@@ -108,13 +108,12 @@ export default function ChatWidget() {
         <div
           className={cn(
             'fixed bg-white shadow-2xl flex flex-col z-50 transition-all duration-200',
-            // Mobile: full screen with safe areas
-            'inset-0 sm:inset-auto sm:bottom-6 sm:right-6',
-            // Desktop: fixed width with rounded corners
-            'sm:w-[380px] sm:rounded-2xl',
-            // Mobile: no rounded corners on top
-            'rounded-none sm:rounded-2xl',
-            isMinimized ? 'h-14' : 'sm:h-[600px] sm:max-h-[80vh]'
+            // Mobile: full screen using dynamic viewport height
+            'inset-0 h-[100dvh]',
+            // Desktop: positioned bottom-right with fixed size
+            'sm:inset-auto sm:bottom-6 sm:right-6 sm:w-[380px] sm:rounded-2xl sm:h-[600px] sm:max-h-[80vh]',
+            // Minimized state
+            isMinimized && 'h-14 sm:h-14'
           )}
         >
           {/* Header */}
