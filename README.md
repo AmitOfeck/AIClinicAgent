@@ -2,6 +2,8 @@
 
 AI-powered dental clinic assistant that handles appointment scheduling with human-in-the-loop approval via Telegram.
 
+[![Demo Video](https://img.shields.io/badge/Demo-Watch%20Video-red?style=for-the-badge&logo=google-drive)](https://drive.google.com/file/d/1QWU9e2aGP2vp3V4n_lAqCb3uF-LBUiof/view?usp=sharing)
+
 ## Overview
 
 A patient-facing website for **Dr. Ilan Ofeck's Dental Clinic** in Tel Aviv with an embedded AI chat agent. Patients can browse clinic info and chat with the agent to book appointments. The clinic owner receives real-time Telegram notifications and can approve or decline with a single tap.
